@@ -12,6 +12,7 @@ import com.aoindustries.aoserv.cluster.DomU;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.ProcessorArchitecture;
 import com.aoindustries.aoserv.cluster.ProcessorType;
+import com.aoindustries.aoserv.cluster.UnmodifiableArrayList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -376,15 +377,22 @@ public class AnalyzedDom0Configuration {
      * Gets the unsorted, unmodifable list of results for each disk.
      */
     public List<AnalyzedDom0DiskConfiguration> getDom0Disks() {
-        return Collections.unmodifiableList(getModifiableDom0Disks());
-    }
-    List<AnalyzedDom0DiskConfiguration> getModifiableDom0Disks() {
         Map<String,Dom0Disk> clusterDom0Disks = dom0.getDom0Disks();
-        List<AnalyzedDom0DiskConfiguration> dom0Disks = new ArrayList<AnalyzedDom0DiskConfiguration>(clusterDom0Disks.size());
-        for(Dom0Disk dom0Disk : clusterDom0Disks.values()) {
-            dom0Disks.add(new AnalyzedDom0DiskConfiguration(clusterConfiguration, dom0Disk));
+        int size = clusterDom0Disks.size();
+        if(size==0) return Collections.emptyList();
+        else if(size==1) {
+            return Collections.singletonList(
+                new AnalyzedDom0DiskConfiguration(clusterConfiguration, clusterDom0Disks.get(0))
+            );
+        } else {
+            AnalyzedDom0DiskConfiguration[] array = new AnalyzedDom0DiskConfiguration[size];
+            int index = 0;
+            for(Dom0Disk dom0Disk : clusterDom0Disks.values()) {
+                array[index++] = new AnalyzedDom0DiskConfiguration(clusterConfiguration, dom0Disk);
+            }
+            assert index==size : "index!=size: "+index+"!="+size;
+            return new UnmodifiableArrayList<AnalyzedDom0DiskConfiguration>(array);
         }
-        return dom0Disks;
     }
 
     /**
@@ -401,8 +409,11 @@ public class AnalyzedDom0Configuration {
         if(!getProcessorCoresResults(resultHandler, minimumAlertLevel)) return false;
         if(!getAvailableProcessorWeightResult(resultHandler, minimumAlertLevel)) return false;
         if(!getRequiresHvmResults(resultHandler, minimumAlertLevel)) return false;
-        for(AnalyzedDom0DiskConfiguration dom0Disk : getModifiableDom0Disks()) {
-            if(!dom0Disk.getAllResults(resultHandler, minimumAlertLevel)) return false;
+        // The highest alert level for disks is HIGH, avoid ArrayList creation here
+        if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
+            for(AnalyzedDom0DiskConfiguration dom0Disk : getDom0Disks()) {
+                if(!dom0Disk.getAllResults(resultHandler, minimumAlertLevel)) return false;
+            }
         }
         return true;
     }

@@ -5,9 +5,8 @@
  */
 package com.aoindustries.aoserv.cluster.analyze;
 
-import com.aoindustries.aoserv.cluster.ProcessorArchitecture;
-import com.aoindustries.aoserv.cluster.ProcessorType;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +71,50 @@ public class AnalyzedClusterConfigurationPrinter {
         println(indent, result.getLabel(), result.getValue(), result.getAlertLevel().toString(), out);
     }
 
-    public static void print(Collection<AnalyzedClusterConfiguration> analyzedClusters, PrintWriter out) {
+    static class ResultPrinter implements ResultHandler<Object> {
+
+        private final int indent;
+        private final PrintWriter out;
+
+        ResultPrinter(int indent, PrintWriter out) {
+            this.indent = indent;
+            this.out = out;
+        }
+
+        public boolean handleResult(Result<?> result) {
+            println(indent, result, out);
+            return true;
+        }
+    }
+
+    static class SortedResultPrinter implements ResultHandler<Object> {
+
+        private final List<Result<?>> results = new ArrayList<Result<?>>();
+        private final int indent;
+        private final PrintWriter out;
+
+        SortedResultPrinter(int indent, PrintWriter out) {
+            this.indent = indent;
+            this.out = out;
+        }
+
+        public boolean handleResult(Result<?> result) {
+            results.add(result);
+            return true;
+        }
+
+        void sortAndPrint() {
+            Collections.sort(results);
+            for(Result result : results) println(indent, result, out);
+            results.clear();
+        }
+    }
+
+    public static void print(Collection<AnalyzedClusterConfiguration> analyzedClusters, PrintWriter out, AlertLevel minimumAlertLevel) {
+        final ResultPrinter resultPrinter2 = new ResultPrinter(2, out);
+        final ResultPrinter resultPrinter4 = new ResultPrinter(4, out);
+        final SortedResultPrinter capturer3 = new SortedResultPrinter(3, out);
+
         out.println("+------------------------------------------------------------+---------+-------------+");
         out.println("|                          Resource                          |  Value  | Alert Level |");
         out.println("+------------------------------------------------------------+---------+-------------+");
@@ -84,48 +126,38 @@ public class AnalyzedClusterConfigurationPrinter {
                 println(1, dom0.getDom0().getHostname(), null, null, out);
 
                 // RAM
-                println(2, dom0.getAvailableRamResult(), out);
+                dom0.getAvailableRamResult(resultPrinter2, minimumAlertLevel);
                 println(2, "Secondary RAM", null, null, out);
-                List<Result<Integer>> availableRamResults = dom0.getModifiableAllocatedSecondaryRamResults(false);
-                Collections.sort(availableRamResults);
-                for(Result result : availableRamResults) println(3, result, out);
+                dom0.getAllocatedSecondaryRamResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Processor type
                 println(2, "Processor Type", dom0.getDom0().getProcessorType(), null, out);
-                List<Result<ProcessorType>> processorTypeResults = dom0.getModifiableProcessorTypeResults(false);
-                Collections.sort(processorTypeResults);
-                for(Result result : processorTypeResults) println(3, result, out);
+                dom0.getProcessorTypeResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Processor architecture
                 println(2, "Processor Architecture", dom0.getDom0().getProcessorArchitecture(), null, out);
-                List<Result<ProcessorArchitecture>> processorArchitectureResults = dom0.getModifiableProcessorArchitectureResults(false);
-                Collections.sort(processorArchitectureResults);
-                for(Result result : processorArchitectureResults) println(3, result, out);
+                dom0.getProcessorArchitectureResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Processor speed
                 println(2, "Processor Speed", Integer.toString(dom0.getDom0().getProcessorSpeed()), null, out);
-                List<Result<Integer>> processorSpeedResults = dom0.getModifiableProcessorSpeedResults(false);
-                Collections.sort(processorSpeedResults);
-                for(Result result : processorSpeedResults) println(3, result, out);
+                dom0.getProcessorSpeedResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Processor cores
                 println(2, "Processor Cores", Integer.toString(dom0.getDom0().getProcessorCores()), null, out);
-                List<Result<Integer>> processorCoresResults = dom0.getModifiableProcessorCoresResults(false);
-                Collections.sort(processorCoresResults);
-                for(Result result : processorCoresResults) println(3, result, out);
+                dom0.getProcessorCoresResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Processor weights
-                println(2, dom0.getAvailableProcessorWeightResult(), out);
-                /*println(2, "Secondary Processor Weights", null, null, out);
-                List<Result<Integer>> secondaryProcessorWeightResults = dom0.getModifiableAllocatedSecondaryProcessorWeightResults();
-                Collections.sort(secondaryProcessorWeightResults);
-                for(Result result : secondaryProcessorWeightResults) println(3, result, out);*/
+                dom0.getAvailableProcessorWeightResult(resultPrinter2, minimumAlertLevel);
 
                 // Supports HVM
                 println(2, "Hardware Virtualization", Boolean.toString(dom0.getDom0().getSupportsHvm()), null, out);
-                List<Result<Boolean>> requiresHvmResults = dom0.getModifiableRequiresHvmResults(false);
-                Collections.sort(requiresHvmResults);
-                for(Result result : requiresHvmResults) println(3, result, out);
+                dom0.getRequiresHvmResults(capturer3, minimumAlertLevel);
+                capturer3.sortAndPrint();
 
                 // Dom0Disks
                 println(2, "Disks", null, null, out);
@@ -133,7 +165,7 @@ public class AnalyzedClusterConfigurationPrinter {
                 Collections.sort(dom0Disks);
                 for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
                     println(3, dom0Disk.getDom0Disk().getDevice(), null, null, out);
-                    println(4, dom0Disk.getAvailableWeightResult(), out);
+                    dom0Disk.getAvailableWeightResult(resultPrinter4, minimumAlertLevel);
                     List<AnalyzedDomUDiskResults> domUDisks = dom0Disk.getModifiableDomUDiskResults();
                     Collections.sort(domUDisks);
                     for(AnalyzedDomUDiskResults domUDisk : domUDisks) {

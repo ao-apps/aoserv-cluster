@@ -279,6 +279,7 @@ public class ClusterOptimizer {
                 Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
                 Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
                 if(!domU.isPrimaryDom0Locked()) {
+                    // Can't swap if either primary or secondary is locked
                     ClusterConfiguration swappedClusterConfiguration = clusterConfiguration.liveMigrate(domU);
                     Transition transition = new MigrateTransition(domU, primaryDom0, secondaryDom0);
                     int size = children.size();

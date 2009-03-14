@@ -113,8 +113,12 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
         return Collections.unmodifiableList(getModifiableDomUDiskResults());
     }
     List<AnalyzedDomUDiskResults> getModifiableDomUDiskResults() {
-        List<AnalyzedDomUDiskResults> results = new ArrayList<AnalyzedDomUDiskResults>();
-        for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
+        List<DomUConfiguration> domUConfigurations = clusterConfiguration.getDomUConfigurations();
+        int size = domUConfigurations.size();
+        // if(size==0) return Collections.emptyList(); // This probably does't help because a cluster with no DomU is already optimal
+        // Size==1 shortcut?
+        List<AnalyzedDomUDiskResults> results = new ArrayList<AnalyzedDomUDiskResults>(size*3);
+        for(DomUConfiguration domUConfiguration : domUConfigurations) {
             // Must be either primary or secondary on this
             Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
             if(primaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
@@ -237,8 +241,11 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
      */
     public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
         if(!getAvailableWeightResult(resultHandler, minimumAlertLevel)) return false;
-        for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) {
-            if(!domUDisk.getAllResults(resultHandler, minimumAlertLevel)) return false;
+        // The highest alert level for disks is HIGH, avoid ArrayList creation here
+        if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
+            for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) {
+                if(!domUDisk.getAllResults(resultHandler, minimumAlertLevel)) return false;
+            }
         }
         return true;
     }

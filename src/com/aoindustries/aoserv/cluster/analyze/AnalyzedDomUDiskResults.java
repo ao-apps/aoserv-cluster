@@ -8,7 +8,6 @@ package com.aoindustries.aoserv.cluster.analyze;
 import com.aoindustries.aoserv.cluster.DiskType;
 import com.aoindustries.aoserv.cluster.DomUDisk;
 import com.aoindustries.aoserv.cluster.RaidType;
-import java.util.Collection;
 
 /**
  * Stores the results of the analysis of a single DomUDisk->(one or more physical volumes)->Dom0Disk mapping.
@@ -70,32 +69,19 @@ public class AnalyzedDomUDiskResults implements Comparable<AnalyzedDomUDiskResul
 
     /**
      * @see AnalyzedCluster#getAllResults()
+     *
+     * @return true if more results are wanted, or false to receive no more results.
      */
-    public void addAllResults(Collection<Result> allResults, boolean nonOptimalOnly) {
-        if(!nonOptimalOnly || raidTypeResult.getAlertLevel()!=AlertLevel.NONE) allResults.add(raidTypeResult);
-        if(!nonOptimalOnly || diskTypeResult.getAlertLevel()!=AlertLevel.NONE) allResults.add(diskTypeResult);
-        if(!nonOptimalOnly || diskSpeedResult.getAlertLevel()!=AlertLevel.NONE) allResults.add(diskSpeedResult);
-    }
-
-    /**
-     * Determines if this is optimal, meaning all results have AlertLevel of NONE.
-     */
-    public boolean isOptimal() {
-        return
-            raidTypeResult.getAlertLevel()==AlertLevel.NONE
-            && diskTypeResult.getAlertLevel()==AlertLevel.NONE
-            && diskSpeedResult.getAlertLevel()==AlertLevel.NONE
-        ;
-    }
-
-    /**
-     * Determines if this has at least one result with AlertLevel of CRITICAL.
-     */
-    public boolean hasCritical() {
-        return
-            raidTypeResult.getAlertLevel()==AlertLevel.CRITICAL
-            || diskTypeResult.getAlertLevel()==AlertLevel.CRITICAL
-            || diskSpeedResult.getAlertLevel()==AlertLevel.CRITICAL
-        ;
+    public boolean getAllResults(ResultHandler resultHandler, AlertLevel minimumAlertLevel) {
+        if(raidTypeResult.getAlertLevel().compareTo(minimumAlertLevel)>=0) {
+            if(!resultHandler.handleResult(raidTypeResult)) return false;
+        }
+        if(diskTypeResult.getAlertLevel().compareTo(minimumAlertLevel)>=0) {
+            if(!resultHandler.handleResult(diskTypeResult)) return false;
+        }
+        if(diskSpeedResult.getAlertLevel().compareTo(minimumAlertLevel)>=0) {
+            if(!resultHandler.handleResult(diskSpeedResult)) return false;
+        }
+        return true;
     }
 }
