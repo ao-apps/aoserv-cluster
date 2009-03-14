@@ -161,7 +161,7 @@ public class AnalyzedClusterConfigurationPrinter {
 
                 // Dom0Disks
                 println(2, "Disks", null, null, out);
-                List<AnalyzedDom0DiskConfiguration> dom0Disks = dom0.getModifiableDom0Disks();
+                List<AnalyzedDom0DiskConfiguration> dom0Disks = dom0.getDom0Disks();
                 Collections.sort(dom0Disks);
                 for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
                     println(3, dom0Disk.getDom0Disk().getDevice(), null, null, out);

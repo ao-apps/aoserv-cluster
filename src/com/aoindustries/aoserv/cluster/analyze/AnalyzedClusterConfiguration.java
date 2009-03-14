@@ -9,7 +9,6 @@ import com.aoindustries.aoserv.cluster.Cluster;
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
 import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.UnmodifiableArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,26 +75,47 @@ public class AnalyzedClusterConfiguration {
      * This convience method will obtain all the different results.
      * This may be useful by heuristics that weigh the state by
      * all the results.
+     * 
+     * @return true if more results are wanted, or false to receive no more results.
      */
-    public void addAllResults(Collection<Result> allResults, boolean nonOptimalOnly) {
+    public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
         for(AnalyzedDom0Configuration dom0 : getAnalyzedDom0Configurations()) {
-            dom0.addAllResults(allResults, nonOptimalOnly);
+            if(!dom0.getAllResults(resultHandler, minimumAlertLevel)) return false;
         }
+        return true;
     }
-    
+
     /**
      * Determines if this is optimal, meaning all results have AlertLevel of NONE.
      */
     public boolean isOptimal() {
-        for(AnalyzedDom0Configuration dom0 : getAnalyzedDom0Configurations()) if(!dom0.isOptimal()) return false;
-        return true;
+        final boolean[] isOptimal = {true};
+        getAllResults(
+            new ResultHandler() {
+                public boolean handleResult(Result result) {
+                    isOptimal[0] = false;
+                    return false;
+                }
+            },
+            AlertLevel.LOW
+        );
+        return isOptimal[0];
     }
 
     /**
      * Determines if this has at least one result with AlertLevel of CRITICAL.
      */
     public boolean hasCritical() {
-        for(AnalyzedDom0Configuration dom0 : getAnalyzedDom0Configurations()) if(dom0.hasCritical()) return true;
-        return false;
+        final boolean[] hasCritical = new boolean[1];
+        getAllResults(
+            new ResultHandler() {
+                public boolean handleResult(Result result) {
+                    hasCritical[0] = true;
+                    return false;
+                }
+            },
+            AlertLevel.CRITICAL
+        );
+        return hasCritical[0];
     }
 }
