@@ -11,12 +11,14 @@ import com.aoindustries.aoserv.cluster.DomU;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.DomUDiskConfiguration;
 import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 /**
  * <p>
@@ -59,11 +61,13 @@ public class ClusterOptimizer {
     private final ClusterConfiguration clusterConfiguration;
     private final HeuristicFunction heuristicFunction;
     private final boolean allowPathThroughCritical;
+    private final boolean randomizeChildren;
 
-    public ClusterOptimizer(ClusterConfiguration clusterConfiguration, HeuristicFunction heuristicFunction, boolean allowPathThroughCritical) {
+    public ClusterOptimizer(ClusterConfiguration clusterConfiguration, HeuristicFunction heuristicFunction, boolean allowPathThroughCritical, boolean randomizeChildren) {
         this.clusterConfiguration = clusterConfiguration;
         this.heuristicFunction = heuristicFunction;
         this.allowPathThroughCritical = allowPathThroughCritical;
+        this.randomizeChildren = randomizeChildren;
     }
 
     /**
@@ -145,11 +149,9 @@ public class ClusterOptimizer {
             }
             // Is this the goal?
             if(new AnalyzedClusterConfiguration(X.clusterConfiguration).isOptimal()) {
+                assert shortestPath==null || X.pathLen<shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
                 boolean needsTrim = false;
-                if(
-                    shortestPath==null
-                    || X.pathLen<shortestPath.pathLen
-                ) {
+                if(shortestPath==null) {
                     shortestPath = X;
                     needsTrim = true;
                 }
@@ -193,7 +195,7 @@ public class ClusterOptimizer {
                 // generate children of X if depth limit not reached
                 // max depth is determined by any path already found
                 if(shortestPath==null || (X.pathLen+1)<shortestPath.pathLen) { // + 1 to match size of newTransitions below
-                    generateChildren(X.clusterConfiguration, children, childTransitions);
+                    generateChildren(X.clusterConfiguration, children, childTransitions, randomizeChildren);
                     //System.out.println("        children: "+children.size());
                     boolean xEndsCritical = allowPathThroughCritical ? true : new AnalyzedClusterConfiguration(X.clusterConfiguration).hasCritical();
                     // for each child of X do
@@ -264,7 +266,9 @@ public class ClusterOptimizer {
         return shortestPath;
     }
 
-    private static void generateChildren(ClusterConfiguration clusterConfiguration, List<ClusterConfiguration> children, List<Transition> childTransitions) {
+    private Random random = new SecureRandom();
+
+    private void generateChildren(ClusterConfiguration clusterConfiguration, List<ClusterConfiguration> children, List<Transition> childTransitions, boolean randomizeChildren) {
         children.clear();
         childTransitions.clear();
         
@@ -276,14 +280,16 @@ public class ClusterOptimizer {
                 Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
                 if(!domU.isPrimaryDom0Locked()) {
                     ClusterConfiguration swappedClusterConfiguration = clusterConfiguration.liveMigrate(domU);
-                    children.add(swappedClusterConfiguration);
-                    childTransitions.add(
-                        new MigrateTransition(
-                            domU,
-                            primaryDom0,
-                            secondaryDom0
-                        )
-                    );
+                    Transition transition = new MigrateTransition(domU, primaryDom0, secondaryDom0);
+                    int size = children.size();
+                    if(randomizeChildren && size!=0) {
+                        int index = random.nextInt(size+1);
+                        children.add(index, swappedClusterConfiguration);
+                        childTransitions.add(index, transition);
+                    } else {
+                        children.add(swappedClusterConfiguration);
+                        childTransitions.add(transition);
+                    }
                 }
 
                 // TODO: Adhere to or remove the locked flags for individual disks
@@ -301,14 +307,16 @@ public class ClusterOptimizer {
                         }
                         if(hasEnoughExtents) {
                             ClusterConfiguration movedClusterConfiguration = clusterConfiguration.moveSecondary(domU, dom0);
-                            children.add(movedClusterConfiguration);
-                            childTransitions.add(
-                                new MoveSecondaryTransition(
-                                    domU,
-                                    secondaryDom0,
-                                    dom0
-                                )
-                            );
+                            Transition transition = new MoveSecondaryTransition(domU, secondaryDom0, dom0);
+                            int size = children.size();
+                            if(randomizeChildren && size!=0) {
+                                int index = random.nextInt(size+1);
+                                children.add(index, movedClusterConfiguration);
+                                childTransitions.add(index, transition);
+                            } else {
+                                children.add(movedClusterConfiguration);
+                                childTransitions.add(transition);
+                            }
                         }
                     }
                 }
@@ -329,8 +337,23 @@ public class ClusterOptimizer {
     public HeuristicFunction getHeuristicFunction() {
         return heuristicFunction;
     }
-    
+
+    /**
+     * When true, a transition from non-critical to critical will be allowed.
+     * Otherwise, any path with this transition will be ignored and not expanded.
+     */
     public boolean allowsPathThroughCritical() {
         return allowPathThroughCritical;
+    }
+    
+    /**
+     * When true, the search will randomize the list of children as it expands
+     * each node.  The impact of this is not yet tested, but it is expected to
+     * provide different alternatives when several different paths yield exactly
+     * the same heuristic value because only the first of a provided path length
+     * is kept as the sortest path.
+     */
+    public boolean getRandomizeChildren() {
+        return randomizeChildren;
     }
 }

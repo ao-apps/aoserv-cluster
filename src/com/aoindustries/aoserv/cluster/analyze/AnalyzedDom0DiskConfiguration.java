@@ -15,7 +15,6 @@ import com.aoindustries.aoserv.cluster.DomUDiskConfiguration;
 import com.aoindustries.aoserv.cluster.PhysicalVolume;
 import com.aoindustries.aoserv.cluster.RaidType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,36 +43,23 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 
     /**
      * Gets the free allocation disk weight.
+     * 
+     * @return true if more results are wanted, or false to receive no more results.
      */
-    public Result<Integer> getAvailableWeightResult() {
-        // Add up all of the weights on any physical volumes on this drive.
-        // Each unique DomUDisk will only be added once.
-        int allocatedDiskWeight = 0;
+    public boolean getAvailableWeightResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+        if(minimumAlertLevel.compareTo(AlertLevel.MEDIUM)<=0) {
+            // Add up all of the weights on any physical volumes on this drive.
+            // Each unique DomUDisk will only be added once.
+            int allocatedDiskWeight = 0;
 
-        for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
-            // Must be either primary or secondary on this
-            Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
-            if(primaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
-                assert primaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "primaryDom0.clusterName!=dom0Disk.clusterName";
-                // Look only for primary matches
-                for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
-                    for(PhysicalVolume physicalVolume : domUDiskConfiguration.getPrimaryPhysicalVolumes()) {
-                        if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
-                            assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
-                            assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
-                            // Found a match between DomUDisk and this Dom0Disk
-                            allocatedDiskWeight += domUDiskConfiguration.getDomUDisk().getWeight();
-                            break;
-                        }
-                    }
-                }
-            } else {
-                Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
-                if(secondaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
-                    assert secondaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "secondaryDom0.clusterName!=dom0Disk.clusterName";
-                    // Look only for secondary matches
+            for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
+                // Must be either primary or secondary on this
+                Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
+                if(primaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
+                    assert primaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "primaryDom0.clusterName!=dom0Disk.clusterName";
+                    // Look only for primary matches
                     for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
-                        for(PhysicalVolume physicalVolume : domUDiskConfiguration.getSecondaryPhysicalVolumes()) {
+                        for(PhysicalVolume physicalVolume : domUDiskConfiguration.getPrimaryPhysicalVolumes()) {
                             if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
                                 assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
                                 assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
@@ -83,20 +69,45 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
                             }
                         }
                     }
+                } else {
+                    Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
+                    if(secondaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
+                        assert secondaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "secondaryDom0.clusterName!=dom0Disk.clusterName";
+                        // Look only for secondary matches
+                        for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
+                            for(PhysicalVolume physicalVolume : domUDiskConfiguration.getSecondaryPhysicalVolumes()) {
+                                if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
+                                    assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
+                                    assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
+                                    // Found a match between DomUDisk and this Dom0Disk
+                                    allocatedDiskWeight += domUDiskConfiguration.getDomUDisk().getWeight();
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            int freeDiskWeight = 1024 - allocatedDiskWeight;
+            AlertLevel alertLevel = freeDiskWeight<0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+            if(alertLevel.compareTo(minimumAlertLevel)>=0) {
+                return resultHandler.handleResult(
+                    new Result<Integer>(
+                        "Available Weight",
+                        freeDiskWeight,
+                        -((double)freeDiskWeight / (double)1024),
+                        alertLevel
+                    )
+                );
+            }
         }
-        int freeDiskWeight = 1024 - allocatedDiskWeight;
-        return new Result<Integer>(
-            "Available Weight",
-            freeDiskWeight,
-            -((double)freeDiskWeight / (double)1024),
-            freeDiskWeight<0 ? AlertLevel.MEDIUM : AlertLevel.NONE
-        );
+        return true;
     }
 
     /**
      * Gets the unsorted, unmodifiable list of results per DomUDisk.
+     * 
+     * TODO: Convert to be like getAllResults to filter and save work based on minimumAlertLevel
      */
     public List<AnalyzedDomUDiskResults> getDomUDiskResults() {
         return Collections.unmodifiableList(getModifiableDomUDiskResults());
@@ -221,28 +232,14 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 
     /**
      * @see AnalyzedCluster#getAllResults()
+     * 
+     * @return true if more results are wanted, or false to receive no more results.
      */
-    public void addAllResults(Collection<Result> allResults, boolean nonOptimalOnly) {
-        Result availableWeightResult = getAvailableWeightResult();
-        if(!nonOptimalOnly || availableWeightResult.getAlertLevel()!=AlertLevel.NONE) allResults.add(availableWeightResult);
-        for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) domUDisk.addAllResults(allResults, nonOptimalOnly);
-    }
-
-    /**
-     * Determines if this is optimal, meaning all results have AlertLevel of NONE.
-     */
-    public boolean isOptimal() {
-        if(getAvailableWeightResult().getAlertLevel()!=AlertLevel.NONE) return false;
-        for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) if(!domUDisk.isOptimal()) return false;
+    public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
+        if(!getAvailableWeightResult(resultHandler, minimumAlertLevel)) return false;
+        for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) {
+            if(!domUDisk.getAllResults(resultHandler, minimumAlertLevel)) return false;
+        }
         return true;
-    }
-
-    /**
-     * Determines if this has at least one result with AlertLevel of CRITICAL.
-     */
-    public boolean hasCritical() {
-        if(getAvailableWeightResult().getAlertLevel()==AlertLevel.CRITICAL) return true;
-        for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) if(domUDisk.hasCritical()) return true;
-        return false;
     }
 }
