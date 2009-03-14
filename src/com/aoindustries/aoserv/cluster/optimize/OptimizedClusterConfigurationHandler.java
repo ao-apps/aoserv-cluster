@@ -5,8 +5,6 @@
  */
 package com.aoindustries.aoserv.cluster.optimize;
 
-import java.util.List;
-
 /**
  * Accepts results from the optimized cluster
  */
@@ -15,5 +13,5 @@ public interface OptimizedClusterConfigurationHandler {
     /**
      * Handles one result.  Returns true if the optimization should continue.
      */
-    boolean handleOptimizedClusterConfiguration(List<Transition> path, long loopCount);
+    boolean handleOptimizedClusterConfiguration(ListElement path, long loopCount);
 }

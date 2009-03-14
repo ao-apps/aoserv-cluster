@@ -6,25 +6,40 @@
 package com.aoindustries.aoserv.cluster.optimize;
 
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
-import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
-import java.util.List;
 
-class ListElement implements Comparable<ListElement> {
+public class ListElement implements Comparable<ListElement> {
 
+    /**
+     * This is null for the first element in the list.
+     */
+    final ListElement previous;
+    
+    /**
+     * This is null for the first element in the list.
+     */
+    final Transition transition;
+    
+    final int pathLen;
+
+    /**
+     * The configuration after the transition.
+     */
     final ClusterConfiguration clusterConfiguration;
-    final HeuristicFunction heuristicFunction;
-    final List<Transition> transitions;
+
     final double heuristic;
 
     ListElement(
+        ListElement previous,
+        Transition transition,
         ClusterConfiguration clusterConfiguration,
-        HeuristicFunction heuristicFunction,
-        List<Transition> transitions
+        double heuristic
     ) {
+        this.previous = previous;
+        this.transition = transition;
+        this.pathLen = previous==null ? 0 : (previous.pathLen+1);
+        assert clusterConfiguration!=null : "clusterConfiguration is null";
         this.clusterConfiguration = clusterConfiguration;
-        this.heuristicFunction = heuristicFunction;
-        this.transitions = transitions;
-        this.heuristic = heuristicFunction.getHeuristic(clusterConfiguration, transitions.size());
+        this.heuristic = heuristic;
     }
 
     /**
@@ -37,13 +52,27 @@ class ListElement implements Comparable<ListElement> {
         if(h2<h1) return 1;
         return 0;
     }
-
+    
+    public ListElement getPrevious() {
+        return previous;
+    }
+    
     /**
-     * Checks if this is a goal state.
-     * 
-     * @see AnalyzedClusterConfiguration#isOptimal()
+     * Gets the transition, this is null for the initial state.
      */
-    boolean isGoal() {
-        return new AnalyzedClusterConfiguration(clusterConfiguration).isOptimal();
+    public Transition getTransition() {
+        return transition;
+    }
+
+    public int getPathLen() {
+        return pathLen;
+    }
+
+    public ClusterConfiguration getClusterConfiguration() {
+        return clusterConfiguration;
+    }
+
+    public double getHeuristic() {
+        return heuristic;
     }
 }

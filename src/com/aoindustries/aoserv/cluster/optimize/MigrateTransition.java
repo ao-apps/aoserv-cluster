@@ -5,7 +5,6 @@
  */
 package com.aoindustries.aoserv.cluster.optimize;
 
-import com.aoindustries.aoserv.cluster.ClusterConfiguration;
 import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.DomU;
 
@@ -21,13 +20,10 @@ public class MigrateTransition extends Transition {
     private final Dom0 oldSecondaryDom0;
 
     MigrateTransition(
-        ClusterConfiguration beforeClusterConfiguration,
-        ClusterConfiguration afterClusterConfiguration,
         DomU domU,
         Dom0 oldPrimaryDom0,
         Dom0 oldSecondaryDom0
     ) {
-        super(beforeClusterConfiguration, afterClusterConfiguration);
         this.domU = domU;
         this.oldPrimaryDom0 = oldPrimaryDom0;
         this.oldSecondaryDom0 = oldSecondaryDom0;

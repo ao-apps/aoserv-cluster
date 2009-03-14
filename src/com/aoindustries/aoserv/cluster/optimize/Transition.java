@@ -5,8 +5,6 @@
  */
 package com.aoindustries.aoserv.cluster.optimize;
 
-import com.aoindustries.aoserv.cluster.ClusterConfiguration;
-
 /**
  * A transition is one of the possible conversions of clusterConfiguration state.
  * TODO: Other transitions could include:
@@ -20,22 +18,6 @@ import com.aoindustries.aoserv.cluster.ClusterConfiguration;
  */
 public abstract class Transition {
     
-    private final ClusterConfiguration beforeClusterConfiguration;
-    private final ClusterConfiguration afterClusterConfiguration;
-
-    Transition(
-        ClusterConfiguration beforeClusterConfiguration,
-        ClusterConfiguration afterClusterConfiguration
-    ) {
-        this.beforeClusterConfiguration = beforeClusterConfiguration;
-        this.afterClusterConfiguration = afterClusterConfiguration;
-    }
-
-    public ClusterConfiguration getBeforeClusterConfiguration() {
-        return beforeClusterConfiguration;
-    }
-
-    public ClusterConfiguration getAfterClusterConfiguration() {
-        return afterClusterConfiguration;
+    Transition() {
     }
 }

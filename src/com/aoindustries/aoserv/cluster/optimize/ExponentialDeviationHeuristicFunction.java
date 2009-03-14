@@ -37,7 +37,8 @@ public class ExponentialDeviationHeuristicFunction implements HeuristicFunction 
     public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
         AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-        // Include g to prefer shorter paths
+        // Include g to prefer shorter paths - this is meant to be just a tie breaker and to minimally
+        // affect the path otherwise
         double total = g*.00001;
 
         // Add each result

@@ -12,7 +12,6 @@ import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.DomUDiskConfiguration;
 import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +70,7 @@ public class ClusterOptimizer {
      * Optimizes the cluster and returns the path to the first optimal configuration found or <code>null</code> if no
      * optimal configuration was found.
      */
-    public List<Transition> getOptimizedClusterConfiguration() {
+    public ListElement getOptimizedClusterConfiguration() {
         return getOptimizedClusterConfiguration(null);
     }
 
@@ -92,21 +91,25 @@ public class ClusterOptimizer {
      * 
      * @param  handler  if null, returns the first path found, not necessarily the shortest
      */
-    public List<Transition> getOptimizedClusterConfiguration(OptimizedClusterConfigurationHandler handler) {
+    public ListElement getOptimizedClusterConfiguration(OptimizedClusterConfigurationHandler handler) {
 
         // Reused inside loop below
         List<ClusterConfiguration> children = new ArrayList<ClusterConfiguration>();
         List<Transition> childTransitions = new ArrayList<Transition>();
 
         // Return value is stored here upon success or remains null on failure
-        List<Transition> transitions = null;
+        ListElement shortestPath = null;
 
         // Initialize the open list
         PriorityQueue<ListElement> openQueue = new PriorityQueue<ListElement>();
         Map<ClusterConfiguration,ListElement> openMap = new HashMap<ClusterConfiguration,ListElement>();
         {
-            List<Transition> emptyTransitions = Collections.emptyList();
-            ListElement openListElement = new ListElement(clusterConfiguration, heuristicFunction, emptyTransitions);
+            ListElement openListElement = new ListElement(
+                null,
+                null,
+                clusterConfiguration,
+                heuristicFunction.getHeuristic(clusterConfiguration, 0)
+            );
             openQueue.add(openListElement);
             openMap.put(clusterConfiguration, openListElement);
         }
@@ -131,7 +134,7 @@ public class ClusterOptimizer {
                 System.out.println(
                     "        open:"+openMap.size()
                     + " closed:"+closedMap.size()
-                    + " transitions:"+X.transitions.size()
+                    + " transitions:"+X.pathLen
                     + " heuristic:"+X.heuristic
                     + " existingOpen:"+existingOpenCount
                     + " existingClosed:"+existingClosedCount
@@ -141,21 +144,20 @@ public class ClusterOptimizer {
                 lastDisplayTime = currentTime;
             }
             // Is this the goal?
-            if(X.isGoal()) {
-                List<Transition> unmodifiablePath = Collections.unmodifiableList(X.transitions);
+            if(new AnalyzedClusterConfiguration(X.clusterConfiguration).isOptimal()) {
                 boolean needsTrim = false;
                 if(
-                    transitions==null
-                    || X.transitions.size()<transitions.size()
+                    shortestPath==null
+                    || X.pathLen<shortestPath.pathLen
                 ) {
-                    transitions = unmodifiablePath;
+                    shortestPath = X;
                     needsTrim = true;
                 }
                 
                 // Give handler a chance to cancel before trimming
                 if(
                     handler==null
-                    || !handler.handleOptimizedClusterConfiguration(unmodifiablePath, loopCounter)
+                    || !handler.handleOptimizedClusterConfiguration(X, loopCounter)
                 ) break;
 
                 // Trim anything out of open/closed that has transitions.length>=this path
@@ -170,7 +172,7 @@ public class ClusterOptimizer {
                     while(openIter.hasNext()) {
                         Map.Entry<ClusterConfiguration,ListElement> entry = openIter.next();
                         ListElement listElement = entry.getValue();
-                        if(listElement.transitions.size()>=transitions.size()) {
+                        if(listElement.pathLen>=shortestPath.pathLen) {
                             openIter.remove();
                             if(!openQueue.remove(listElement)) throw new AssertionError("listElement not found in openQueue");
                         }
@@ -179,7 +181,7 @@ public class ClusterOptimizer {
                     Iterator<Map.Entry<ClusterConfiguration,ListElement>> closedIter = closedMap.entrySet().iterator();
                     while(closedIter.hasNext()) {
                         Map.Entry<ClusterConfiguration,ListElement> entry = closedIter.next();
-                        if(entry.getValue().transitions.size()>=transitions.size()) closedIter.remove();
+                        if(entry.getValue().pathLen>=shortestPath.pathLen) closedIter.remove();
                     }
                     //System.out.println(
                     //    "        After trim: openQueue: "+openQueue.size()
@@ -190,10 +192,10 @@ public class ClusterOptimizer {
             } else {
                 // generate children of X if depth limit not reached
                 // max depth is determined by any path already found
-                if(transitions==null || (X.transitions.size()+1)<transitions.size()) { // + 1 to match size of newTransitions below
+                if(shortestPath==null || (X.pathLen+1)<shortestPath.pathLen) { // + 1 to match size of newTransitions below
                     generateChildren(X.clusterConfiguration, children, childTransitions);
                     //System.out.println("        children: "+children.size());
-                    boolean xEndsCritical = allowPathThroughCritical ? true : X.transitions.isEmpty() ? true : new AnalyzedClusterConfiguration(X.transitions.get(X.transitions.size()-1).getAfterClusterConfiguration()).hasCritical();
+                    boolean xEndsCritical = allowPathThroughCritical ? true : new AnalyzedClusterConfiguration(X.clusterConfiguration).hasCritical();
                     // for each child of X do
                     for(int i=0, size=children.size(); i<size; i++) {
                         ClusterConfiguration child = children.get(i);
@@ -204,7 +206,7 @@ public class ClusterOptimizer {
                             if(existingOpen!=null) {
                                 existingOpenCount++;
                                 // if the child was reached by a shorter path
-                                if((X.transitions.size()+1)<existingOpen.transitions.size()) { // + 1 to match size of newTransitions below
+                                if((X.pathLen+1)<existingOpen.pathLen) { // + 1 to match size of newTransitions below
                                     // then give the state of open the shorter path
 
                                     // removing and adding back to open because a short path affects the heuristic and therefore
@@ -212,10 +214,12 @@ public class ClusterOptimizer {
                                     openQueue.remove(existingOpen); // This runs in O(n)
                                     openQueueRemoveCount++;
 
-                                    List<Transition> newTransitions = new ArrayList<Transition>(X.transitions.size()+1);
-                                    newTransitions.addAll(X.transitions);
-                                    newTransitions.add(childTransitions.get(i));
-                                    ListElement openListElement = new ListElement(child, heuristicFunction, newTransitions);
+                                    ListElement openListElement = new ListElement(
+                                        X,
+                                        childTransitions.get(i),
+                                        child,
+                                        heuristicFunction.getHeuristic(child, X.pathLen+1)
+                                    );
                                     openQueue.add(openListElement);
                                     openMap.put(child, openListElement);
                                 }
@@ -224,24 +228,28 @@ public class ClusterOptimizer {
                                 if(existingClosed!=null) {
                                     existingClosedCount++;
                                     // If the child was reached by a shorter path then
-                                    if((X.transitions.size()+1)<existingClosed.transitions.size()) {
+                                    if((X.pathLen+1)<existingClosed.pathLen) {
                                         // remove the state from closed
                                         closedMap.remove(child);
                                         // add the child to open
-                                        List<Transition> newTransitions = new ArrayList<Transition>(X.transitions.size()+1);
-                                        newTransitions.addAll(X.transitions);
-                                        newTransitions.add(childTransitions.get(i));
-                                        ListElement openListElement = new ListElement(child, heuristicFunction, newTransitions);
+                                        ListElement openListElement = new ListElement(
+                                            X,
+                                            childTransitions.get(i),
+                                            child,
+                                            heuristicFunction.getHeuristic(child, X.pathLen+1)
+                                        );
                                         openQueue.add(openListElement);
                                         openMap.put(child, openListElement);
                                     }
                                 } else {
                                     // the child is not on open or closed
                                     // add the child to open
-                                    List<Transition> newTransitions = new ArrayList<Transition>(X.transitions.size()+1);
-                                    newTransitions.addAll(X.transitions);
-                                    newTransitions.add(childTransitions.get(i));
-                                    ListElement openListElement = new ListElement(child, heuristicFunction, newTransitions);
+                                    ListElement openListElement = new ListElement(
+                                        X,
+                                        childTransitions.get(i),
+                                        child,
+                                        heuristicFunction.getHeuristic(child, X.pathLen+1)
+                                    );
                                     openQueue.add(openListElement);
                                     openMap.put(child, openListElement);
                                 }
@@ -253,7 +261,7 @@ public class ClusterOptimizer {
             // put X on closed
             closedMap.put(X.clusterConfiguration, X);
         }
-        return transitions;
+        return shortestPath;
     }
 
     private static void generateChildren(ClusterConfiguration clusterConfiguration, List<ClusterConfiguration> children, List<Transition> childTransitions) {
@@ -271,8 +279,6 @@ public class ClusterOptimizer {
                     children.add(swappedClusterConfiguration);
                     childTransitions.add(
                         new MigrateTransition(
-                            clusterConfiguration,
-                            swappedClusterConfiguration,
                             domU,
                             primaryDom0,
                             secondaryDom0
@@ -298,8 +304,6 @@ public class ClusterOptimizer {
                             children.add(movedClusterConfiguration);
                             childTransitions.add(
                                 new MoveSecondaryTransition(
-                                    clusterConfiguration,
-                                    movedClusterConfiguration,
                                     domU,
                                     secondaryDom0,
                                     dom0
