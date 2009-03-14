@@ -1,0 +1,255 @@
+/*
+ * Copyright 2007-2009 by AO Industries, Inc.,
+ * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
+ * All rights reserved.
+ */
+package com.aoindustries.aoserv.cluster.analyze;
+
+import java.io.Serializable;
+
+/**
+ * One Xen dom0 disk configuration.
+ *
+ * @author  AO Industries, Inc.
+ */
+public class Dom0DiskConfiguration implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final Dom0Disk dom0Disk;
+
+    /**
+     * The DomUDisks that have been added to the totalDiskWeight.
+     */
+    private final SortedSet<DomUDisk> domUDisks = new TreeSet<DomUDisk>();
+    private final Map<String,DomUDisk> unmodifiableDomUDisks;
+
+    /**
+     * Disk allocation weight is the sum of the weights of any DomUDisk that use any physical volume on this Dom0Disk.
+     * Both primary and secondary weights are always added because they are both always used (unlike RAM/CPU cores).
+     * This can be overcommitted in a non-optimal state.
+     */
+    private int allocatedDiskWeight = 0;
+
+    Dom0DiskConfiguration(
+        Dom0Disk dom0Disk
+    ) {
+        this.dom0Disk = dom0Disk;
+    }
+
+    public Dom0Disk getDom0Disk() {
+        return dom0Disk;
+    }
+    
+    @Override
+    public String toString() {
+        return dom0Disk.toString();
+    }
+
+    /*
+    @Override
+    public boolean equals(Object O) {
+        if(O==null) return false;
+        if(!(O instanceof Dom0)) return false;
+        Dom0 other = (Dom0)O;
+        return
+            cluster==other.cluster
+            && hostname.equals(other.hostname)
+        ;
+    }*/
+
+    /**
+     * @see Cluster#deepEquals
+     */
+    /*boolean deepEquals(Dom0 other) {
+        if(allocatedPrimaryRam!=other.allocatedPrimaryRam) return false;
+        if(allocatedPrimaryProcessorWeight!=other.allocatedPrimaryProcessorWeight) return false;
+        if(ram!=other.ram) return false;
+        if(processorType!=other.processorType) return false;
+        if(processorArchitecture!=other.processorArchitecture) return false;
+        if(processorSpeed!=other.processorSpeed) return false;
+        if(processorCores!=other.processorCores) return false;
+        if(supportsHvm!=other.supportsHvm) return false;
+        if(!hostname.equals(other.hostname)) return false;
+        // dom0Disks
+        {
+            int size = dom0Disks.size();
+            if(size!=other.dom0Disks.size()) return false;
+            Iterator<Dom0Disk> myDom0DisksIter = dom0Disks.iterator();
+            Iterator<Dom0Disk> otherDom0DisksIter = other.dom0Disks.iterator();
+            while(myDom0DisksIter.hasNext()) {
+                if(!myDom0DisksIter.next().deepEquals(otherDom0DisksIter.next())) return false;
+            }
+        }
+        // Skipping because all other things being equal, these should be too: domUs
+        // Skipping because all other things being equal, these should be too: private final Map<Dom0,Integer> allocatedSecondaryRams = new HashMap<Dom0,Integer>();
+        // Skipping because all other things being equal, these should be too: private final Map<Dom0,Integer> allocatedSecondaryProcessorWeights = new HashMap<Dom0,Integer>();
+        return true;
+    }*/
+
+    /*
+    @Override
+    public int hashCode() {
+        // Get NullPointerException on object deserialization because this is put into a map before the values are set
+        if(cluster==null || hostname==null) return System.identityHashCode(this);
+        return cluster.hashCode() * 31 + hostname.hashCode();
+    }*/
+
+    /**
+     * Adds a DomU as primary to this Dom0.
+     *
+     * @see Cluster#addDomU
+     */
+    void addPrimaryDomU(DomU domU) {
+        // Add to the set
+        if(!domU.getPrimaryDom0().equals(this)) throw new IllegalArgumentException(this+": DomU is not primary on this Dom0");
+        if(domUs.contains(domU)) throw new IllegalArgumentException(this+": DomU is already on this Dom0");
+        domUs.add(domU);
+
+        // Add to RAM allocation
+        allocatedPrimaryRam += domU.getPrimaryRam();
+        
+        // Add to CPU allocation
+        allocatedPrimaryProcessorWeight += domU.getPrimaryProcessorCores() * domU.getPrimaryProcessorWeight();
+    }
+    
+    /**
+     * Adds a DomU as secondary to this Dom0.
+     *
+     * @see Cluster#addDomU
+     */
+    void addSecondaryDomU(DomU domU) {
+        // Add to the set
+        if(!domU.getSecondaryDom0().equals(this)) throw new IllegalArgumentException(this+": DomU is not secondary on this Dom0");
+        if(domUs.contains(domU)) throw new IllegalArgumentException(this+": DomU is already on this Dom0");
+        domUs.add(domU);
+
+        Dom0 primaryDom0 = domU.getPrimaryDom0();
+
+        // Add to RAM allocation
+        int secondaryRam = domU.getSecondaryRam();
+        if(secondaryRam!=-1) {
+            Integer totalSecondaryRam = allocatedSecondaryRams.get(primaryDom0);
+            allocatedSecondaryRams.put(primaryDom0, totalSecondaryRam==null ? secondaryRam : (totalSecondaryRam + secondaryRam));
+        }
+
+        // Add to CPU allocation
+        int secondaryProcessorCores = domU.getSecondaryProcessorCores();
+        if(secondaryProcessorCores!=-1) {
+            int secondaryProcessorWeight = domU.getSecondaryProcessorWeight();
+            if(secondaryProcessorWeight!=-1) {
+                int secondaryCpuWeight = secondaryProcessorCores * secondaryProcessorWeight;
+                Integer totalSecondaryProcessorWeight = allocatedSecondaryProcessorWeights.get(primaryDom0);
+                allocatedSecondaryProcessorWeights.put(primaryDom0, totalSecondaryProcessorWeight==null ? secondaryCpuWeight : (totalSecondaryProcessorWeight + secondaryCpuWeight));
+            }
+        }
+    }
+
+    /**
+     * Gets the number of megabytes of RAM that have been allocated to primary mode.
+     */
+    public int getAllocatedPrimaryRam() {
+        return allocatedPrimaryRam;
+    }
+    
+    /**
+     * Gets an unmodifiable view of the allocated secondary RAM.
+     */
+    public Map<Dom0,Integer> getAllocatedSecondaryRams() {
+        return unmodifiableAllocatedSecondaryRams;
+    }
+    
+    /**
+     * Gets the total primary allocated processor weight.
+     */
+    public int getAllocatedPrimaryProcessorWeight() {
+        return allocatedPrimaryProcessorWeight;
+    }
+    
+    /**
+     * Gets the unmodifiable view of the allocated secondary processor weights.
+     */
+    public Map<Dom0,Integer> getAllocatedSecondaryProcessorWeights() {
+        return unmodifiableAllocatedSecondaryProcessorWeights;
+    }
+    
+    /**
+     * Gets the unmodifiable set of DomU that are either primary or secondary on this Dom0.
+     */
+    public SortedSet<DomU> getDomUs() {
+        return unmodifiableDomUs;
+    }
+
+    /*
+    @Override
+    public boolean equals(Object O) {
+        if(O==null) return false;
+        if(!(O instanceof Dom0Disk)) return false;
+        Dom0Disk other = (Dom0Disk)O;
+        return
+            dom0.equals(other.dom0)
+            && device.equals(other.device)
+        ;
+    }*/
+
+    /**
+     * @see Cluster#deepEquals
+     */
+    /*
+    boolean deepEquals(Dom0Disk other) {
+        if(raidType!=other.raidType) return false;
+        if(diskType!=other.diskType) return false;
+        if(diskSpeed!=other.diskSpeed) return false;
+        if(allocatedDiskWeight!=other.allocatedDiskWeight) return false;
+        if(!device.equals(other.device)) return false;
+        // physicalVolumes
+        {
+            int size = physicalVolumes.size();
+            if(size!=other.physicalVolumes.size()) return false;
+            Iterator<PhysicalVolume> myIter = physicalVolumes.iterator();
+            Iterator<PhysicalVolume> otherIter = other.physicalVolumes.iterator();
+            while(myIter.hasNext()) {
+                if(!myIter.next().deepEquals(otherIter.next())) return false;
+            }
+        }
+        // Skipping because it is a function of other configurations: domUDisks
+        return true;
+    }*/
+
+    /*
+    @Override
+    public int hashCode() {
+        return dom0.hashCode() * 31 + device.hashCode();
+    }*/
+
+    /**
+     * Adds the allocation weight for a DomUDisk.  A DomUDisk may use
+     * multiple PhysicalVolumes from this Dom0Disk, its weight will
+     * only be added once.
+     * 
+     * @see PhysicalVolume#addDomUDisk
+     */
+    void addDomUDisk(DomUDisk domUDisk, int weight) {
+        if(!domUDisks.contains(domUDisk)) {
+            domUDisks.add(domUDisk);
+            allocatedDiskWeight += weight;
+        }
+    }
+    
+    /**
+     * Gets the total disk allocation between all DomUDisks that use any
+     * physical volume on this disk.  Each DomUDisk will only be counted
+     * once even when it spans multiple physical volumes.
+     */
+    public int getAllocatedDiskWeight() {
+        return allocatedDiskWeight;
+    }
+    
+    /**
+     * Gets the unmodifiable set of DomUDisk that have any allocation on any of the
+     * physical volumes on this disk.
+     */
+    public SortedSet<DomUDisk> getDomUDisks() {
+        return unmodifiableDomUDisks;
+    }
+}
