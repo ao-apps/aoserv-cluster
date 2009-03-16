@@ -35,9 +35,9 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      * If the existing map is empty, will use Collections.singletonMap, otherwise
      * creates a new HashMap and returns it wrapped by Collections.unmodifiableMap.
      */
-    static <K,V> Map<K,V> addToUnmodifiableMap(Map<K,V> existingMap, K newKey, V newValue) {
+    private static <K,V> Map<K,V> addToUnmodifiableMap(Map<K,V> existingMap, K newKey, V newValue) {
         if(existingMap.isEmpty()) return Collections.singletonMap(newKey, newValue);
-        assert !existingMap.containsKey(newKey) : "Map already contains key: "+newKey;
+        if(existingMap.containsKey(newKey)) throw new AssertionError("Map already contains key: "+newKey);
         Map<K,V> newMap = new HashMap<K,V>(existingMap);
         newMap.put(newKey, newValue);
         return Collections.unmodifiableMap(newMap);
@@ -48,8 +48,8 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      * entry, will use Collections.singletonMap, otherwise creates a new HashMap and
      * returns it wrapped by Collections.unmodifiableMap.
      */
-    static <K,V> Map<K,V> replaceInUnmodifiableMap(Map<K,V> existingMap, K key, V newValue) {
-        assert existingMap.containsKey(key) : "Map doesn't contain key: "+key;
+    private static <K,V> Map<K,V> replaceInUnmodifiableMap(Map<K,V> existingMap, K key, V newValue) {
+        if(!existingMap.containsKey(key)) throw new AssertionError("Map doesn't contain key: "+key);
         if(existingMap.size()==1) return Collections.singletonMap(key, newValue);
         Map<K,V> newMap = new HashMap<K,V>(existingMap);
         newMap.put(key, newValue);
@@ -120,7 +120,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      */
     /*public Rack addRack(String id) {
         Rack newRack = new Rack(this, id);
-        if(racks.contains(newRack)) assert throw new IllegalArgumentException(this+": Cluster already contains rack with id="+id);
+        if(racks.contains(newRack)) throw new IllegalArgumentException(this+": Cluster already contains rack with id="+id);
         racks.add(newRack);
         return newRack;
     }*/
@@ -234,7 +234,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      */
     public Cluster addDom0Disk(String hostname, String device, int diskSpeed) {
         Dom0 dom0 = unmodifiableDom0s.get(hostname);
-        assert dom0!=null : this+": Dom0 not found: "+hostname;
+        if(dom0==null) throw new IllegalArgumentException(this+": Dom0 not found: "+hostname);
         return new Cluster(
             name,
             replaceInUnmodifiableMap(
@@ -272,10 +272,10 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      */
     public Cluster addPhysicalVolume(String hostname, String device, Integer partition, int extents) {
         Dom0 dom0 = unmodifiableDom0s.get(hostname);
-        assert dom0!=null : this+": Dom0 not found: "+hostname;
+        if(dom0==null) throw new IllegalArgumentException(this+": Dom0 not found: "+hostname);
 
         Dom0Disk dom0Disk = dom0.getDom0Disk(device);
-        assert dom0Disk==null : dom0+": Disk not found: "+device;
+        if(dom0Disk==null) throw new IllegalArgumentException(dom0+": Disk not found: "+device);
 
         return new Cluster(
             name,
@@ -332,7 +332,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
         boolean secondaryPhysicalVolumesLocked
     ) {
         DomU domU = unmodifiableDomUs.get(hostname);
-        assert domU!=null : this+": DomU not found: "+hostname;
+        if(domU==null) throw new IllegalArgumentException(this+": DomU not found: "+hostname);
         return new Cluster(
             name,
             unmodifiableDom0s,
@@ -375,10 +375,10 @@ public class Cluster implements Comparable<Cluster>, Serializable {
      * Adds a group of DomU that should all be on different Dom0 machines.
      */
     /*public void addDomUGroup(String name, SortedSet<DomU> domUGroup) {
-        if(domUGroups.containsKey(name)) assert throw new IllegalArgumentException(this+": DomU group already exists in this cluster: "+name);
+        if(domUGroups.containsKey(name)) throw new IllegalArgumentException(this+": DomU group already exists in this cluster: "+name);
         // Each of the DomU must be in this cluster
         for(DomU domU : domUGroup) {
-            if(domU.getCluster()!=this) assert throw new IllegalArgumentException(this+": DomU is not in this cluster: "+domU);
+            if(domU.getCluster()!=this) throw new IllegalArgumentException(this+": DomU is not in this cluster: "+domU);
         }
         domUGroups.put(name, Collections.unmodifiableSortedSet(new TreeSet<DomU>(domUGroup)));
     }*/

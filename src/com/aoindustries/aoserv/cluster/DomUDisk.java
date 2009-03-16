@@ -35,9 +35,9 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         boolean primaryPhysicalVolumesLocked,
         boolean secondaryPhysicalVolumesLocked
     ) {
-        assert minimumDiskSpeed>0 || minimumDiskSpeed==-1 : this+": Invalid value for minimumDiskSpeed: "+minimumDiskSpeed;
-        assert extents>=1 : this+": extents should be >=1: "+extents;
-        assert weight>=1 && weight<=1024 : this+": Invalid value for weight, should be in range 1-1024: "+weight;
+        if(minimumDiskSpeed!=-1 && minimumDiskSpeed<=0) throw new IllegalArgumentException(this+": Invalid value for minimumDiskSpeed: "+minimumDiskSpeed);
+        if(extents<1) throw new IllegalArgumentException(this+": extents should be >=1: "+extents);
+        if(weight<1 || weight>1024) throw new IllegalArgumentException(this+": Invalid value for weight, should be in range 1-1024: "+weight);
 
         this.clusterName = clusterName;
         this.domUHostname = domUHostname;

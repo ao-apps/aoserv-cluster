@@ -51,12 +51,12 @@ public class DomU implements Comparable<DomU>, Serializable {
         boolean secondaryDom0Locked,
         Map<String,DomUDisk> unmodifiableDomUDisks
     ) {
-        assert primaryRam>=1 : this+": primaryRam should be >=1: "+primaryRam;
-        assert secondaryRam==-1 || secondaryRam>=1 : this+": secondaryRam should be -1 or >=1: "+secondaryRam;
-        assert minimumProcessorArchitecture!=null : this+": minimumProcessorArchitecture is null";
-        assert minimumProcessorSpeed>0 || minimumProcessorSpeed==-1 : this+": Invalid value for minimumProcessorSpeed: "+minimumProcessorSpeed;
-        assert processorCores>=1 : this+": processorCores should be >=1: "+processorCores;
-        assert processorWeight>=1 && processorWeight<=1024 : this+": Invalid value for processorWeight, should be in range 1-1024: "+processorWeight;
+        if(primaryRam<1) throw new IllegalArgumentException(this+": primaryRam should be >=1: "+primaryRam);
+        if(secondaryRam!=-1 && secondaryRam<1) throw new IllegalArgumentException(this+": secondaryRam should be -1 or >=1: "+secondaryRam);
+        if(minimumProcessorArchitecture==null) throw new IllegalArgumentException(this+": minimumProcessorArchitecture is null");
+        if(minimumProcessorSpeed!=-1 && minimumProcessorSpeed<=0) throw new IllegalArgumentException(this+": Invalid value for minimumProcessorSpeed: "+minimumProcessorSpeed);
+        if(processorCores<1) throw new IllegalArgumentException(this+": processorCores should be >=1: "+processorCores);
+        if(processorWeight<1 || processorWeight>1024) throw new IllegalArgumentException(this+": Invalid value for processorWeight, should be in range 1-1024: "+processorWeight);
 
         this.clusterName = clusterName;
         this.hostname = hostname;

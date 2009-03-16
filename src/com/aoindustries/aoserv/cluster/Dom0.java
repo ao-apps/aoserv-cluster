@@ -47,7 +47,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
     ) {
         this.clusterName = clusterName;
         this.hostname = hostname;
-        //if(rack.getCluster()!=cluster) assert throw new IllegalArgumentException(this+": cluster!=rack.cluster");
+        //if(rack.getCluster()!=cluster) throw new IllegalArgumentException(this+": cluster!=rack.cluster");
         //this.rack = rack;
         this.ram = ram;
         this.processorType = processorType;

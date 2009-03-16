@@ -34,7 +34,7 @@ public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler
     }
 
     public boolean handleResult(Result<?> result) {
-        assert result.getAlertLevel().compareTo(AlertLevel.NONE)<=0 : "Should only get non-optimal results";
+        assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
         count++;
         return true;
     }
