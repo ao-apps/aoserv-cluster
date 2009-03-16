@@ -6,7 +6,6 @@
 package com.aoindustries.aoserv.cluster;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,20 +18,85 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
     private static final long serialVersionUID = 1L;
 
     final DomUDisk domUDisk;
-    final List<PhysicalVolume> unmodifiablePrimaryPhysicalVolumes;
-    final List<PhysicalVolume> unmodifiableSecondaryPhysicalVolumes;
+    final List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations;
+    final List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations;
+
+    /**
+     * Used by assertions.
+     */
+    private static boolean isSorted(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
+        int size = physicalVolumeConfigurations.size();
+        for(int c=1; c<size; c++) {
+            if(physicalVolumeConfigurations.get(c-1).compareTo(physicalVolumeConfigurations.get(c))>0) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Used by assertions.
+     */
+    private static boolean totalExtentsMatch(long requiredExtents, List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
+        long totalExtents = 0;
+        for(PhysicalVolumeConfiguration physicalVolumeConfiguration : physicalVolumeConfigurations) {
+            totalExtents += physicalVolumeConfiguration.getExtents();
+        }
+        return requiredExtents==totalExtents;
+    }
+
+    /**
+     * Used by assertions.
+     */
+    private static boolean overlaps(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
+        int size = physicalVolumeConfigurations.size();
+        for(int c=1;c<size;c++) {
+            PhysicalVolumeConfiguration pv1 = physicalVolumeConfigurations.get(c-1);
+            for(int d=c; d<size; d++) {
+                if(pv1.overlaps(physicalVolumeConfigurations.get(d))) return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Used by assertions.
+     */
+    private static boolean allSameDom0(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
+        int size = physicalVolumeConfigurations.size();
+        if(size>1) {
+            PhysicalVolume pv = physicalVolumeConfigurations.get(0).physicalVolume;
+            String clusterName = pv.clusterName;
+            String dom0Hostname = pv.dom0Hostname;
+            for(int c=1; c<size; c++) {
+                pv = physicalVolumeConfigurations.get(1).physicalVolume;
+                if(
+                    !clusterName.equals(pv.clusterName)
+                    || !dom0Hostname.equals(pv.dom0Hostname)
+                ) return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * unmodifiablePrimaryPhysicalVolumes and unmodifiableSecondaryPhysicalVolumes MUST BE UNMODIFIABLE.
+     * They must also both be sorted to ensure proper results from hashCode and equals.
      */
     DomUDiskConfiguration(
         DomUDisk domUDisk,
-        List<PhysicalVolume> unmodifiablePrimaryPhysicalVolumes,
-        List<PhysicalVolume> unmodifiableSecondaryPhysicalVolumes
+        List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
+        List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
     ) {
+        assert isSorted(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
+        assert isSorted(secondaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
+        assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents";
+        assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents";
+        assert !overlaps(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations contains overlapping segments";
+        assert !overlaps(secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations contains overlapping segments";
+        assert allSameDom0(primaryPhysicalVolumeConfigurations) : "not all primaryPhysicalVolumeConfigurations are on the same Dom0";
+        assert allSameDom0(secondaryPhysicalVolumeConfigurations) : "not all secondaryPhysicalVolumeConfigurations are on the same Dom0";
         this.domUDisk = domUDisk;
-        this.unmodifiablePrimaryPhysicalVolumes = unmodifiablePrimaryPhysicalVolumes;
-        this.unmodifiableSecondaryPhysicalVolumes = unmodifiableSecondaryPhysicalVolumes;
+        this.primaryPhysicalVolumeConfigurations = primaryPhysicalVolumeConfigurations;
+        this.secondaryPhysicalVolumeConfigurations = secondaryPhysicalVolumeConfigurations;
     }
 
     @Override
@@ -45,17 +109,17 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
     }
     
     /**
-     * Gets the unmodifiable set of physical volumes that back this device.
+     * Gets the unmodifiable sorted list of physical volumes that back this device.
      */
-    public List<PhysicalVolume> getPrimaryPhysicalVolumes() {
-        return unmodifiablePrimaryPhysicalVolumes;
+    public List<PhysicalVolumeConfiguration> getPrimaryPhysicalVolumeConfigurations() {
+        return primaryPhysicalVolumeConfigurations;
     }
 
     /**
-     * Gets the unmodifiable set of physical volumes that back this device.
+     * Gets the unmodifiable sorted list of physical volumes that back this device.
      */
-    public List<PhysicalVolume> getSecondaryPhysicalVolumes() {
-        return unmodifiableSecondaryPhysicalVolumes;
+    public List<PhysicalVolumeConfiguration> getSecondaryPhysicalVolumeConfigurations() {
+        return secondaryPhysicalVolumeConfigurations;
     }
 
     /**
@@ -74,42 +138,35 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
      * @see  #equals(Object)
      */
     public boolean equals(DomUDiskConfiguration other) {
-        if(this==other) return true;
-        if(other==null) return false;
-        if(domUDisk!=other.domUDisk) return false;
-        {
-            int size = unmodifiablePrimaryPhysicalVolumes.size();
-            if(size!=other.unmodifiablePrimaryPhysicalVolumes.size()) return false;
-            Iterator<PhysicalVolume> myIter = unmodifiablePrimaryPhysicalVolumes.iterator();
-            Iterator<PhysicalVolume> otherIter = other.unmodifiablePrimaryPhysicalVolumes.iterator();
-            while(myIter.hasNext()) {
-                if(myIter.next()!=otherIter.next()) return false;
-            }
-        }
-        {
-            int size = unmodifiableSecondaryPhysicalVolumes.size();
-            if(size!=other.unmodifiableSecondaryPhysicalVolumes.size()) return false;
-            Iterator<PhysicalVolume> myIter = unmodifiableSecondaryPhysicalVolumes.iterator();
-            Iterator<PhysicalVolume> otherIter = other.unmodifiableSecondaryPhysicalVolumes.iterator();
-            while(myIter.hasNext()) {
-                if(myIter.next()!=otherIter.next()) return false;
-            }
-        }
-        return true;
+        return
+            this==other
+            || (
+                other!=null
+                && domUDisk==other.domUDisk
+                && primaryPhysicalVolumeConfigurations.equals(other.primaryPhysicalVolumeConfigurations)
+                && secondaryPhysicalVolumeConfigurations.equals(other.secondaryPhysicalVolumeConfigurations)
+            )
+        ;
     }
 
     @Override
     public int hashCode() {
         return
-            + 37*domUDisk.hashCode()
-            + 31*unmodifiablePrimaryPhysicalVolumes.hashCode()
-            + unmodifiableSecondaryPhysicalVolumes.hashCode()
+            + 127*domUDisk.hashCode()
+            + 31*primaryPhysicalVolumeConfigurations.hashCode()
+            + secondaryPhysicalVolumeConfigurations.hashCode()
         ;
     }
 
+    /**
+     * Sorted ascending by:
+     * <ol>
+     *   <li>domUDisk</li>
+     * </ol>
+     */
+    @Override
     public int compareTo(DomUDiskConfiguration other) {
         if(this==other) return 0;
         return domUDisk.compareTo(other.domUDisk);
-        // Include physical volumes?
     }
 }

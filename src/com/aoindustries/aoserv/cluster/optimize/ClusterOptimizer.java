@@ -132,6 +132,7 @@ public class ClusterOptimizer {
             assert openQueue.size()==openMap.size() : "openQueue and openMap have different sizes";
             ListElement X = openQueue.remove();
             openMap.remove(X.clusterConfiguration);
+            assert shortestPath==null || X.pathLen<shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
             long currentTime = System.currentTimeMillis();
             long timeSince = currentTime - lastDisplayTime;
             if(timeSince<0 || timeSince>=60000) {
@@ -148,14 +149,10 @@ public class ClusterOptimizer {
                 lastDisplayTime = currentTime;
             }
             // Is this the goal?
-            if(new AnalyzedClusterConfiguration(X.clusterConfiguration).isOptimal()) {
-                assert shortestPath==null || X.pathLen<shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
-                boolean needsTrim = false;
-                if(shortestPath==null) {
-                    shortestPath = X;
-                    needsTrim = true;
-                }
-                
+            AnalyzedClusterConfiguration analyzedX = new AnalyzedClusterConfiguration(X.clusterConfiguration);
+            if(analyzedX.isOptimal()) {
+                shortestPath = X;
+
                 // Give handler a chance to cancel before trimming
                 if(
                     handler==null
@@ -163,41 +160,42 @@ public class ClusterOptimizer {
                 ) break;
 
                 // Trim anything out of open/closed that has transitions.length>=this path
-                if(needsTrim) {
-                    //System.out.println(
-                    //    "        Before trim: openQueue: "+openQueue.size()
-                    //    + " openMap: "+openMap.size()
-                    //    + " closedMap:"+closedMap.size()
-                    //);
-                    // openQueue and openMap
-                    Iterator<Map.Entry<ClusterConfiguration,ListElement>> openIter = openMap.entrySet().iterator();
-                    while(openIter.hasNext()) {
-                        Map.Entry<ClusterConfiguration,ListElement> entry = openIter.next();
-                        ListElement listElement = entry.getValue();
-                        if(listElement.pathLen>=shortestPath.pathLen) {
-                            openIter.remove();
-                            if(!openQueue.remove(listElement)) throw new AssertionError("listElement not found in openQueue");
-                        }
+                //System.out.println(
+                //    "        Before trim: openQueue: "+openQueue.size()
+                //    + " openMap: "+openMap.size()
+                //    + " closedMap:"+closedMap.size()
+                //);
+                // openQueue and openMap
+                int shortestPathLen = shortestPath.pathLen;
+                Iterator<Map.Entry<ClusterConfiguration,ListElement>> openIter = openMap.entrySet().iterator();
+                while(openIter.hasNext()) {
+                    Map.Entry<ClusterConfiguration,ListElement> entry = openIter.next();
+                    ListElement listElement = entry.getValue();
+                    int lePathLen = listElement.pathLen;
+                    if(lePathLen>=shortestPathLen) {
+                        openIter.remove();
+                        if(!openQueue.remove(listElement)) throw new AssertionError("listElement not found in openQueue");
                     }
-                    // closedMap
-                    Iterator<Map.Entry<ClusterConfiguration,ListElement>> closedIter = closedMap.entrySet().iterator();
-                    while(closedIter.hasNext()) {
-                        Map.Entry<ClusterConfiguration,ListElement> entry = closedIter.next();
-                        if(entry.getValue().pathLen>=shortestPath.pathLen) closedIter.remove();
-                    }
-                    //System.out.println(
-                    //    "        After trim: openQueue: "+openQueue.size()
-                    //    + " openMap: "+openMap.size()
-                    //    + " closedMap:"+closedMap.size()
-                    //);
                 }
+                // TODO: Is it safe to move from open to closed when listElement.pathLen == shortestPath.pathLen-1?
+                // closedMap
+                Iterator<Map.Entry<ClusterConfiguration,ListElement>> closedIter = closedMap.entrySet().iterator();
+                while(closedIter.hasNext()) {
+                    Map.Entry<ClusterConfiguration,ListElement> entry = closedIter.next();
+                    if(entry.getValue().pathLen>=shortestPathLen) closedIter.remove();
+                }
+                //System.out.println(
+                //    "        After trim: openQueue: "+openQueue.size()
+                //    + " openMap: "+openMap.size()
+                //    + " closedMap:"+closedMap.size()
+                //);
             } else {
                 // generate children of X if depth limit not reached
                 // max depth is determined by any path already found
                 if(shortestPath==null || (X.pathLen+1)<shortestPath.pathLen) { // + 1 to match size of newTransitions below
                     generateChildren(X.clusterConfiguration, children, childTransitions, randomizeChildren);
                     //System.out.println("        children: "+children.size());
-                    boolean xEndsCritical = allowPathThroughCritical ? true : new AnalyzedClusterConfiguration(X.clusterConfiguration).hasCritical();
+                    boolean xEndsCritical = allowPathThroughCritical ? true : analyzedX.hasCritical();
                     // for each child of X do
                     for(int i=0, size=children.size(); i<size; i++) {
                         ClusterConfiguration child = children.get(i);

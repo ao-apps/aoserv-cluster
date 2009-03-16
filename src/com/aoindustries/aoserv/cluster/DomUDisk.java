@@ -20,7 +20,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
     final String domUHostname;
     final String device;
     final int minimumDiskSpeed;
-    final int extents;
+    final long extents;
     final short weight;
     final boolean primaryPhysicalVolumesLocked;
     final boolean secondaryPhysicalVolumesLocked;
@@ -30,7 +30,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         String domUHostname,
         String device,
         int minimumDiskSpeed,
-        int extents,
+        long extents,
         short weight,
         boolean primaryPhysicalVolumesLocked,
         boolean secondaryPhysicalVolumesLocked
@@ -74,7 +74,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
     /**
      * Gets the number of LVM extents this virtual disk requires.
      */
-    public int getExtents() {
+    public long getExtents() {
         return extents;
     }
     

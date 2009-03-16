@@ -232,7 +232,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     /**
      * Adds a disk to the server with the provided hostname, returns the new cluster.
      */
-    public Cluster addDom0Disk(String hostname, String device, RaidType raidType, DiskType diskType, int diskSpeed) {
+    public Cluster addDom0Disk(String hostname, String device, int diskSpeed) {
         Dom0 dom0 = unmodifiableDom0s.get(hostname);
         assert dom0!=null : this+": Dom0 not found: "+hostname;
         return new Cluster(
@@ -257,8 +257,6 @@ public class Cluster implements Comparable<Cluster>, Serializable {
                             name,
                             hostname,
                             device,
-                            raidType,
-                            diskType,
                             diskSpeed,
                             emptyPhysicalVolumeMap
                         )
@@ -301,8 +299,6 @@ public class Cluster implements Comparable<Cluster>, Serializable {
                             name,
                             hostname,
                             device,
-                            dom0Disk.raidType,
-                            dom0Disk.diskType,
                             dom0Disk.diskSpeed,
                             addToUnmodifiableMap(
                                 dom0Disk.getPhysicalVolumes(),
@@ -329,8 +325,6 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     public Cluster addDomUDisk(
         String hostname,
         String device,
-        RaidType minimumRaidType,
-        DiskType minimumDiskType,
         int minimumDiskSpeed,
         int extents,
         short weight,
@@ -365,8 +359,6 @@ public class Cluster implements Comparable<Cluster>, Serializable {
                             name,
                             hostname,
                             device,
-                            minimumRaidType,
-                            minimumDiskType,
                             minimumDiskSpeed,
                             extents,
                             weight,

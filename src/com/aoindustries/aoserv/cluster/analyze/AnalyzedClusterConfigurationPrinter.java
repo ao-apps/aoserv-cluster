@@ -169,7 +169,7 @@ public class AnalyzedClusterConfigurationPrinter {
                     dom0Disk.getAvailableWeightResult(resultPrinter4, minimumAlertLevel);
 
                     println(3, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, out);
-                    dom0Disk.getDomUDiskResults(capturer4, minimumAlertLevel);
+                    dom0Disk.getDiskSpeedResults(capturer4, minimumAlertLevel);
                     capturer4.sortAndPrint();
                 }
             }

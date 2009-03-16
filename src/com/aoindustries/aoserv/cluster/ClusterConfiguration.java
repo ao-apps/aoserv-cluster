@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -30,9 +29,6 @@ import java.util.List;
  * threads, external synchronization is required.
  *
  * DomU VMs may only be allocated to Dom0 machines in the same cluster.
- *
- * TODO: Need to evaluate the use of unordered lists with the hashCode and equals to make
- *       sure that the same state arrived-at in a different way will still be considered equal
  *
  * @author  AO Industries, Inc.
  */
@@ -156,25 +152,25 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         return false;
     }
 
-    private static boolean allDom0Match(List<PhysicalVolume> physicalVolumes, Dom0 dom0) {
-        for(PhysicalVolume pv : physicalVolumes) {
+    private static boolean allDom0Match(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations, Dom0 dom0) {
+        for(PhysicalVolumeConfiguration pvc : physicalVolumeConfigurations) {
             if(
-                !pv.clusterName.equals(dom0.clusterName)
-                || !pv.dom0Hostname.equals(dom0.hostname)
+                !pvc.physicalVolume.clusterName.equals(dom0.clusterName)
+                || !pvc.physicalVolume.dom0Hostname.equals(dom0.hostname)
             ) return false;
         }
         return true;
     }
 
     /**
-     * @param unmodifiablePrimaryPhysicalVolumes MUST BE UNMODIFIABLE
-     * @param unmodifiableSecondaryPhysicalVolumes MUST BE UNMODIFIABLE
+     * @param unmodifiablePrimaryPhysicalVolumeConfigurations MUST BE UNMODIFIABLE
+     * @param unmodifiableSecondaryPhysicalVolumeConfigurations MUST BE UNMODIFIABLE
      */
     public ClusterConfiguration addDomUDiskConfiguration(
         DomU domU,
         DomUDisk domUDisk,
-        List<PhysicalVolume> unmodifiablePrimaryPhysicalVolumes,
-        List<PhysicalVolume> unmodifiableSecondaryPhysicalVolumes
+        List<PhysicalVolumeConfiguration> unmodifiablePrimaryPhysicalVolumeConfigurations,
+        List<PhysicalVolumeConfiguration> unmodifiableSecondaryPhysicalVolumeConfigurations
     ) {
         assert domUDisk.clusterName.equals(domU.clusterName) : this+": DomUDisk.clusterName!=DomU.clusterName: "+domUDisk.clusterName+"!="+domU.clusterName;
         assert domUDisk.domUHostname.equals(domU.hostname) : this+": DomUDisk.domUHostname!=DomU.hostname: "+domUDisk.domUHostname+"!="+domU.hostname;
@@ -194,8 +190,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         assert !contains(domUConfiguration.unmodifiableDomUDiskConfigurations, domUDisk) : domUConfiguration+": DomUDisk already exists in this configuration: "+domUDisk;
 
         // Make sure all physical volumes belong to the proper Dom0
-        assert allDom0Match(unmodifiablePrimaryPhysicalVolumes, domUConfiguration.primaryDom0);
-        assert allDom0Match(unmodifiableSecondaryPhysicalVolumes, domUConfiguration.secondaryDom0);
+        assert allDom0Match(unmodifiablePrimaryPhysicalVolumeConfigurations, domUConfiguration.primaryDom0);
+        assert allDom0Match(unmodifiableSecondaryPhysicalVolumeConfigurations, domUConfiguration.secondaryDom0);
 
         return new ClusterConfiguration(
             cluster,
@@ -212,43 +208,13 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
                         domUConfiguration.unmodifiableDomUDiskConfigurations,
                         new DomUDiskConfiguration(
                             domUDisk,
-                            unmodifiablePrimaryPhysicalVolumes,
-                            unmodifiableSecondaryPhysicalVolumes
+                            unmodifiablePrimaryPhysicalVolumeConfigurations,
+                            unmodifiableSecondaryPhysicalVolumeConfigurations
                         )
                     )
                 )
             )
         );
-
-        // Allocate to the primary physical volumes from slowest to fastest (as a result of the natural sort for PhysicalVolume)
-        /*
-        int extentsToAllocate = extents;
-        for(PhysicalVolume pv : primaryPhysicalVolumes) {
-            if(extentsToAllocate<=0) break;
-            int pvExtents = pv.getExtents() - pv.getAllocatedExtents();
-            if(pvExtents>0) {
-                int allocateExtents = extentsToAllocate<pvExtents ? extentsToAllocate : pvExtents;
-                pv.addDomUDisk(newDomUDisk, allocateExtents, primaryWeight);
-                extentsToAllocate -= allocateExtents;
-            }
-        }
-        if(extentsToAllocate>0) assert throw new IllegalArgumentException(this+": Not enough extents in primary physical volumes, need "+extentsToAllocate+" more");
-         */
-
-        // Allocate to the secondary physical volumes from slowest to fastest (as a result of the natural sort for PhysicalVolume)
-        /*
-        extentsToAllocate = extents;
-        for(PhysicalVolume pv : secondaryPhysicalVolumes) {
-            if(extentsToAllocate<=0) break;
-            int pvExtents = pv.getExtents() - pv.getAllocatedExtents();
-            if(pvExtents>0) {
-                int allocateExtents = extentsToAllocate<pvExtents ? extentsToAllocate : pvExtents;
-                pv.addDomUDisk(newDomUDisk, allocateExtents, secondaryWeight);
-                extentsToAllocate -= allocateExtents;
-            }
-        }
-        if(extentsToAllocate>0) assert throw new IllegalArgumentException(this+": Not enough extents in secondary physical volumes, need "+extentsToAllocate+" more");
-         */
     }
 
     /**
@@ -277,8 +243,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
             newDomUDiskConfigurations = Collections.singletonList(
                 new DomUDiskConfiguration(
                     oldDomUDiskConfiguration.domUDisk,
-                    oldDomUDiskConfiguration.unmodifiableSecondaryPhysicalVolumes,
-                    oldDomUDiskConfiguration.unmodifiablePrimaryPhysicalVolumes
+                    oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
+                    oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
                 )
             );
         } else {
@@ -288,8 +254,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
                 DomUDiskConfiguration oldDomUDiskConfiguration = oldDomUDiskConfigurations.get(c);
                 array[c] = new DomUDiskConfiguration(
                     oldDomUDiskConfiguration.domUDisk,
-                    oldDomUDiskConfiguration.unmodifiableSecondaryPhysicalVolumes,
-                    oldDomUDiskConfiguration.unmodifiablePrimaryPhysicalVolumes
+                    oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
+                    oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
                 );
             }
             newDomUDiskConfigurations = new UnmodifiableArrayList<DomUDiskConfiguration>(array);
@@ -325,8 +291,6 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
             }
         }
         assert domUConfiguration!=null : this+": DomUConfiguration not found: "+domU;
-
-        // TODO: assert: Make sure has enough free extents
 
         int size = domUConfiguration.unmodifiableDomUDiskConfigurations.size();
         List<DomUDiskConfiguration> newDomUDiskConfigurations;

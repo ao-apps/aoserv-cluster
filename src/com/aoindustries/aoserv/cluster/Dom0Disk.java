@@ -21,8 +21,6 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
     final String clusterName;
     final String dom0Hostname;
     final String device;
-    final RaidType raidType;
-    final DiskType diskType;
     final int diskSpeed;
     final Map<Integer,PhysicalVolume> unmodifiablePhysicalVolumes;
 
@@ -35,16 +33,12 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
         String clusterName,
         String dom0Hostname,
         String device,
-        RaidType raidType,
-        DiskType diskType,
         int diskSpeed,
         Map<Integer,PhysicalVolume> unmodifiablePhysicalVolumes
     ) {
         this.clusterName = clusterName;
         this.dom0Hostname = dom0Hostname;
         this.device = device;
-        this.raidType = raidType;
-        this.diskType = diskType;
         this.diskSpeed = diskSpeed;
         this.unmodifiablePhysicalVolumes = unmodifiablePhysicalVolumes;
     }
@@ -64,14 +58,6 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
         return device;
     }
     
-    public RaidType getRaidType() {
-        return raidType;
-    }
-    
-    public DiskType getDiskType() {
-        return diskType;
-    }
-
     public int getDiskSpeed() {
         return diskSpeed;
     }
@@ -105,8 +91,6 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
      *   <li>clusterName</li>
      *   <li>dom0Hostname</li>
      *   <li>diskSpeed</li>
-     *   <li>raidType</li>
-     *   <li>diskType</li>
      *   <li>device</li>
      * </ol>
      */
@@ -123,12 +107,6 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
         diff = diskSpeed - other.diskSpeed;
         if(diff!=0) return diff;
 
-        diff = raidType.compareTo(other.raidType);
-        if(diff!=0) return diff;
-
-        diff = diskType.compareTo(other.diskType);
-        if(diff!=0) return diff;
-        
         return device.compareTo(other.device);
     }
 }

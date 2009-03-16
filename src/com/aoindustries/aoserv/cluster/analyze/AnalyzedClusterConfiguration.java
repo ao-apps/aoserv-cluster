@@ -96,6 +96,8 @@ public class AnalyzedClusterConfiguration {
         getAllResults(
             new ResultHandler() {
                 public boolean handleResult(Result result) {
+                    assert result.getAlertLevel()!=AlertLevel.NONE : "result.alertLevel should not be NONE";
+                    assert isOptimal[0] : "isOptimal[0] is false, handleResult called more than once";
                     isOptimal[0] = false;
                     return false;
                 }
@@ -113,6 +115,8 @@ public class AnalyzedClusterConfiguration {
         getAllResults(
             new ResultHandler() {
                 public boolean handleResult(Result result) {
+                    assert result.getAlertLevel()==AlertLevel.CRITICAL : "result.alertLevel should be CRITICAL but it is "+result.getAlertLevel();
+                    assert !hasCritical[0] : "hasCritical[0] is true, handleResult called more than once";
                     hasCritical[0] = true;
                     return false;
                 }

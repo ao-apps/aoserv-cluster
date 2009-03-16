@@ -50,4 +50,10 @@ public class Result<T> implements Comparable<Result> {
     public int compareTo(Result other) {
         return label.compareTo(other.label);
     }
+    
+    @Override
+    public String toString() {
+        if(value==null) return alertLevel+": "+label+" "+deviation;
+        return alertLevel+": "+label+" "+value+" "+deviation;
+    }
 }
