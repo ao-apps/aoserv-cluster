@@ -6,17 +6,12 @@
 package com.aoindustries.aoserv.cluster.analyze;
 
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
-import com.aoindustries.aoserv.cluster.DiskType;
 import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.Dom0Disk;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.DomUDisk;
 import com.aoindustries.aoserv.cluster.DomUDiskConfiguration;
 import com.aoindustries.aoserv.cluster.PhysicalVolume;
-import com.aoindustries.aoserv.cluster.RaidType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Analyzes a single Dom0Disk to find anything that is not optimal.
@@ -107,108 +102,78 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
     /**
      * Gets the unsorted, unmodifiable list of results per DomUDisk.
      * 
-     * TODO: Convert to be like getAllResults to filter and save work based on minimumAlertLevel
+     * @return true if more results are wanted, or false to receive no more results.
      */
-    public List<AnalyzedDomUDiskResults> getDomUDiskResults() {
-        return Collections.unmodifiableList(getModifiableDomUDiskResults());
-    }
-    List<AnalyzedDomUDiskResults> getModifiableDomUDiskResults() {
-        List<DomUConfiguration> domUConfigurations = clusterConfiguration.getDomUConfigurations();
-        int size = domUConfigurations.size();
-        // if(size==0) return Collections.emptyList(); // This probably does't help because a cluster with no DomU is already optimal
-        // Size==1 shortcut?
-        List<AnalyzedDomUDiskResults> results = new ArrayList<AnalyzedDomUDiskResults>(size*3);
-        for(DomUConfiguration domUConfiguration : domUConfigurations) {
-            // Must be either primary or secondary on this
-            Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
-            if(primaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
-                assert primaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "primaryDom0.clusterName!=dom0Disk.clusterName";
-                // Look only for primary matches
-                for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
-                    for(PhysicalVolume physicalVolume : domUDiskConfiguration.getPrimaryPhysicalVolumes()) {
-                        if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
-                            assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
-                            assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
-                            // Found a match between DomUDisk and this Dom0Disk
-                            DomUDisk domUDisk = domUDiskConfiguration.getDomUDisk();
-                            RaidType minRaidType = domUDisk.getMinimumRaidType();
-                            DiskType minDiskType = domUDisk.getMinimumDiskType();
-                            int minDiskSpeed = domUDisk.getMinimumDiskSpeed();
-                            int diskSpeed = dom0Disk.getDiskSpeed();
-                            results.add(
-                                new AnalyzedDomUDiskResults(
-                                    domUDisk,
-                                    new Result<RaidType>(
-                                        "Minimum RAID Type",
-                                        minRaidType,
-                                        1,
-                                        minRaidType!=null && dom0Disk.getRaidType().compareTo(minRaidType) < 0 ? AlertLevel.HIGH : AlertLevel.NONE
-                                    ),
-                                    new Result<DiskType>(
-                                        "Minimum Disk Type",
-                                        minDiskType,
-                                        1,
-                                        minDiskType!=null && dom0Disk.getDiskType().compareTo(minDiskType) < 0 ? AlertLevel.LOW : AlertLevel.NONE
-                                    ),
-                                    new Result<Integer>(
-                                        "Minimum Disk Speed",
-                                        minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
-                                        (double)(minDiskSpeed-diskSpeed)/(double)minDiskSpeed,
-                                        minDiskSpeed!=-1 && diskSpeed < minDiskSpeed ? AlertLevel.MEDIUM : AlertLevel.NONE
-                                    )
-                                )
-                            );
-                            break;
-                        }
-                    }
-                }
-            } else {
-                Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
-                if(secondaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
-                    assert secondaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "secondaryDom0.clusterName!=dom0Disk.clusterName";
-                    // Look only for secondary matches
+    public boolean getDomUDiskResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+        if(minimumAlertLevel.compareTo(AlertLevel.MEDIUM)<=0) {
+            for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
+                // Must be either primary or secondary on this
+                Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
+                if(primaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
+                    assert primaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "primaryDom0.clusterName!=dom0Disk.clusterName";
+                    // Look only for primary matches
                     for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
-                        for(PhysicalVolume physicalVolume : domUDiskConfiguration.getSecondaryPhysicalVolumes()) {
+                        for(PhysicalVolume physicalVolume : domUDiskConfiguration.getPrimaryPhysicalVolumes()) {
                             if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
                                 assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
                                 assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
                                 // Found a match between DomUDisk and this Dom0Disk
                                 DomUDisk domUDisk = domUDiskConfiguration.getDomUDisk();
-                                RaidType minRaidType = domUDisk.getMinimumRaidType();
-                                DiskType minDiskType = domUDisk.getMinimumDiskType();
                                 int minDiskSpeed = domUDisk.getMinimumDiskSpeed();
                                 int diskSpeed = dom0Disk.getDiskSpeed();
-                                results.add(
-                                    new AnalyzedDomUDiskResults(
-                                        domUDisk,
-                                        new Result<RaidType>(
-                                            "Minimum RAID Type",
-                                            minRaidType,
-                                            1,
-                                            minRaidType!=null && dom0Disk.getRaidType().compareTo(minRaidType) < 0 ? AlertLevel.HIGH : AlertLevel.NONE
-                                        ),
-                                        new Result<DiskType>(
-                                            "Minimum Disk Type",
-                                            minDiskType,
-                                            1,
-                                            minDiskType!=null && dom0Disk.getDiskType().compareTo(minDiskType) < 0 ? AlertLevel.LOW : AlertLevel.NONE
-                                        ),
-                                        new Result<Integer>(
-                                            "Minimum Disk Speed",
-                                            minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
-                                            (double)(minDiskSpeed-diskSpeed)/(double)minDiskSpeed,
-                                            minDiskSpeed!=-1 && diskSpeed < minDiskSpeed ? AlertLevel.MEDIUM : AlertLevel.NONE
+                                AlertLevel alertLevel = minDiskSpeed!=-1 && diskSpeed < minDiskSpeed ? AlertLevel.MEDIUM : AlertLevel.NONE;
+                                if(alertLevel.compareTo(minimumAlertLevel)>=0) {
+                                    if(!
+                                        resultHandler.handleResult(
+                                            new Result<Integer>(
+                                                domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
+                                                minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
+                                                (double)(minDiskSpeed-diskSpeed)/(double)minDiskSpeed,
+                                                alertLevel
+                                            )
                                         )
-                                    )
-                                );
+                                    ) return false;
+                                }
                                 break;
+                            }
+                        }
+                    }
+                } else {
+                    Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
+                    if(secondaryDom0.getHostname().equals(dom0Disk.getDom0Hostname())) {
+                        assert secondaryDom0.getClusterName().equals(dom0Disk.getClusterName()) : "secondaryDom0.clusterName!=dom0Disk.clusterName";
+                        // Look only for secondary matches
+                        for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
+                            for(PhysicalVolume physicalVolume : domUDiskConfiguration.getSecondaryPhysicalVolumes()) {
+                                if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
+                                    assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
+                                    assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
+                                    // Found a match between DomUDisk and this Dom0Disk
+                                    DomUDisk domUDisk = domUDiskConfiguration.getDomUDisk();
+                                    int minDiskSpeed = domUDisk.getMinimumDiskSpeed();
+                                    int diskSpeed = dom0Disk.getDiskSpeed();
+                                    AlertLevel alertLevel = minDiskSpeed!=-1 && diskSpeed < minDiskSpeed ? AlertLevel.MEDIUM : AlertLevel.NONE;
+                                    if(alertLevel.compareTo(minimumAlertLevel)>=0) {
+                                        if(!
+                                            resultHandler.handleResult(
+                                                new Result<Integer>(
+                                                    domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
+                                                    minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
+                                                    (double)(minDiskSpeed-diskSpeed)/(double)minDiskSpeed,
+                                                    alertLevel
+                                                )
+                                            )
+                                        ) return false;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        return results;
+        return true;
     }
 
     /**
@@ -241,12 +206,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
      */
     public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
         if(!getAvailableWeightResult(resultHandler, minimumAlertLevel)) return false;
-        // The highest alert level for disks is HIGH, avoid ArrayList creation here
-        if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
-            for(AnalyzedDomUDiskResults domUDisk : getModifiableDomUDiskResults()) {
-                if(!domUDisk.getAllResults(resultHandler, minimumAlertLevel)) return false;
-            }
-        }
+        if(!getDomUDiskResults(resultHandler, minimumAlertLevel)) return false;
         return true;
     }
 }

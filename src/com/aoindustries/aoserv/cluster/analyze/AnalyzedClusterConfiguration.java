@@ -28,6 +28,7 @@ import java.util.Map;
 public class AnalyzedClusterConfiguration {
 
     private final ClusterConfiguration clusterConfiguration;
+    private final List<AnalyzedDom0Configuration> analyzedDom0Configurations;
 
     /**
      * Analyzes the cluster looking for any non-optimal configurations.
@@ -36,6 +37,27 @@ public class AnalyzedClusterConfiguration {
      */
     public AnalyzedClusterConfiguration(ClusterConfiguration clusterConfiguration) {
         this.clusterConfiguration = clusterConfiguration;
+        // Analyze each Dom0
+        Cluster cluster = clusterConfiguration.getCluster();
+        Map<String,Dom0> clusterDom0s = cluster.getDom0s();
+        int size = clusterDom0s.size();
+        if(size==0) analyzedDom0Configurations = Collections.emptyList();
+        else if(size==1) {
+            analyzedDom0Configurations = Collections.singletonList(
+                new AnalyzedDom0Configuration(
+                    clusterConfiguration,
+                    clusterDom0s.values().iterator().next()
+                )
+            );
+        } else {
+            AnalyzedDom0Configuration[] dom0s = new AnalyzedDom0Configuration[clusterDom0s.size()];
+            int index = 0;
+            for(Dom0 dom0 : clusterDom0s.values()) {
+                dom0s[index++] = new AnalyzedDom0Configuration(clusterConfiguration, dom0);
+            }
+            assert index==size : "index!=size: "+index+"!="+size;
+            analyzedDom0Configurations = new UnmodifiableArrayList<AnalyzedDom0Configuration>(dom0s);
+        }
     }
 
     /**
@@ -49,26 +71,7 @@ public class AnalyzedClusterConfiguration {
      * Gets the unmodifiable list of analyzed Dom0 configuration results.
      */
     public List<AnalyzedDom0Configuration> getAnalyzedDom0Configurations() {
-        // Analyze each Dom0
-        Cluster cluster = clusterConfiguration.getCluster();
-        Map<String,Dom0> clusterDom0s = cluster.getDom0s();
-        int size = clusterDom0s.size();
-        if(size==0) return Collections.emptyList();
-        if(size==1) {
-            return Collections.singletonList(
-                new AnalyzedDom0Configuration(
-                    clusterConfiguration,
-                    clusterDom0s.values().iterator().next()
-                )
-            );
-        }
-        AnalyzedDom0Configuration[] dom0s = new AnalyzedDom0Configuration[clusterDom0s.size()];
-        int index = 0;
-        for(Dom0 dom0 : clusterDom0s.values()) {
-            dom0s[index++] = new AnalyzedDom0Configuration(clusterConfiguration, dom0);
-        }
-        assert index==size : "index!=size: "+index+"!="+size;
-        return new UnmodifiableArrayList<AnalyzedDom0Configuration>(dom0s);
+        return analyzedDom0Configurations;
     }
 
     /**

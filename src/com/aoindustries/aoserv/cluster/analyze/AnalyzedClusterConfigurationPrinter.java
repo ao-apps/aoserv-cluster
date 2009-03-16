@@ -114,6 +114,7 @@ public class AnalyzedClusterConfigurationPrinter {
         final ResultPrinter resultPrinter2 = new ResultPrinter(2, out);
         final ResultPrinter resultPrinter4 = new ResultPrinter(4, out);
         final SortedResultPrinter capturer3 = new SortedResultPrinter(3, out);
+        final SortedResultPrinter capturer4 = new SortedResultPrinter(4, out);
 
         out.println("+------------------------------------------------------------+---------+-------------+");
         out.println("|                          Resource                          |  Value  | Alert Level |");
@@ -166,14 +167,10 @@ public class AnalyzedClusterConfigurationPrinter {
                 for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
                     println(3, dom0Disk.getDom0Disk().getDevice(), null, null, out);
                     dom0Disk.getAvailableWeightResult(resultPrinter4, minimumAlertLevel);
-                    List<AnalyzedDomUDiskResults> domUDisks = dom0Disk.getModifiableDomUDiskResults();
-                    Collections.sort(domUDisks);
-                    for(AnalyzedDomUDiskResults domUDisk : domUDisks) {
-                        println(4, domUDisk.getDomUDisk().getDomUHostname() + ":" + domUDisk.getDomUDisk().getDevice(), null, null, out);
-                        println(5, domUDisk.getRaidTypeResult(), out);
-                        println(5, domUDisk.getDiskTypeResult(), out);
-                        println(5, domUDisk.getDiskSpeedResult(), out);
-                    }
+
+                    println(3, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, out);
+                    dom0Disk.getDomUDiskResults(capturer4, minimumAlertLevel);
+                    capturer4.sortAndPrint();
                 }
             }
         }

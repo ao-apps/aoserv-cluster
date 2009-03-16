@@ -19,8 +19,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
     final String clusterName;
     final String domUHostname;
     final String device;
-    final RaidType minimumRaidType;
-    final DiskType minimumDiskType;
     final int minimumDiskSpeed;
     final int extents;
     final short weight;
@@ -31,8 +29,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         String clusterName,
         String domUHostname,
         String device,
-        RaidType minimumRaidType,
-        DiskType minimumDiskType,
         int minimumDiskSpeed,
         int extents,
         short weight,
@@ -46,8 +42,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         this.clusterName = clusterName;
         this.domUHostname = domUHostname;
         this.device = device;
-        this.minimumRaidType = minimumRaidType;
-        this.minimumDiskType = minimumDiskType;
         this.minimumDiskSpeed = minimumDiskSpeed;
         this.extents = extents;
         this.weight = weight;
@@ -70,20 +64,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         return device;
     }
     
-    /**
-     * Gets the minimum RAID type or <code>null</code> if doesn't matter.
-     */
-    public RaidType getMinimumRaidType() {
-        return minimumRaidType;
-    }
-    
-    /**
-     * Gets the minimum disk type or <code>null</code> if doesn't matter.
-     */
-    public DiskType getMinimumDiskType() {
-        return minimumDiskType;
-    }
-
     /**
      * Gets the minimum disk speed or <code>-1</code> if doesn't matter.
      */
