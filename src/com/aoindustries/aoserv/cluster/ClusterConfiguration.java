@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +71,20 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         return new UnmodifiableArrayList<V>(newArray);
     }
 
+    /**
+     * Gets the smallest possible List container to hold the provided collection.
+     * It sorts the list and ensures it is unmodifiable.
+     */
+    static <V extends Comparable<V>> List<V> getSortedUnmodifiableCopy(Class<V> clazz, List<V> original) {
+        int size = original.size();
+        if(size==0) return Collections.emptyList();
+        if(size==1) return Collections.singletonList(original.get(0));
+        V[] newArray = (V[])Array.newInstance(clazz, size);
+        newArray = original.toArray(newArray);
+        Arrays.sort(newArray);
+        return new UnmodifiableArrayList<V>(newArray);
+    }
+
     private static int computeHashCode(Cluster cluster, List<DomUConfiguration> unmodifiableDomUConfigurations) {
         return 31*cluster.hashCode() + unmodifiableDomUConfigurations.hashCode();
     }
@@ -114,6 +129,19 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      */
     public List<DomUConfiguration> getDomUConfigurations() {
         return unmodifiableDomUConfigurations;
+    }
+    
+    /**
+     * Gets the cluster configuration for the provided DomU.  To conserve
+     * heap space at the expense of more time, this runs in O(n).
+     * 
+     * @return  the DomUConfiguration or null if not found
+     */
+    public DomUConfiguration getDomUConfiguration(DomU domU) {
+        for(DomUConfiguration domUConfiguration : unmodifiableDomUConfigurations) {
+            if(domUConfiguration.domU==domU) return domUConfiguration;
+        }
+        return null;
     }
 
     private static boolean contains(List<DomUConfiguration> domUConfigurations, DomU domU) {
@@ -162,15 +190,11 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         return true;
     }
 
-    /**
-     * @param unmodifiablePrimaryPhysicalVolumeConfigurations MUST BE UNMODIFIABLE
-     * @param unmodifiableSecondaryPhysicalVolumeConfigurations MUST BE UNMODIFIABLE
-     */
     public ClusterConfiguration addDomUDiskConfiguration(
         DomU domU,
         DomUDisk domUDisk,
-        List<PhysicalVolumeConfiguration> unmodifiablePrimaryPhysicalVolumeConfigurations,
-        List<PhysicalVolumeConfiguration> unmodifiableSecondaryPhysicalVolumeConfigurations
+        List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
+        List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
     ) {
         assert domUDisk.clusterName.equals(domU.clusterName) : this+": DomUDisk.clusterName!=DomU.clusterName: "+domUDisk.clusterName+"!="+domU.clusterName;
         assert domUDisk.domUHostname.equals(domU.hostname) : this+": DomUDisk.domUHostname!=DomU.hostname: "+domUDisk.domUHostname+"!="+domU.hostname;
@@ -189,9 +213,13 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         // Make sure DomUDisk not already added
         assert !contains(domUConfiguration.unmodifiableDomUDiskConfigurations, domUDisk) : domUConfiguration+": DomUDisk already exists in this configuration: "+domUDisk;
 
+        // Make a sorted, unmodifiable, defensive copy of the inputs
+        List<PhysicalVolumeConfiguration> primaryPVCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, primaryPhysicalVolumeConfigurations);
+        List<PhysicalVolumeConfiguration> secondaryPVCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations);
+
         // Make sure all physical volumes belong to the proper Dom0
-        assert allDom0Match(unmodifiablePrimaryPhysicalVolumeConfigurations, domUConfiguration.primaryDom0);
-        assert allDom0Match(unmodifiableSecondaryPhysicalVolumeConfigurations, domUConfiguration.secondaryDom0);
+        assert allDom0Match(primaryPVCopy, domUConfiguration.primaryDom0);
+        assert allDom0Match(secondaryPVCopy, domUConfiguration.secondaryDom0);
 
         return new ClusterConfiguration(
             cluster,
@@ -208,8 +236,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
                         domUConfiguration.unmodifiableDomUDiskConfigurations,
                         new DomUDiskConfiguration(
                             domUDisk,
-                            unmodifiablePrimaryPhysicalVolumeConfigurations,
-                            unmodifiableSecondaryPhysicalVolumeConfigurations
+                            primaryPVCopy,
+                            secondaryPVCopy
                         )
                     )
                 )

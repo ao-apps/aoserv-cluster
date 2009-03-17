@@ -25,6 +25,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
     private final Dom0Disk dom0Disk;
 
     public AnalyzedDom0DiskConfiguration(ClusterConfiguration clusterConfiguration, Dom0Disk dom0Disk) {
+        assert dom0Disk!=null : "AnalyzedDom0DiskConfiguration.<init>: dom0Disk is null";
         this.clusterConfiguration = clusterConfiguration;
         this.dom0Disk = dom0Disk;
     }

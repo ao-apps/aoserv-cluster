@@ -26,7 +26,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     // These are here just for generic-type-specific versions
     private static final Map<String,Dom0> emptyDom0Map = Collections.emptyMap();
     private static final Map<String,Dom0Disk> emptyDom0DiskMap = Collections.emptyMap();
-    private static final Map<Integer,PhysicalVolume> emptyPhysicalVolumeMap = Collections.emptyMap();
+    private static final Map<Short,PhysicalVolume> emptyPhysicalVolumeMap = Collections.emptyMap();
     private static final Map<String,DomU> emptyDomUMap = Collections.emptyMap();
     private static final Map<String,DomUDisk> emptyDomUDiskMap = Collections.emptyMap();
 
@@ -270,7 +270,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     /**
      * Adds a physical volume to this disk, returns the new cluster.
      */
-    public Cluster addPhysicalVolume(String hostname, String device, Integer partition, int extents) {
+    public Cluster addPhysicalVolume(String hostname, String device, short partition, long extents) {
         Dom0 dom0 = unmodifiableDom0s.get(hostname);
         if(dom0==null) throw new IllegalArgumentException(this+": Dom0 not found: "+hostname);
 

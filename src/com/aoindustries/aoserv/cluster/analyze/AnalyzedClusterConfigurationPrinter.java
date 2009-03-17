@@ -114,7 +114,7 @@ public class AnalyzedClusterConfigurationPrinter {
         final ResultPrinter resultPrinter2 = new ResultPrinter(2, out);
         final ResultPrinter resultPrinter4 = new ResultPrinter(4, out);
         final SortedResultPrinter capturer3 = new SortedResultPrinter(3, out);
-        final SortedResultPrinter capturer4 = new SortedResultPrinter(4, out);
+        final SortedResultPrinter capturer5 = new SortedResultPrinter(5, out);
 
         out.println("+------------------------------------------------------------+---------+-------------+");
         out.println("|                          Resource                          |  Value  | Alert Level |");
@@ -162,15 +162,16 @@ public class AnalyzedClusterConfigurationPrinter {
 
                 // Dom0Disks
                 println(2, "Disks", null, null, out);
-                List<AnalyzedDom0DiskConfiguration> dom0Disks = dom0.getDom0Disks();
+                List<AnalyzedDom0DiskConfiguration> dom0Disks = new ArrayList<AnalyzedDom0DiskConfiguration>(dom0.getDom0Disks());
                 Collections.sort(dom0Disks);
                 for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
+                    assert dom0Disk!=null : "AnalyzedClusterConfigurationPrinter.print: dom0Disk is null";
                     println(3, dom0Disk.getDom0Disk().getDevice(), null, null, out);
                     dom0Disk.getAvailableWeightResult(resultPrinter4, minimumAlertLevel);
 
-                    println(3, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, out);
-                    dom0Disk.getDiskSpeedResults(capturer4, minimumAlertLevel);
-                    capturer4.sortAndPrint();
+                    println(4, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, out);
+                    dom0Disk.getDiskSpeedResults(capturer5, minimumAlertLevel);
+                    capturer5.sortAndPrint();
                 }
             }
         }

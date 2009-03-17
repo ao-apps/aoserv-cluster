@@ -381,7 +381,7 @@ public class AnalyzedDom0Configuration {
         if(size==0) return Collections.emptyList();
         else if(size==1) {
             return Collections.singletonList(
-                new AnalyzedDom0DiskConfiguration(clusterConfiguration, clusterDom0Disks.get(0))
+                new AnalyzedDom0DiskConfiguration(clusterConfiguration, clusterDom0Disks.values().iterator().next())
             );
         } else {
             AnalyzedDom0DiskConfiguration[] array = new AnalyzedDom0DiskConfiguration[size];

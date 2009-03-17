@@ -7,10 +7,12 @@ package com.aoindustries.aoserv.cluster.optimize;
 
 /**
  * A transition is one of the possible conversions of clusterConfiguration state.
- * TODO: Other transitions could include:
+ * Other transitions could include:
  *     pvmove
- *     vgextend
- *     vgreduce
+ *     vgextend -\
+ *                if we allow a mapping where not all extents have been reached,
+ *                this may be helpful when growing/shrinking existing VMs.
+ *     vgreduce -/
  *     physically moving a hard drive
  *     adding more hardware/servers
  *

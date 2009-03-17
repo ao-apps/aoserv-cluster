@@ -16,6 +16,11 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
 
     private static final long serialVersionUID = 2L;
 
+    /**
+     * This is the standard size of the extents in bytes.
+     */
+    public static final int EXTENTS_SIZE = 33554432;
+
     final String clusterName;
     final String domUHostname;
     final String device;

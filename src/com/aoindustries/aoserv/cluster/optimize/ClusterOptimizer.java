@@ -50,7 +50,7 @@ import java.util.Random;
  * </p>
  * TODO: Is there any way to reduce the search space when different pieces of hardware are identical?
  * 
- * TODO: To manage heap consumption, allow to optional parameters:
+ * TODO: To manage heap consumption, allow two optional parameters:
  *           maxPathLen
  *           something to make it a "Beam Search" (http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
  *
@@ -177,7 +177,6 @@ public class ClusterOptimizer {
                         if(!openQueue.remove(listElement)) throw new AssertionError("listElement not found in openQueue");
                     }
                 }
-                // TODO: Is it safe to move from open to closed when listElement.pathLen == shortestPath.pathLen-1?
                 // closedMap
                 Iterator<Map.Entry<ClusterConfiguration,ListElement>> closedIter = closedMap.entrySet().iterator();
                 while(closedIter.hasNext()) {
@@ -282,6 +281,9 @@ public class ClusterOptimizer {
                     Transition transition = new MigrateTransition(domU, primaryDom0, secondaryDom0);
                     int size = children.size();
                     if(randomizeChildren && size!=0) {
+                        // It may be faster to build the list and randomize at the end instead of incuring the overhead of inserting into an ArrayList
+                        // However, since the two lists children and childrenTransitions need to be kept in sync, a simple call to
+                        // Collections.shuffle will not work
                         int index = random.nextInt(size+1);
                         children.add(index, swappedClusterConfiguration);
                         childTransitions.add(index, transition);

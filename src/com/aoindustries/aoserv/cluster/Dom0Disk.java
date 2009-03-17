@@ -22,7 +22,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
     final String dom0Hostname;
     final String device;
     final int diskSpeed;
-    final Map<Integer,PhysicalVolume> unmodifiablePhysicalVolumes;
+    final Map<Short,PhysicalVolume> unmodifiablePhysicalVolumes;
 
     /**
      * unmodifiablePhysicalVolumes MUST BE UNMODIFIABLE
@@ -34,7 +34,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
         String dom0Hostname,
         String device,
         int diskSpeed,
-        Map<Integer,PhysicalVolume> unmodifiablePhysicalVolumes
+        Map<Short,PhysicalVolume> unmodifiablePhysicalVolumes
     ) {
         this.clusterName = clusterName;
         this.dom0Hostname = dom0Hostname;
@@ -65,14 +65,14 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
     /**
      * Gets the unmodifable set of physical volumes for this disk.
      */
-    public Map<Integer,PhysicalVolume> getPhysicalVolumes() {
+    public Map<Short,PhysicalVolume> getPhysicalVolumes() {
         return unmodifiablePhysicalVolumes;
     }
 
     /**
      * Gets the physical volume for the specified partition number of <code>null</code> if not found
      */
-    public PhysicalVolume getPhysicalVolume(Integer partition) {
+    public PhysicalVolume getPhysicalVolume(short partition) {
         return unmodifiablePhysicalVolumes.get(partition);
     }
 

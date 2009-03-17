@@ -51,7 +51,11 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
         for(int c=1;c<size;c++) {
             PhysicalVolumeConfiguration pv1 = physicalVolumeConfigurations.get(c-1);
             for(int d=c; d<size; d++) {
-                if(pv1.overlaps(physicalVolumeConfigurations.get(d))) return true;
+                PhysicalVolumeConfiguration pv2 = physicalVolumeConfigurations.get(d);
+                if(pv1.overlaps(pv2)) {
+                    System.out.println(pv1+" overlaps "+pv2);
+                    return true;
+                }
             }
         }
         return false;
@@ -88,8 +92,8 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
     ) {
         assert isSorted(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
         assert isSorted(secondaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
-        assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents";
-        assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents";
+        assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk="+domUDisk+", domUDisk.extents="+domUDisk.extents+", primaryPhysicalVolumeConfigurations="+primaryPhysicalVolumeConfigurations;
+        assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk="+domUDisk+", domUDisk.extents="+domUDisk.extents+", secondaryPhysicalVolumeConfigurations="+secondaryPhysicalVolumeConfigurations;
         assert !overlaps(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations contains overlapping segments";
         assert !overlaps(secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations contains overlapping segments";
         assert allSameDom0(primaryPhysicalVolumeConfigurations) : "not all primaryPhysicalVolumeConfigurations are on the same Dom0";

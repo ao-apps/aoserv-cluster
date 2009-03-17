@@ -34,13 +34,13 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
     ) {
         this.domU = domU;
 
-        assert primaryDom0!=null : this+": primaryDom0 is null";
-        assert primaryDom0.clusterName.equals(domU.clusterName) : this+": primaryDom0.clusterName!=domU.clusterName";
+        assert primaryDom0!=null : "primaryDom0 is null";
+        assert primaryDom0.clusterName.equals(domU.clusterName) : "primaryDom0.clusterName!=domU.clusterName";
         this.primaryDom0 = primaryDom0;
 
-        assert secondaryDom0!=null : this+": secondaryDom0 is null";
-        assert primaryDom0!=secondaryDom0 : this+": primaryDom0==secondaryDom0: "+primaryDom0;
-        assert secondaryDom0.clusterName.equals(domU.clusterName) : this+": secondaryDom0.clusterName!=domU.clusterName";
+        assert secondaryDom0!=null : "secondaryDom0 is null";
+        assert primaryDom0!=secondaryDom0 : "primaryDom0==secondaryDom0: "+primaryDom0;
+        assert secondaryDom0.clusterName.equals(domU.clusterName) : "secondaryDom0.clusterName!=domU.clusterName";
         this.secondaryDom0 = secondaryDom0;
 
         this.unmodifiableDomUDiskConfigurations = unmodifiableDomUDiskConfigurations;

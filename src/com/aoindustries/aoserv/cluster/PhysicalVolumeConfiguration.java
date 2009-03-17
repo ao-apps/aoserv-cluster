@@ -17,6 +17,33 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 
     private static final long serialVersionUID = 1L;
 
+    // Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
+    // 32-bit representation when possible to save heap.
+    public static PhysicalVolumeConfiguration newInstance(
+        PhysicalVolume physicalVolume,
+        long firstLogicalExtent,
+        long firstPhysicalExtent,
+        long extents
+    ) {
+        assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
+        assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
+        assert extents>0 : "extents<=0: "+extents;
+        // 16-bit
+        if(
+            firstLogicalExtent<=Short.MAX_VALUE
+            && firstPhysicalExtent<=Short.MAX_VALUE
+            && extents<=Short.MAX_VALUE
+        ) return new PhysicalVolumeConfigurationShort(physicalVolume, (short)firstLogicalExtent, (short)firstPhysicalExtent, (short)extents);
+        // 32-bit
+        if(
+            firstLogicalExtent<=Integer.MAX_VALUE
+            && firstPhysicalExtent<=Integer.MAX_VALUE
+            && extents<=Integer.MAX_VALUE
+        ) return new PhysicalVolumeConfigurationInt(physicalVolume, (int)firstLogicalExtent, (int)firstPhysicalExtent, (int)extents);
+        // 64-bit
+        return new PhysicalVolumeConfigurationLong(physicalVolume, firstLogicalExtent, firstPhysicalExtent, extents);
+    }
+
     final PhysicalVolume physicalVolume;
 
     PhysicalVolumeConfiguration(PhysicalVolume physicalVolume) {
@@ -25,7 +52,7 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 
     @Override
     final public String toString() {
-        return physicalVolume.toString();
+        return physicalVolume.toString()+"("+getFirstLogicalExtent()+","+getFirstPhysicalExtent()+","+getExtents()+")";
     }
 
     final public PhysicalVolume getPhysicalVolume() {
@@ -59,7 +86,14 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
     }
 
     @Override
-    abstract public int hashCode();
+    final public int hashCode() {
+        return
+            + 127*physicalVolume.hashCode()
+            + 31*(int)getFirstLogicalExtent()
+            + 7*(int)getFirstPhysicalExtent()
+            + (int)getExtents()
+        ;
+    }
 
     abstract public long getFirstLogicalExtent();
 
@@ -141,7 +175,10 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
         long otherExtents = other.getExtents();
         return
             overlaps(getFirstLogicalExtent(), myExtents, other.getFirstLogicalExtent(), otherExtents)
-            || overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
+            || (
+                physicalVolume==other.physicalVolume
+                && overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
+            )
         ;
     }
 }

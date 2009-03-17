@@ -6,6 +6,7 @@
 package com.aoindustries.aoserv.cluster;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -28,6 +29,11 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
     final boolean supportsHvm;
     final Map<String,Dom0Disk> unmodifiableDom0Disks;
 
+    private static final boolean hasNull(Collection C) {
+        for(Object O : C) if(O==null) return true;
+        return false;
+    }
+
     /**
      * The list of dom0disks MUST BE UNMODIFIABLE - no defensive copy is made.
      *
@@ -45,6 +51,9 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
         boolean supportsHvm,
         Map<String,Dom0Disk> unmodifiableDom0Disks
     ) {
+        assert clusterName!=null : "clusterName is null";
+        assert hostname!=null : "hostname is null";
+        assert !hasNull(unmodifiableDom0Disks.values()) : "null value in unmodifiableDom0Disks";
         this.clusterName = clusterName;
         this.hostname = hostname;
         //if(rack.getCluster()!=cluster) throw new IllegalArgumentException(this+": cluster!=rack.cluster");
