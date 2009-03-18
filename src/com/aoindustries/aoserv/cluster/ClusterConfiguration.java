@@ -9,10 +9,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * A ClusterConfiguration contains one possible configuration of a cluster.  The configuration
@@ -82,6 +86,19 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         V[] newArray = (V[])Array.newInstance(clazz, size);
         newArray = original.toArray(newArray);
         Arrays.sort(newArray);
+        return new UnmodifiableArrayList<V>(newArray);
+    }
+
+    /**
+     * Gets the smallest possible List container to hold the provided collection.
+     * It ensures it is unmodifiable.
+     */
+    static <V extends Comparable<V>> List<V> getUnmodifiableCopy(Class<V> clazz, List<V> original) {
+        int size = original.size();
+        if(size==0) return Collections.emptyList();
+        if(size==1) return Collections.singletonList(original.get(0));
+        V[] newArray = (V[])Array.newInstance(clazz, size);
+        newArray = original.toArray(newArray);
         return new UnmodifiableArrayList<V>(newArray);
     }
 
@@ -305,9 +322,41 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     }
 
     /**
-     * Moves the secondary to another machine and returns the new ClusterConfiguration.
+     * Moves the secondary to another machine if it is possible to map all of the extents for the DomUDisks onto free physical
+     * volumes in Dom0.
+     * 
+     * Because there can be many mappings between DomUDisk and PhysicalVolumes, in factorial combinations,
+     * this method has a large impact on the branch factor for the cluster optimizer.  However, it also
+     * affects which solutions may be found or transitioned through in the path to a solution.
+     * 
+     * This implementation is meant to be as simple as possible.  It focuses on reducing the search space
+     * while possibly missing some valid configurations.  It works as follows:
+     * <ol>
+     *   <li>Make sure all DomUDisk have the same minspeed - error otherwise.</li>
+     *   <li>Find all unallocated physical volumes, sort by speed, device, partition</li>
+     *   <li>Work through each Dom0Disk as a starting point
+     *     <ol type="a">
+     *       <li>Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped</li>
+     *       <li>If mapping complete add to results</li>
+     *       <li>If mapping incomplete return results found</li>
+     *     </ol>
+     *   </li>
+     * </ol>
+     * 
+     * In the future, a more advanced configuration could try to reduce the combinations while (hopefully) not losing any possible solution by:
+     * <ol>
+     *   <li>Always allocating DomUDisks of the same min speed, extents, and weight in order by device</li>
+     *   <li>Always allocating to the physical volumes in order by speed, device, partition</li>
+     *   <li>Always allocating from the first unused physical volumes on a single Dom0Disk</li>
+     *   <li>Always consuming as many of the physical volumes in a single Dom0Disk as possible</li>
+     *   <li>Not returning multiple results onto different Dom0Disk that have the same speed, size, and overall allocation</li>
+     * </ol>
+     *
+     * @return  the new configuration(s)
      */
-    public ClusterConfiguration moveSecondary(DomU domU, Dom0 newSecondaryDom0) {
+    public Iterable<ClusterConfiguration> moveSecondary(DomU domU, Dom0 newSecondaryDom0) {
+        // TODO: Adhere to or remove the locked flags for individual disks
+
         // Find existing configuration
         DomUConfiguration domUConfiguration = null;
         int unmodifiableDomUConfigurationsIndex = 0;
@@ -320,29 +369,189 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
         }
         assert domUConfiguration!=null : this+": DomUConfiguration not found: "+domU;
 
-        int size = domUConfiguration.unmodifiableDomUDiskConfigurations.size();
-        List<DomUDiskConfiguration> newDomUDiskConfigurations;
-        if(size==0) {
-            newDomUDiskConfigurations = Collections.emptyList();
-        } else if(size==1) {
-            throw new RuntimeException("TODO: Finish method");
-        } else {
-            throw new RuntimeException("TODO: Finish method");
-        }
-        return new ClusterConfiguration(
-            cluster,
-            replaceInUnmodifiableList(
-                DomUConfiguration.class,
-                unmodifiableDomUConfigurations,
-                unmodifiableDomUConfigurationsIndex,
-                new DomUConfiguration(
-                    domU,
-                    domUConfiguration.primaryDom0,
-                    newSecondaryDom0,
-                    newDomUDiskConfigurations
+        Map<String,DomUDisk> domUDisks = domU.getDomUDisks();
+        Iterator<Map.Entry<String,DomUDisk>> domUDisksIter = domUDisks.entrySet().iterator();
+        if(!domUDisksIter.hasNext()) {
+            // Short-cut if domU has no disks
+            List<DomUDiskConfiguration> newDomUDiskConfigurations = Collections.emptyList();
+            return Collections.singletonList(
+                new ClusterConfiguration(
+                    cluster,
+                    replaceInUnmodifiableList(
+                        DomUConfiguration.class,
+                        unmodifiableDomUConfigurations,
+                        unmodifiableDomUConfigurationsIndex,
+                        new DomUConfiguration(
+                            domU,
+                            domUConfiguration.primaryDom0,
+                            newSecondaryDom0,
+                            newDomUDiskConfigurations
+                        )
+                    )
                 )
-            )
-        );
+            );
+        }
+        
+        // Make sure all DomUDisk have the same minspeed
+        DomUDisk firstDomUDisk = domUDisksIter.next().getValue();
+        int firstMinSpeed = firstDomUDisk.minimumDiskSpeed;
+        while(domUDisksIter.hasNext()) {
+            DomUDisk nextDomUDisk = domUDisksIter.next().getValue();
+            int nextMinSpeed = nextDomUDisk.minimumDiskSpeed;
+            if(nextMinSpeed!=firstMinSpeed) throw new AssertionError("DomUDisks have different minimum speeds: "+firstDomUDisk+"="+firstMinSpeed+" while "+nextDomUDisk+"="+nextMinSpeed);
+        }
+
+        // Find all unallocated physical volumes
+        SortedMap<Dom0Disk,List<PhysicalVolume>> unallocatedDom0Disks = new TreeMap<Dom0Disk,List<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
+        for(Dom0Disk dom0Disk : newSecondaryDom0.unmodifiableDom0Disks.values()) {
+            for(PhysicalVolume physicalVolume : dom0Disk.unmodifiablePhysicalVolumes.values()) {
+                // Find if allocated
+                boolean allocated = false;
+     ALLOCATED: for(DomUConfiguration duc : unmodifiableDomUConfigurations) {
+                    if(duc.primaryDom0==newSecondaryDom0) {
+                        // Primary matches
+                        for(DomUDiskConfiguration dudc : duc.unmodifiableDomUDiskConfigurations) {
+                            for(PhysicalVolumeConfiguration pvc : dudc.primaryPhysicalVolumeConfigurations) {
+                                if(pvc.physicalVolume==physicalVolume) {
+                                    allocated = true;
+                                    break ALLOCATED;
+                                }
+                            }
+                        }
+                    } else if(duc.secondaryDom0==newSecondaryDom0) {
+                        // Secondary matches
+                        for(DomUDiskConfiguration dudc : duc.unmodifiableDomUDiskConfigurations) {
+                            for(PhysicalVolumeConfiguration pvc : dudc.secondaryPhysicalVolumeConfigurations) {
+                                if(pvc.physicalVolume==physicalVolume) {
+                                    allocated = true;
+                                    break ALLOCATED;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!allocated) {
+                    //SortedMap<Dom0Disk,SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<Dom0Disk,SortedSet<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
+                    List<PhysicalVolume> unallocatedPhysicalVolumes = unallocatedDom0Disks.get(dom0Disk);
+                    if(unallocatedPhysicalVolumes==null) unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<PhysicalVolume>());
+                    unallocatedPhysicalVolumes.add(physicalVolume);
+                }
+            }
+        }
+        // Sort by partition number
+        for(List<PhysicalVolume> sortMe : unallocatedDom0Disks.values()) Collections.sort(sortMe);
+
+        int size = unallocatedDom0Disks.size();
+        if(size==0) {
+            // No free physical volumes
+            return Collections.emptyList();
+        }
+        List<ClusterConfiguration> mappedConfigurations = new ArrayList<ClusterConfiguration>();
+        // Reused on inner loop
+        List<DomUDiskConfiguration> newDomUDiskConfigurations = new ArrayList<DomUDiskConfiguration>();
+        List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations = new ArrayList<PhysicalVolumeConfiguration>();
+        // Work through each Dom0Disk as a starting point
+        List<Dom0Disk> unallocatedDom0DisksList = new ArrayList<Dom0Disk>(unallocatedDom0Disks.keySet());
+START_DISK:
+        for(int startDiskIndex = 0; startDiskIndex<size; startDiskIndex++) {
+            // These are all used to iterate through the physical volumes during allocation
+            int currentDiskIndex = startDiskIndex;
+            Dom0Disk currentDom0Disk = unallocatedDom0DisksList.get(currentDiskIndex);
+            assert currentDom0Disk!=null : "dom0Disk is null";
+            List<PhysicalVolume> currentPhysicalVolumes = unallocatedDom0Disks.get(currentDom0Disk);
+            assert currentPhysicalVolumes!=null : "physicalVolumes is null";
+            int currentPhysicalVolumeIndex = 0;
+            PhysicalVolume currentPhysicalVolume = currentPhysicalVolumes.get(currentPhysicalVolumeIndex);
+            long currentPhysicalVolumeExtentsRemaing = currentPhysicalVolume.extents;
+
+            // Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped
+            newDomUDiskConfigurations.clear();
+DOMU_DISK:
+            for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.unmodifiableDomUDiskConfigurations) {
+                DomUDisk domUDisk = domUDiskConfiguration.domUDisk;
+                secondaryPhysicalVolumeConfigurations.clear();
+                long domUDiskAllocationRemaining = domUDisk.extents;
+
+                while(true) {
+                    // Add to domUDisk
+                    long allocatingExtents = currentPhysicalVolumeExtentsRemaing<domUDiskAllocationRemaining ? currentPhysicalVolumeExtentsRemaing : domUDiskAllocationRemaining;
+                    secondaryPhysicalVolumeConfigurations.add(
+                        PhysicalVolumeConfiguration.newInstance(
+                            currentPhysicalVolume,
+                            domUDisk.extents - domUDiskAllocationRemaining,
+                            currentPhysicalVolume.extents - currentPhysicalVolumeExtentsRemaing,
+                            allocatingExtents
+                        )
+                    );
+                    domUDiskAllocationRemaining -= allocatingExtents;
+                    assert domUDiskAllocationRemaining>=0 : "domUDiskAllocationRemaining<0: "+domUDiskAllocationRemaining;
+
+                    // Update iteration of physical volumes
+                    currentPhysicalVolumeExtentsRemaing -= allocatingExtents;
+                    assert currentPhysicalVolumeExtentsRemaing>=0 : "currentPhysicalVolumeExtentsRemaing<0: "+currentPhysicalVolumeExtentsRemaing;
+                    boolean hasMorePhysicalExtents;
+                    if(currentPhysicalVolumeExtentsRemaing==0) {
+                        // Update to point to the next physical volume
+                        currentPhysicalVolumeIndex++;
+                        if(currentPhysicalVolumeIndex<currentPhysicalVolumes.size()) {
+                            currentPhysicalVolume = currentPhysicalVolumes.get(currentPhysicalVolumeIndex);
+                            currentPhysicalVolumeExtentsRemaing = currentPhysicalVolume.extents;
+                            hasMorePhysicalExtents = true;
+                        } else {
+                            currentDiskIndex++;
+                            if(currentDiskIndex<unallocatedDom0DisksList.size()) {
+                                currentDom0Disk = unallocatedDom0DisksList.get(currentDiskIndex);
+                                assert currentDom0Disk!=null : "dom0Disk is null";
+                                currentPhysicalVolumes = unallocatedDom0Disks.get(currentDom0Disk);
+                                assert currentPhysicalVolumes!=null : "physicalVolumes is null";
+                                currentPhysicalVolumeIndex = 0;
+                                currentPhysicalVolume = currentPhysicalVolumes.get(currentPhysicalVolumeIndex);
+                                currentPhysicalVolumeExtentsRemaing = currentPhysicalVolume.extents;
+                                hasMorePhysicalExtents = true;
+                            } else {
+                                hasMorePhysicalExtents = false;
+                            }
+                        }
+                    } else {
+                        hasMorePhysicalExtents = true;
+                    }
+
+                    // If mapping complete add to domUConfigurations
+                    if(domUDiskAllocationRemaining<=0) {
+                        newDomUDiskConfigurations.add(
+                            new DomUDiskConfiguration(
+                                domUDisk,
+                                domUDiskConfiguration.primaryPhysicalVolumeConfigurations,
+                                getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations)
+                            )
+                        );
+                        continue DOMU_DISK;
+                    }
+
+                    // If mapping incomplete return results found
+                    if(!hasMorePhysicalExtents) break START_DISK;
+                }
+            }
+            // If mapping complete add to results
+            mappedConfigurations.add(
+                new ClusterConfiguration(
+                    cluster,
+                    replaceInUnmodifiableList(
+                        DomUConfiguration.class,
+                        unmodifiableDomUConfigurations,
+                        unmodifiableDomUConfigurationsIndex,
+                        new DomUConfiguration(
+                            domU,
+                            domUConfiguration.primaryDom0,
+                            newSecondaryDom0,
+                            getUnmodifiableCopy(DomUDiskConfiguration.class, newDomUDiskConfigurations)
+                        )
+                    )
+                )
+            );
+        }
+        
+        return mappedConfigurations;
     }
 
     /**
