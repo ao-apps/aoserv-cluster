@@ -327,9 +327,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
         String device,
         int minimumDiskSpeed,
         int extents,
-        short weight,
-        boolean primaryPhysicalVolumesLocked,
-        boolean secondaryPhysicalVolumesLocked
+        short weight
     ) {
         DomU domU = unmodifiableDomUs.get(hostname);
         if(domU==null) throw new IllegalArgumentException(this+": DomU not found: "+hostname);
@@ -361,9 +359,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
                             device,
                             minimumDiskSpeed,
                             extents,
-                            weight,
-                            primaryPhysicalVolumesLocked,
-                            secondaryPhysicalVolumesLocked
+                            weight
                         )
                     )
                 )

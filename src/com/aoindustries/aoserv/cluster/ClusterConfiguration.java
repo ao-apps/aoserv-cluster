@@ -337,7 +337,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      *   <li>Work through each Dom0Disk as a starting point
      *     <ol type="a">
      *       <li>Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped</li>
-     *       <li>If mapping complete add to results</li>
+     *       <li>If mapping complete add to results (TODO: avoid allocation to exactly equal resources in exactly equal ways)</li>
      *       <li>If mapping incomplete return results found</li>
      *     </ol>
      *   </li>
@@ -355,8 +355,6 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      * @return  the new configuration(s)
      */
     public Iterable<ClusterConfiguration> moveSecondary(DomU domU, Dom0 newSecondaryDom0) {
-        // TODO: Adhere to or remove the locked flags for individual disks
-
         // Find existing configuration
         DomUConfiguration domUConfiguration = null;
         int unmodifiableDomUConfigurationsIndex = 0;

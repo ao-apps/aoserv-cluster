@@ -17,8 +17,14 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 
     private static final long serialVersionUID = 1L;
 
-    // Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
-    // 32-bit representation when possible to save heap.
+    /**
+     * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
+     * 16-bit and 32-bit representation when possible to save heap.
+     * 
+     * If heap space is every an issue, can use even more specialized versions like:
+     *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
+     *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
+     */
     public static PhysicalVolumeConfiguration newInstance(
         PhysicalVolume physicalVolume,
         long firstLogicalExtent,

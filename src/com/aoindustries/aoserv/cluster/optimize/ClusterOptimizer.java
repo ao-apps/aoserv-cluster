@@ -80,9 +80,12 @@ public class ClusterOptimizer {
      * or <code>null</code> if no optimal configuration was found.
      *
      * Best-first search implementation.
-     * 
-     * TODO: Allow heuristic to return Double.POSITIVE_INFINITY to indicate no solution from that state:
-     * TODO: (see http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
+     *
+     * TODO: Since we are limited by heap space more than CPU speed, perhaps we should look for optimal
+     *       solutions before adding onto the open list?  This means we could at least look one more move ahead.
+     *
+     * Could allow heuristic to return Double.POSITIVE_INFINITY to indicate no solution from that state:
+     *     (see http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
      *
      * TODO: Add in transition cost because the best path depends not on the number of steps, but the total time of the steps.
      * TODO: This could be a real-world estimate on how many seconds the operation would take.

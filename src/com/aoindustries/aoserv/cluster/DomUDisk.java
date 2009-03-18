@@ -27,8 +27,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
     final int minimumDiskSpeed;
     final long extents;
     final short weight;
-    final boolean primaryPhysicalVolumesLocked;
-    final boolean secondaryPhysicalVolumesLocked;
 
     DomUDisk(
         String clusterName,
@@ -36,9 +34,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         String device,
         int minimumDiskSpeed,
         long extents,
-        short weight,
-        boolean primaryPhysicalVolumesLocked,
-        boolean secondaryPhysicalVolumesLocked
+        short weight
     ) {
         if(minimumDiskSpeed!=-1 && minimumDiskSpeed<=0) throw new IllegalArgumentException(this+": Invalid value for minimumDiskSpeed: "+minimumDiskSpeed);
         if(extents<1) throw new IllegalArgumentException(this+": extents should be >=1: "+extents);
@@ -50,8 +46,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
         this.minimumDiskSpeed = minimumDiskSpeed;
         this.extents = extents;
         this.weight = weight;
-        this.primaryPhysicalVolumesLocked = primaryPhysicalVolumesLocked;
-        this.secondaryPhysicalVolumesLocked = secondaryPhysicalVolumesLocked;
     }
 
     public String getClusterName() {
@@ -88,14 +82,6 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
      */
     public short getWeight() {
         return weight;
-    }
-
-    public boolean getPrimaryPhysicalVolumesLocked() {
-        return primaryPhysicalVolumesLocked;
-    }
-    
-    public boolean getSecondaryPhysicalVolumesLocked() {
-        return secondaryPhysicalVolumesLocked;
     }
 
     @Override

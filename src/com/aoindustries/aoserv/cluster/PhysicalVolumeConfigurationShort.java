@@ -12,6 +12,8 @@ import java.io.Serializable;
  * when all three extents fields fit into 16 bits.  This will be the case
  * until the logical or phyiscal volumes reach 1 TB.
  *
+ * In JDK 1.6 (i586) on Linux, this takes 24 bytes of heap per instance.
+ *
  * @author  AO Industries, Inc.
  */
 public class PhysicalVolumeConfigurationShort extends PhysicalVolumeConfiguration implements Serializable {
