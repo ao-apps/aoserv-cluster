@@ -10,50 +10,64 @@ package com.aoindustries.aoserv.cluster.analyze;
  *
  * @author  AO Industries, Inc.
  */
-public class Result<T> implements Comparable<Result> {
+abstract public class Result<T> implements Comparable<Result> {
 
     final private String label;
-    final private T value;
     final private double deviation;
     final private AlertLevel alertLevel;
 
-    Result(String label, T value, double deviation, AlertLevel alertLevel) {
+    Result(String label, double deviation, AlertLevel alertLevel) {
+        assert !(alertLevel!=AlertLevel.NONE && deviation<=0) : "Any result with an alert level > NONE should have a positive, non-zero deviation";
+        assert !(alertLevel==AlertLevel.NONE && deviation>0) : "Any result with an alert level = NONE should have a negative or zero deviation";
         this.label = label;
-        this.value = value;
         this.deviation = deviation;
         this.alertLevel = alertLevel;
     }
 
-    public String getLabel() {
+    final public String getLabel() {
         return label;
     }
 
-    public T getValue() {
-        return value;
-    }
+    /**
+     * Gets the current value for the resource or <code>null</code> if unavailable.
+     */
+    abstract public T getValue();
+    
+    /**
+     * Gets the maximum value for the resource or <code>null</code> if unavailable.
+     */
+    abstract public T getMaxValue();
 
     /**
-     * Gets the relative amount of devation the value is from the expected value.
-     * If the deviation is otherwise unknown or doesn't make sense, should be 1.0.
+     * Gets the relative amount of devation the value is from the expected/maximum value.
+     * If the deviation is otherwise unknown or doesn't make sense for the type of resource,
+     * should be 1.0.
      */
-    public double getDeviation() {
+    final public double getDeviation() {
         return deviation;
     }
 
-    public AlertLevel getAlertLevel() {
+    final public AlertLevel getAlertLevel() {
         return alertLevel;
     }
     
     /**
      * Sorted by label.
      */
-    public int compareTo(Result other) {
+    final public int compareTo(Result other) {
         return label.compareTo(other.label);
     }
     
     @Override
-    public String toString() {
-        if(value==null) return alertLevel+": "+label+" "+deviation;
-        return alertLevel+": "+label+" "+value+" "+deviation;
+    final public String toString() {
+        T value = getValue();
+        T maxValue = getMaxValue();
+        return
+            alertLevel
+            + ": " + label
+            + " "  + (value==null ? "NA" : value)
+            + "/"  + (maxValue==null ? "NA" : maxValue)
+            + " "  + deviation
+        ;
     }
 }

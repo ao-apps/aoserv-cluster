@@ -43,7 +43,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
      * 
      * @return true if more results are wanted, or false to receive no more results.
      */
-    public boolean getAvailableWeightResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+    public boolean getAllocatedWeightResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
         if(minimumAlertLevel.compareTo(AlertLevel.MEDIUM)<=0) {
             // Add up all of the weights on any physical volumes on this drive.
             // Each unique DomUDisk will only be added once.
@@ -85,14 +85,15 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
                     }
                 }
             }
-            int freeDiskWeight = 1024 - allocatedDiskWeight;
-            AlertLevel alertLevel = freeDiskWeight<0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+            int overcommitDiskWeight = allocatedDiskWeight - 1024;
+            AlertLevel alertLevel = overcommitDiskWeight>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
             if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                 return resultHandler.handleResult(
-                    new Result<Integer>(
-                        "Available Weight",
-                        freeDiskWeight,
-                        -((double)freeDiskWeight / (double)1024),
+                    new IntResult(
+                        "Allocated Weight",
+                        allocatedDiskWeight,
+                        1024,
+                        (double)overcommitDiskWeight / (double)1024,
                         alertLevel
                     )
                 );
@@ -108,7 +109,9 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
      */
     public boolean getDiskSpeedResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
         if(minimumAlertLevel.compareTo(AlertLevel.MEDIUM)<=0) {
-            for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
+            List<DomUConfiguration> domUConfigurations = clusterConfiguration.getDomUConfigurations();
+            for(int c=0, sizeC=domUConfigurations.size(); c<sizeC; c++) {
+                DomUConfiguration domUConfiguration = domUConfigurations.get(c);
                 // Must be either primary or secondary on this
                 boolean isPrimary;
                 if(domUConfiguration.getPrimaryDom0().getHostname().equals(dom0Disk.getDom0Hostname())) {
@@ -120,35 +123,41 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
                 } else {
                     continue;
                 }
-                for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) {
+                List<DomUDiskConfiguration> domUDiskConfigurations = domUConfiguration.getDomUDiskConfigurations();
+                for(int d=0, sizeD=domUDiskConfigurations.size(); d<sizeD; d++) {
+                    DomUDiskConfiguration domUDiskConfiguration = domUDiskConfigurations.get(d);
                     DomUDisk domUDisk = domUDiskConfiguration.getDomUDisk();
+                    long totalExtents = domUDisk.getExtents();
                     int minDiskSpeed = domUDisk.getMinimumDiskSpeed();
                     long tooSlowExtents = 0;
-                    boolean foundMatch = false;
+                    long extentsFound = 0;
                     List<PhysicalVolumeConfiguration> physicalVolumeConfigurations;
                     if(isPrimary) physicalVolumeConfigurations = domUDiskConfiguration.getPrimaryPhysicalVolumeConfigurations();
                     else physicalVolumeConfigurations = domUDiskConfiguration.getSecondaryPhysicalVolumeConfigurations();
-                    for(PhysicalVolumeConfiguration physicalVolumeConfiguration : physicalVolumeConfigurations) {
+                    for(int e=0, sizeE=physicalVolumeConfigurations.size(); e<sizeE; e++) {
+                        PhysicalVolumeConfiguration physicalVolumeConfiguration = physicalVolumeConfigurations.get(e);
                         PhysicalVolume physicalVolume = physicalVolumeConfiguration.getPhysicalVolume();
                         if(physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
                             assert physicalVolume.getClusterName().equals(dom0Disk.getClusterName()) : "physicalVolume.clusterName!=dom0Disk.clusterName";
                             assert physicalVolume.getDom0Hostname().equals(dom0Disk.getDom0Hostname()) : "physicalVolume.dom0Hostname!=dom0Disk.dom0Hostname";
                             // Found a match between DomUDisk and this Dom0Disk
-                            foundMatch = true;
                             if(minDiskSpeed==-1) break;
+                            long pvExtents = physicalVolumeConfiguration.getExtents();
                             int diskSpeed = dom0Disk.getDiskSpeed();
-                            if(diskSpeed<minDiskSpeed) tooSlowExtents += physicalVolumeConfiguration.getExtents();
+                            if(diskSpeed<minDiskSpeed) tooSlowExtents += pvExtents;
+                            extentsFound += pvExtents;
+                            if(extentsFound>=totalExtents) break; // All extents found, can stop looking for more
                         }
                     }
-                    if(foundMatch) {
+                    if(extentsFound>0) {
                         AlertLevel alertLevel = minDiskSpeed!=-1 && tooSlowExtents>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
                         if(alertLevel.compareTo(minimumAlertLevel)>=0) {
-                            long totalExtents = domUDisk.getExtents();
                             if(!
                                 resultHandler.handleResult(
-                                    new Result<Integer>(
+                                    new ObjectResult<Integer>(
                                         domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
                                         minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
+                                        null,
                                         (double)tooSlowExtents/(double)totalExtents,
                                         alertLevel
                                     )
@@ -191,7 +200,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
      * @return true if more results are wanted, or false to receive no more results.
      */
     public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
-        if(!getAvailableWeightResult(resultHandler, minimumAlertLevel)) return false;
+        if(!getAllocatedWeightResult(resultHandler, minimumAlertLevel)) return false;
         if(!getDiskSpeedResults(resultHandler, minimumAlertLevel)) return false;
         return true;
     }

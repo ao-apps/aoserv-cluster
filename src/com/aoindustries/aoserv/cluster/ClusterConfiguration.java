@@ -466,8 +466,14 @@ START_DISK:
 
             // Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped
             newDomUDiskConfigurations.clear();
+            List<DomUDiskConfiguration> domUDiskConfigurations = domUConfiguration.unmodifiableDomUDiskConfigurations;
 DOMU_DISK:
-            for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.unmodifiableDomUDiskConfigurations) {
+            for(
+                int domUDiskConfigurationsIndex=0, domUDiskConfigurationsSize=domUDiskConfigurations.size();
+                domUDiskConfigurationsIndex<domUDiskConfigurationsSize;
+                domUDiskConfigurationsIndex++
+            ) {
+                DomUDiskConfiguration domUDiskConfiguration = domUDiskConfigurations.get(domUDiskConfigurationsIndex);
                 DomUDisk domUDisk = domUDiskConfiguration.domUDisk;
                 secondaryPhysicalVolumeConfigurations.clear();
                 long domUDiskAllocationRemaining = domUDisk.extents;
@@ -518,6 +524,8 @@ DOMU_DISK:
 
                     // If mapping complete add to domUConfigurations
                     if(domUDiskAllocationRemaining<=0) {
+                        // This must be the last DomUDisk to be accepted
+                        if(!hasMorePhysicalExtents && domUDiskConfigurationsIndex<(domUDiskConfigurationsSize-1)) break START_DISK; // More disks but no room left, can't allocate any more
                         newDomUDiskConfigurations.add(
                             new DomUDiskConfiguration(
                                 domUDisk,

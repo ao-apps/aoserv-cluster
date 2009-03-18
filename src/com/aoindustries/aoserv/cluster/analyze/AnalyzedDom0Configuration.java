@@ -42,24 +42,25 @@ public class AnalyzedDom0Configuration {
     }
 
     /**
-     * Gets the results for primary RAM
+     * Gets the results for primary RAM allocation.
      *
      * @return true if more results are wanted, or false to receive no more results.
      */
-    public boolean getAvailableRamResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+    public boolean getPrimaryRamResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
         int allocatedPrimaryRam = 0;
         for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
             if(domUConfiguration.getPrimaryDom0()==dom0) allocatedPrimaryRam+=domUConfiguration.getDomU().getPrimaryRam();
         }
         int totalRam = dom0.getRam();
-        int freePrimaryRam = totalRam - allocatedPrimaryRam;
-        AlertLevel alertLevel = freePrimaryRam<0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
+        int overcommittedRam = allocatedPrimaryRam - totalRam;
+        AlertLevel alertLevel = overcommittedRam>0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
         if(alertLevel.compareTo(minimumAlertLevel)>=0) {
             return resultHandler.handleResult(
-                new Result<Integer>(
-                    "Available RAM",
-                    freePrimaryRam,
-                    -((double)freePrimaryRam / (double)totalRam),
+                new IntResult(
+                    "Primary RAM",
+                    allocatedPrimaryRam,
+                    totalRam,
+                    ((double)overcommittedRam / (double)totalRam),
                     alertLevel
                 )
             );
@@ -72,7 +73,7 @@ public class AnalyzedDom0Configuration {
      *
      * @return true if more results are wanted, or false to receive no more results.
      */
-    public boolean getAllocatedSecondaryRamResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+    public boolean getSecondaryRamResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
         if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
             int allocatedPrimaryRam = 0;
             Map<String,Integer> allocatedSecondaryRams = new HashMap<String,Integer>();
@@ -101,9 +102,10 @@ public class AnalyzedDom0Configuration {
                 if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                     if(
                         !resultHandler.handleResult(
-                            new Result<Integer>(
+                            new IntResult(
                                 failedHostname,
                                 allocatedSecondary,
+                                freePrimaryRam,
                                 (double)(allocatedSecondary-freePrimaryRam)/(double)totalRam,
                                 alertLevel
                             )
@@ -137,14 +139,25 @@ public class AnalyzedDom0Configuration {
                     )
                 ) {
                     ProcessorType minProcessorType = domU.getMinimumProcessorType();
-                    AlertLevel alertLevel = minProcessorType!=null && processorType.compareTo(minProcessorType)<0 ? AlertLevel.LOW : AlertLevel.NONE;
+                    AlertLevel alertLevel;
+                    double deviation;
+                    if(minProcessorType==null) {
+                        alertLevel = AlertLevel.NONE;
+                        deviation = 0;
+                    } else {
+                        // The further apart the generations, the higher the deviation
+                        int diff = minProcessorType.ordinal() - processorType.ordinal();
+                        alertLevel = diff>0 ? AlertLevel.LOW : AlertLevel.NONE;
+                        deviation = diff;
+                    }
                     if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                         if(
                             !resultHandler.handleResult(
-                                new Result<ProcessorType>(
+                                new ObjectResult<ProcessorType>(
                                     domU.getHostname(),
                                     minProcessorType,
-                                    1,
+                                    processorType,
+                                    deviation,
                                     alertLevel
                                 )
                             )
@@ -172,14 +185,18 @@ public class AnalyzedDom0Configuration {
             if(domUConfiguration.getPrimaryDom0()==dom0) {
                 // Primary is CRITICAL
                 ProcessorArchitecture minProcessorArchitecture = domU.getMinimumProcessorArchitecture();
-                AlertLevel alertLevel = processorArchitecture.compareTo(minProcessorArchitecture)<0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
+                AlertLevel alertLevel;
+                // The further apart the architectures, the higher the deviation
+                int diff = minProcessorArchitecture.ordinal() - processorArchitecture.ordinal();
+                alertLevel = diff>0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
                 if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                     if(
                         !resultHandler.handleResult(
-                            new Result<ProcessorArchitecture>(
+                            new ObjectResult<ProcessorArchitecture>(
                                 domU.getHostname(),
                                 minProcessorArchitecture,
-                                1,
+                                processorArchitecture,
+                                (double)diff,
                                 alertLevel
                             )
                         )
@@ -191,14 +208,18 @@ public class AnalyzedDom0Configuration {
             ) {
                 // Secondary is HIGH
                 ProcessorArchitecture minProcessorArchitecture = domU.getMinimumProcessorArchitecture();
-                AlertLevel alertLevel = processorArchitecture.compareTo(minProcessorArchitecture)<0 ? AlertLevel.HIGH : AlertLevel.NONE;
+                AlertLevel alertLevel;
+                // The further apart the architectures, the higher the deviation
+                int diff = minProcessorArchitecture.ordinal() - processorArchitecture.ordinal();
+                alertLevel = diff>0 ? AlertLevel.HIGH : AlertLevel.NONE;
                 if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                     if(
                         !resultHandler.handleResult(
-                            new Result<ProcessorArchitecture>(
+                            new ObjectResult<ProcessorArchitecture>(
                                 domU.getHostname(),
                                 minProcessorArchitecture,
-                                1,
+                                processorArchitecture,
+                                (double)diff,
                                 alertLevel
                             )
                         )
@@ -231,14 +252,23 @@ public class AnalyzedDom0Configuration {
                     )
                 ) {
                     int minSpeed = domU.getMinimumProcessorSpeed();
-                    AlertLevel alertLevel = minSpeed!=-1 && processorSpeed<minSpeed ? AlertLevel.LOW : AlertLevel.NONE;
+                    AlertLevel alertLevel;
+                    double deviation;
+                    if(minSpeed==-1) {
+                        alertLevel = AlertLevel.NONE;
+                        deviation = 0;
+                    } else {
+                        alertLevel = processorSpeed<minSpeed ? AlertLevel.LOW : AlertLevel.NONE;
+                        deviation = (double)(minSpeed-processorSpeed)/(double)minSpeed;
+                    }
                     if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                         if(
                             !resultHandler.handleResult(
-                                new Result<Integer>(
+                                new ObjectResult<Integer>(
                                     domU.getHostname(),
                                     minSpeed==-1 ? null : Integer.valueOf(minSpeed),
-                                    (double)(minSpeed-processorSpeed)/(double)minSpeed,
+                                    processorSpeed,
+                                    deviation,
                                     alertLevel
                                 )
                             )
@@ -276,9 +306,10 @@ public class AnalyzedDom0Configuration {
                     if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                         if(
                             !resultHandler.handleResult(
-                                new Result<Integer>(
+                                new ObjectResult<Integer>(
                                     domU.getHostname(),
                                     minCores==-1 ? null : Integer.valueOf(minCores),
+                                    processorCores,
                                     (double)(minCores-processorCores)/(double)minCores,
                                     alertLevel
                                 )
@@ -296,7 +327,7 @@ public class AnalyzedDom0Configuration {
      *
      * @return true if more results are wanted, or false to receive no more results.
      */
-    public boolean getAvailableProcessorWeightResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
+    public boolean getPrimaryProcessorWeightResult(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
         if(minimumAlertLevel.compareTo(AlertLevel.MEDIUM)<=0) {
             int allocatedPrimaryWeight = 0;
             for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
@@ -306,14 +337,15 @@ public class AnalyzedDom0Configuration {
                 }
             }
             int totalWeight = dom0.getProcessorCores() * 1024;
-            int freePrimaryWeight = totalWeight - allocatedPrimaryWeight;
-            AlertLevel alertLevel = freePrimaryWeight<0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+            int overcommittedWeight = allocatedPrimaryWeight - totalWeight;
+            AlertLevel alertLevel = overcommittedWeight>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
             if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                 return resultHandler.handleResult(
-                    new Result<Integer>(
-                        "Available Processor Weight",
-                        freePrimaryWeight,
-                        -((double)freePrimaryWeight / (double)totalWeight),
+                    new IntResult(
+                        "Primary Processor Weight",
+                        allocatedPrimaryWeight,
+                        totalWeight,
+                        ((double)overcommittedWeight / (double)totalWeight),
                         alertLevel
                     )
                 );
@@ -336,14 +368,32 @@ public class AnalyzedDom0Configuration {
             DomU domU = domUConfiguration.getDomU();
             if(domUConfiguration.getPrimaryDom0()==dom0) {
                 boolean requiresHvm = domU.getRequiresHvm();
-                AlertLevel alertLevel = requiresHvm && !supportsHvm ? AlertLevel.CRITICAL : AlertLevel.NONE;
+                AlertLevel alertLevel;
+                double deviation;
+                if(requiresHvm) {
+                    if(supportsHvm) {
+                        alertLevel = AlertLevel.NONE;
+                        deviation = 0;
+                    } else {
+                        alertLevel = AlertLevel.CRITICAL;
+                        deviation = 1;
+                    }
+                } else {
+                    alertLevel = AlertLevel.NONE;
+                    if(supportsHvm) {
+                        deviation = -1;
+                    } else {
+                        deviation = 0;
+                    }
+                }
                 if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                     if(
                         !resultHandler.handleResult(
-                            new Result<Boolean>(
+                            new BooleanResult(
                                 domU.getHostname(),
                                 requiresHvm,
-                                1,
+                                supportsHvm,
+                                deviation,
                                 alertLevel
                             )
                         )
@@ -354,14 +404,32 @@ public class AnalyzedDom0Configuration {
                 && domU.getSecondaryRam()!=-1
             ) {
                 boolean requiresHvm = domU.getRequiresHvm();
-                AlertLevel alertLevel = requiresHvm && !supportsHvm ? AlertLevel.HIGH : AlertLevel.NONE;
+                AlertLevel alertLevel;
+                double deviation;
+                if(requiresHvm) {
+                    if(supportsHvm) {
+                        alertLevel = AlertLevel.NONE;
+                        deviation = 0;
+                    } else {
+                        alertLevel = AlertLevel.HIGH;
+                        deviation = 1;
+                    }
+                } else {
+                    alertLevel = AlertLevel.NONE;
+                    if(supportsHvm) {
+                        deviation = -1;
+                    } else {
+                        deviation = 0;
+                    }
+                }
                 if(alertLevel.compareTo(minimumAlertLevel)>=0) {
                     if(
                         !resultHandler.handleResult(
-                            new Result<Boolean>(
+                            new BooleanResult(
                                 domU.getHostname(),
                                 requiresHvm,
-                                1,
+                                supportsHvm,
+                                deviation,
                                 alertLevel
                             )
                         )
@@ -400,13 +468,13 @@ public class AnalyzedDom0Configuration {
      * @return true if more results are wanted, or false to receive no more results.
      */
     public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
-        if(!getAvailableRamResult(resultHandler, minimumAlertLevel)) return false;
-        if(!getAllocatedSecondaryRamResults(resultHandler, minimumAlertLevel)) return false;
+        if(!getPrimaryRamResult(resultHandler, minimumAlertLevel)) return false;
+        if(!getSecondaryRamResults(resultHandler, minimumAlertLevel)) return false;
         if(!getProcessorTypeResults(resultHandler, minimumAlertLevel)) return false;
         if(!getProcessorArchitectureResults(resultHandler, minimumAlertLevel)) return false;
         if(!getProcessorSpeedResults(resultHandler, minimumAlertLevel)) return false;
         if(!getProcessorCoresResults(resultHandler, minimumAlertLevel)) return false;
-        if(!getAvailableProcessorWeightResult(resultHandler, minimumAlertLevel)) return false;
+        if(!getPrimaryProcessorWeightResult(resultHandler, minimumAlertLevel)) return false;
         if(!getRequiresHvmResults(resultHandler, minimumAlertLevel)) return false;
         // The highest alert level for disks is HIGH, avoid ArrayList creation here
         if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {

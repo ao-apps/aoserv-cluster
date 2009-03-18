@@ -23,7 +23,7 @@ public class AnalyzedClusterConfigurationPrinter {
      */
     private AnalyzedClusterConfigurationPrinter() {}
 
-    private static void println(int indent, String label, Object value, String alertLevel, PrintWriter out) {
+    private static void println(int indent, String label, Object value, Object maxValue, String alertLevel, PrintWriter out) {
         out.print("| ");
         int lineWidth = 2;
         for(int c=0; c<indent; c++) {
@@ -56,11 +56,27 @@ public class AnalyzedClusterConfigurationPrinter {
         }
         out.print(" | ");
         lineWidth += 3;
+        if(maxValue!=null) {
+            String maxValueString = maxValue.toString();
+            // Right-align max value
+            for(int c=7 - maxValueString.length(); c>0; c--) {
+                out.print(' ');
+                lineWidth++;
+            }
+            out.print(maxValueString);
+            lineWidth += maxValueString.length();
+        }
+        while(lineWidth<80) {
+            out.print(' ');
+            lineWidth++;
+        }
+        out.print(" | ");
+        lineWidth += 3;
         if(alertLevel!=null) {
             out.print(alertLevel);
             lineWidth += alertLevel.toString().length();
         }
-        while(lineWidth<85) {
+        while(lineWidth<95) {
             out.print(' ');
             lineWidth++;
         }
@@ -68,7 +84,7 @@ public class AnalyzedClusterConfigurationPrinter {
     }
 
     private static void println(int indent, Result result, PrintWriter out) {
-        println(indent, result.getLabel(), result.getValue(), result.getAlertLevel().toString(), out);
+        println(indent, result.getLabel(), result.getValue(), result.getMaxValue(), result.getAlertLevel().toString(), out);
     }
 
     static class ResultPrinter implements ResultHandler<Object> {
@@ -116,65 +132,65 @@ public class AnalyzedClusterConfigurationPrinter {
         final SortedResultPrinter capturer3 = new SortedResultPrinter(3, out);
         final SortedResultPrinter capturer5 = new SortedResultPrinter(5, out);
 
-        out.println("+------------------------------------------------------------+---------+-------------+");
-        out.println("|                          Resource                          |  Value  | Alert Level |");
-        out.println("+------------------------------------------------------------+---------+-------------+");
+        out.println("+------------------------------------------------------------+---------+---------+-------------+");
+        out.println("|                          Resource                          |  Value  | Max Val | Alert Level |");
+        out.println("+------------------------------------------------------------+---------+---------+-------------+");
         for(AnalyzedClusterConfiguration analyzedCluster : analyzedClusters) {
             // TODO: Add DomU Groups
-            println(0, analyzedCluster.getClusterConfiguration().getCluster().getName(), null, null, out);
+            println(0, analyzedCluster.getClusterConfiguration().getCluster().getName(), null, null, null, out);
             for(AnalyzedDom0Configuration dom0 : analyzedCluster.getAnalyzedDom0Configurations()) {
                 // Overall
-                println(1, dom0.getDom0().getHostname(), null, null, out);
+                println(1, dom0.getDom0().getHostname(), null, null, null, out);
 
                 // RAM
-                dom0.getAvailableRamResult(resultPrinter2, minimumAlertLevel);
-                println(2, "Secondary RAM", null, null, out);
-                dom0.getAllocatedSecondaryRamResults(capturer3, minimumAlertLevel);
+                dom0.getPrimaryRamResult(resultPrinter2, minimumAlertLevel);
+                println(2, "Secondary RAM", null, null, null, out);
+                dom0.getSecondaryRamResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
+                // Processor weights
+                dom0.getPrimaryProcessorWeightResult(resultPrinter2, minimumAlertLevel);
+
                 // Processor type
-                println(2, "Processor Type", dom0.getDom0().getProcessorType(), null, out);
+                println(2, "Processor Type", dom0.getDom0().getProcessorType(), null, null, out);
                 dom0.getProcessorTypeResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
                 // Processor architecture
-                println(2, "Processor Architecture", dom0.getDom0().getProcessorArchitecture(), null, out);
+                println(2, "Processor Architecture", dom0.getDom0().getProcessorArchitecture(), null, null, out);
                 dom0.getProcessorArchitectureResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
                 // Processor speed
-                println(2, "Processor Speed", Integer.toString(dom0.getDom0().getProcessorSpeed()), null, out);
+                println(2, "Processor Speed", Integer.toString(dom0.getDom0().getProcessorSpeed()), null, null, out);
                 dom0.getProcessorSpeedResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
                 // Processor cores
-                println(2, "Processor Cores", Integer.toString(dom0.getDom0().getProcessorCores()), null, out);
+                println(2, "Processor Cores", Integer.toString(dom0.getDom0().getProcessorCores()), null, null, out);
                 dom0.getProcessorCoresResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
-                // Processor weights
-                dom0.getAvailableProcessorWeightResult(resultPrinter2, minimumAlertLevel);
-
                 // Supports HVM
-                println(2, "Hardware Virtualization", Boolean.toString(dom0.getDom0().getSupportsHvm()), null, out);
+                println(2, "Hardware Virtualization", Boolean.toString(dom0.getDom0().getSupportsHvm()), null, null, out);
                 dom0.getRequiresHvmResults(capturer3, minimumAlertLevel);
                 capturer3.sortAndPrint();
 
                 // Dom0Disks
-                println(2, "Disks", null, null, out);
+                println(2, "Disks", null, null, null, out);
                 List<AnalyzedDom0DiskConfiguration> dom0Disks = new ArrayList<AnalyzedDom0DiskConfiguration>(dom0.getDom0Disks());
                 Collections.sort(dom0Disks);
                 for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
                     assert dom0Disk!=null : "AnalyzedClusterConfigurationPrinter.print: dom0Disk is null";
-                    println(3, dom0Disk.getDom0Disk().getDevice(), null, null, out);
-                    dom0Disk.getAvailableWeightResult(resultPrinter4, minimumAlertLevel);
+                    println(3, dom0Disk.getDom0Disk().getDevice(), null, null, null, out);
+                    dom0Disk.getAllocatedWeightResult(resultPrinter4, minimumAlertLevel);
 
-                    println(4, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, out);
+                    println(4, "Disk Speed", Integer.toString(dom0Disk.getDom0Disk().getDiskSpeed()), null, null, out);
                     dom0Disk.getDiskSpeedResults(capturer5, minimumAlertLevel);
                     capturer5.sortAndPrint();
                 }
             }
         }
-        out.println("+------------------------------------------------------------+---------+-------------+");
+        out.println("+------------------------------------------------------------+---------+---------+-------------+");
     }
 }

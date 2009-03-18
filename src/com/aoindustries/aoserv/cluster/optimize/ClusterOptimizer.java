@@ -9,7 +9,6 @@ import com.aoindustries.aoserv.cluster.ClusterConfiguration;
 import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.DomU;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
-import com.aoindustries.aoserv.cluster.DomUDiskConfiguration;
 import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -48,8 +47,6 @@ import java.util.Random;
  * To reduce the number of non-live-migrate swaps, this search could try to move
  * between same architectures in preference to different architectures.
  * </p>
- * TODO: Is there any way to reduce the search space when different pieces of hardware are identical?
- * 
  * TODO: To manage heap consumption, allow two optional parameters:
  *           maxPathLen
  *           something to make it a "Beam Search" (http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
@@ -293,21 +290,10 @@ public class ClusterOptimizer {
                     }
                 }
 
-                // TODO: Adhere to or remove the locked flags for individual disks
-                // Try moving secondary to any other Dom0 that has enough free extents
-                int domUTotalExtents = 0;
-                for(DomUDiskConfiguration domUDiskConfiguration : domUConfiguration.getDomUDiskConfigurations()) domUTotalExtents += domUDiskConfiguration.getDomUDisk().getExtents();
-
                 for(Dom0 dom0 : clusterConfiguration.getCluster().getDom0s().values()) {
                     // Can't move to current primary or secondary
                     if(!dom0.equals(primaryDom0) && !dom0.equals(secondaryDom0)) {
-                        boolean hasEnoughExtents;
-                        if(domUTotalExtents==0) hasEnoughExtents = true;
-                        else {
-                            throw new RuntimeException("TODO: Finish method");
-                        }
-                        if(hasEnoughExtents) {
-                            ClusterConfiguration movedClusterConfiguration = clusterConfiguration.moveSecondary(domU, dom0);
+                        for(ClusterConfiguration movedClusterConfiguration : clusterConfiguration.moveSecondary(domU, dom0)) {
                             Transition transition = new MoveSecondaryTransition(domU, secondaryDom0, dom0);
                             int size = children.size();
                             if(randomizeChildren && size!=0) {
