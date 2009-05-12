@@ -41,6 +41,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     
     private static final long serialVersionUID = 1L;
 
+    private static final boolean USE_ALREADY_CONTAINS = false;
+
     /**
      * Gets an unmodifiable list that combines the existing list with the new object
      * If the existing list is empty, will use Collections.singletonList, otherwise
@@ -337,7 +339,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      *   <li>Work through each Dom0Disk as a starting point
      *     <ol type="a">
      *       <li>Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped</li>
-     *       <li>If mapping complete add to results (TODO: avoid allocation to exactly equal resources in exactly equal ways)</li>
+     *       <li>If mapping complete add to results (avoid allocation to exactly equal resources in exactly equal ways)</li>
      *       <li>If mapping incomplete return results found</li>
      *     </ol>
      *   </li>
@@ -445,6 +447,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
             return Collections.emptyList();
         }
         List<ClusterConfiguration> mappedConfigurations = new ArrayList<ClusterConfiguration>();
+        int alreadyContainsCount = 0;
         // Reused on inner loop
         List<DomUDiskConfiguration> newDomUDiskConfigurations = new ArrayList<DomUDiskConfiguration>();
         List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations = new ArrayList<PhysicalVolumeConfiguration>();
@@ -538,27 +541,101 @@ DOMU_DISK:
                     if(!hasMorePhysicalExtents) break START_DISK;
                 }
             }
+            // avoid allocation to exactly equal resources in exactly equal ways
+            boolean alreadyContains = false;
+            if(USE_ALREADY_CONTAINS) {
+                for(ClusterConfiguration alreadyMappedConfig : mappedConfigurations) {
+                    DomUConfiguration alreadyMappedDomUConfig = alreadyMappedConfig.getDomUConfigurations().get(unmodifiableDomUConfigurationsIndex);
+                    assert alreadyMappedDomUConfig.getDomU()==domU : "alreadyMappedDomUConfig.domU!=domU";
+                    List<DomUDiskConfiguration> alreadyMappedDiskConfigs = alreadyMappedDomUConfig.getDomUDiskConfigurations();
+                    int mappedSize = alreadyMappedDiskConfigs.size();
+                    if(mappedSize==newDomUDiskConfigurations.size()) {
+                        alreadyContains = true;
+                        for(int c=0; c<mappedSize; c++) {
+                            DomUDiskConfiguration alreadyMappedDiskConfig = alreadyMappedDiskConfigs.get(c);
+                            DomUDiskConfiguration newDiskConfig = newDomUDiskConfigurations.get(c);
+                            assert alreadyMappedDiskConfig.domUDisk == newDiskConfig.domUDisk : "alreadyMappedDiskConfig.domUDisk!=newDiskConfig.domUDisk";
+                            List<PhysicalVolumeConfiguration> alreadyMappedPVConfigs = alreadyMappedDiskConfig.secondaryPhysicalVolumeConfigurations;
+                            List<PhysicalVolumeConfiguration> newPVConfigs = newDiskConfig.secondaryPhysicalVolumeConfigurations;
+                            int pvSize = alreadyMappedPVConfigs.size();
+                            if(pvSize==newPVConfigs.size()) {
+                                for(int pvIndex=0; pvIndex<pvSize; pvIndex++) {
+                                    // TODO: Also consider total extents mapped (interaction with other VMs)?
+                                    // TODO: Consider match by total extents and those of other VMs?
+                                    // TODO: Or, just randomize the order???
+                                    PhysicalVolumeConfiguration alreadyMappedPVConfig = alreadyMappedPVConfigs.get(pvIndex);
+                                    PhysicalVolumeConfiguration newPVConfig = newPVConfigs.get(pvIndex);
+                                    if(
+                                        alreadyMappedPVConfig.getFirstLogicalExtent()!=newPVConfig.getFirstLogicalExtent()
+                                        || alreadyMappedPVConfig.getFirstPhysicalExtent()!=newPVConfig.getFirstPhysicalExtent()
+                                        || alreadyMappedPVConfig.getExtents()!=newPVConfig.getExtents()
+                                    ) {
+                                        alreadyContains = false;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                alreadyContains = false;
+                                break;
+                            }
+                        }
+                        if(alreadyContains) break;
+                    }
+                }
+            }
             // If mapping complete add to results
-            mappedConfigurations.add(
-                new ClusterConfiguration(
-                    cluster,
-                    replaceInUnmodifiableList(
-                        DomUConfiguration.class,
-                        unmodifiableDomUConfigurations,
-                        unmodifiableDomUConfigurationsIndex,
-                        new DomUConfiguration(
-                            domU,
-                            domUConfiguration.primaryDom0,
-                            newSecondaryDom0,
-                            getUnmodifiableCopy(DomUDiskConfiguration.class, newDomUDiskConfigurations)
+            if(alreadyContains) {
+                alreadyContainsCount++;
+            } else {
+                mappedConfigurations.add(
+                    new ClusterConfiguration(
+                        cluster,
+                        replaceInUnmodifiableList(
+                            DomUConfiguration.class,
+                            unmodifiableDomUConfigurations,
+                            unmodifiableDomUConfigurationsIndex,
+                            new DomUConfiguration(
+                                domU,
+                                domUConfiguration.primaryDom0,
+                                newSecondaryDom0,
+                                getUnmodifiableCopy(DomUDiskConfiguration.class, newDomUDiskConfigurations)
+                            )
                         )
                     )
-                )
-            );
+                );
+            }
         }
-        
+
+        if(USE_ALREADY_CONTAINS) {
+            synchronized(mappedConfigurationsStatsLock) {
+                totalMapped += mappedConfigurations.size();
+                totalAlreadyContains += alreadyContainsCount;
+                mappedCount++;
+                long currentTime = System.currentTimeMillis();
+                long timeSince = currentTime - lastDisplayTime;
+                if(timeSince<0 || timeSince>=60000) {
+                    System.out.println(
+                        "        totalMapped:"+totalMapped
+                        + " totalAlreadyContains:"+totalAlreadyContains
+                        + " mappedCount:"+mappedCount
+                        + " averageMapped:"+((float)totalMapped/(float)mappedCount)
+                        + " averageAlreadyContains:"+((float)totalAlreadyContains/(float)mappedCount)
+                    );
+                    //mappedCount = 0;
+                    //totalMapped = 0;
+                    //totalAlreadyContains = 0;
+                    lastDisplayTime = currentTime;
+                }
+            }
+        }
         return mappedConfigurations;
     }
+
+    private static final Object mappedConfigurationsStatsLock = new Object();
+    private static long mappedCount = 0;
+    private static long totalMapped = 0;
+    private static long totalAlreadyContains = 0;
+    private static long lastDisplayTime = System.currentTimeMillis();
 
     /**
      * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
