@@ -37,6 +37,7 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T[] toArray(T[] a) {
         int size = size();
         int len = a.length;

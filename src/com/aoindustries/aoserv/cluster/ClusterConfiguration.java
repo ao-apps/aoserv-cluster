@@ -48,6 +48,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      * If the existing list is empty, will use Collections.singletonList, otherwise
      * creates a new UnmodifiableArrayList.
      */
+    @SuppressWarnings({"unchecked"})
     static <V extends Comparable<V>> List<V> addToUnmodifiableList(Class<V> clazz, List<V> existingList, V newValue) {
         int size = existingList.size();
         if(size==0) return Collections.singletonList(newValue);
@@ -62,6 +63,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      * Replaces an existing entry in an unmodifiable list.  If the list only has a single
      * entry, will use Collections.singletonList, otherwise creates a new UnmodifiableArrayList.
      */
+    @SuppressWarnings({"unchecked"})
     static <V extends Comparable<V>> List<V> replaceInUnmodifiableList(Class<V> clazz, List<V> existingList, int index, V newValue) {
         int size = existingList.size();
         assert size!=0 : "List is empty";
@@ -81,6 +83,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      * Gets the smallest possible List container to hold the provided collection.
      * It sorts the list and ensures it is unmodifiable.
      */
+    @SuppressWarnings({"unchecked"})
     static <V extends Comparable<V>> List<V> getSortedUnmodifiableCopy(Class<V> clazz, List<V> original) {
         int size = original.size();
         if(size==0) return Collections.emptyList();
@@ -95,6 +98,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
      * Gets the smallest possible List container to hold the provided collection.
      * It ensures it is unmodifiable.
      */
+    @SuppressWarnings({"unchecked"})
     static <V extends Comparable<V>> List<V> getUnmodifiableCopy(Class<V> clazz, List<V> original) {
         int size = original.size();
         if(size==0) return Collections.emptyList();

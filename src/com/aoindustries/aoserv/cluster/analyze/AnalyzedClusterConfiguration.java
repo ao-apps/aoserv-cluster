@@ -91,6 +91,7 @@ public class AnalyzedClusterConfiguration {
     /**
      * Determines if this is optimal, meaning all results have AlertLevel of NONE.
      */
+    @SuppressWarnings({"unchecked"})
     public boolean isOptimal() {
         final boolean[] isOptimal = {true};
         getAllResults(
@@ -110,6 +111,7 @@ public class AnalyzedClusterConfiguration {
     /**
      * Determines if this has at least one result with AlertLevel of CRITICAL.
      */
+    @SuppressWarnings({"unchecked"})
     public boolean hasCritical() {
         final boolean[] hasCritical = new boolean[1];
         getAllResults(
