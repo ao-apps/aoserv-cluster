@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2019 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -10,6 +10,7 @@ import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.DomU;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
+import com.aoindustries.io.IoUtils;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -269,7 +270,7 @@ public class ClusterOptimizer {
         return shortestPath;
     }
 
-    private Random random = new SecureRandom();
+	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(8)));
 
     private void generateChildren(ClusterConfiguration clusterConfiguration, List<ClusterConfiguration> children, List<Transition> childTransitions, boolean randomizeChildren) {
         children.clear();
@@ -295,7 +296,7 @@ public class ClusterOptimizer {
                         // It may be faster to build the list and randomize at the end instead of incuring the overhead of inserting into an ArrayList
                         // However, since the two lists children and childrenTransitions need to be kept in sync, a simple call to
                         // Collections.shuffle will not work
-                        int index = random.nextInt(size+1);
+                        int index = fastRandom.nextInt(size+1);
                         children.add(index, swappedClusterConfiguration);
                         childTransitions.add(index, transition);
                     } else {
@@ -319,7 +320,7 @@ public class ClusterOptimizer {
                             Transition transition = new MoveSecondaryTransition(domU, secondaryDom0, dom0);
                             int size = children.size();
                             if(randomizeChildren && size!=0) {
-                                int index = random.nextInt(size+1);
+                                int index = fastRandom.nextInt(size+1);
                                 children.add(index, movedClusterConfiguration);
                                 childTransitions.add(index, transition);
                             } else {
