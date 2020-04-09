@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -15,9 +15,9 @@ import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
  */
 public class LeastInformedHeuristicFunction implements HeuristicFunction {
 
-    public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-        AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-        return analysis.isOptimal() ? g : (g+1);
-    }
+		return analysis.isOptimal() ? g : (g+1);
+	}
 }

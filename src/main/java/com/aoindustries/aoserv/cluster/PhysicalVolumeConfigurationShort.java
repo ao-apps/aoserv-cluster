@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 by AO Industries, Inc.,
+ * Copyright 2007-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -18,36 +18,36 @@ import java.io.Serializable;
  */
 public class PhysicalVolumeConfigurationShort extends PhysicalVolumeConfiguration implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    final short firstLogicalExtent;
-    final short firstPhysicalExtent;
-    final short extents;
+	final short firstLogicalExtent;
+	final short firstPhysicalExtent;
+	final short extents;
 
-    PhysicalVolumeConfigurationShort(
-        PhysicalVolume physicalVolume,
-        short firstLogicalExtent,
-        short firstPhysicalExtent,
-        short extents
-    ) {
-        super(physicalVolume);
-        assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-        assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-        assert extents>0 : "extents<=0: "+extents;
-        this.firstLogicalExtent = firstLogicalExtent;
-        this.firstPhysicalExtent = firstPhysicalExtent;
-        this.extents = extents;
-    }
+	PhysicalVolumeConfigurationShort(
+		PhysicalVolume physicalVolume,
+		short firstLogicalExtent,
+		short firstPhysicalExtent,
+		short extents
+	) {
+		super(physicalVolume);
+		assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
+		assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
+		assert extents>0 : "extents<=0: "+extents;
+		this.firstLogicalExtent = firstLogicalExtent;
+		this.firstPhysicalExtent = firstPhysicalExtent;
+		this.extents = extents;
+	}
 
-    public long getFirstLogicalExtent() {
-        return firstLogicalExtent;
-    }
+	public long getFirstLogicalExtent() {
+		return firstLogicalExtent;
+	}
 
-    public long getFirstPhysicalExtent() {
-        return firstPhysicalExtent;
-    }
+	public long getFirstPhysicalExtent() {
+		return firstPhysicalExtent;
+	}
 
-    public long getExtents() {
-        return extents;
-    }
+	public long getExtents() {
+		return extents;
+	}
 }

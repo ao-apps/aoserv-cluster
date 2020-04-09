@@ -54,6 +54,7 @@ along with aoserv-cluster.  If not, see <http://www.gnu.org/licenses />.
 			>
 				<ul>
 					<li>Project moved to GitHub and Maven.</li>
+					<li>Converted to tab indentation.</li>
 				</ul>
 			</changelog:release>
 		</c:if>

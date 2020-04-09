@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -19,7 +19,7 @@ package com.aoindustries.aoserv.cluster.optimize;
  * @author  AO Industries, Inc.
  */
 public abstract class Transition {
-    
-    Transition() {
-    }
+
+	Transition() {
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -12,26 +12,26 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class BooleanResult extends Result<Boolean> {
 
-    final private boolean value;
-    final private boolean maxValue;
+	final private boolean value;
+	final private boolean maxValue;
 
-    BooleanResult(String label, boolean value, boolean maxValue, double deviation, AlertLevel alertLevel) {
-        super(label, deviation, alertLevel);
-        this.value = value;
-        this.maxValue = maxValue;
-    }
+	BooleanResult(String label, boolean value, boolean maxValue, double deviation, AlertLevel alertLevel) {
+		super(label, deviation, alertLevel);
+		this.value = value;
+		this.maxValue = maxValue;
+	}
 
-    /**
-     * Gets the current value for the resource.
-     */
-    public Boolean getValue() {
-        return value;
-    }
+	/**
+	 * Gets the current value for the resource.
+	 */
+	public Boolean getValue() {
+		return value;
+	}
 
-    /**
-     * Gets the maximum value for the resource.
-     */
-    public Boolean getMaxValue() {
-        return maxValue;
-    }
+	/**
+	 * Gets the maximum value for the resource.
+	 */
+	public Boolean getMaxValue() {
+		return maxValue;
+	}
 }

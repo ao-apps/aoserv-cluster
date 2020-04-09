@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 by AO Industries, Inc.,
+ * Copyright 2007-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -12,6 +12,6 @@ package com.aoindustries.aoserv.cluster;
  * @author  AO Industries, Inc.
  */
 public enum ProcessorArchitecture {
-    I686,
-    X86_64
+	I686,
+	X86_64
 }

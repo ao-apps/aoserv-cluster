@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2011 by AO Industries, Inc.,
+ * Copyright 2009-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -10,8 +10,8 @@ package com.aoindustries.aoserv.cluster.optimize;
  */
 public interface OptimizedClusterConfigurationHandler {
 
-    /**
-     * Handles one result.  Returns true if the optimization should continue.
-     */
-    boolean handleOptimizedClusterConfiguration(ListElement path, long loopCount);
+	/**
+	 * Handles one result.  Returns true if the optimization should continue.
+	 */
+	boolean handleOptimizedClusterConfiguration(ListElement path, long loopCount);
 }

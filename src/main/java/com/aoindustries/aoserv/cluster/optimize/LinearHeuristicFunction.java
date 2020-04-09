@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -30,40 +30,40 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class LinearHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-    private int total;
-    
-    public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-        AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+	private int total;
 
-        // Include g to prefer shorter paths
-        total = g;
+	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-        // Add each result
-        analysis.getAllResults(this, AlertLevel.LOW);
+		// Include g to prefer shorter paths
+		total = g;
 
-        return total;
-    }
+		// Add each result
+		analysis.getAllResults(this, AlertLevel.LOW);
 
-    public boolean handleResult(Result<?> result) {
-        AlertLevel alertLevel = result.getAlertLevel();
-        switch(alertLevel) {
-            case NONE :
-                throw new AssertionError("Should only get non-optimal results");
-            case LOW :
-                total++;
-                break;
-            case MEDIUM :
-                total += 2;
-                break;
-            case HIGH :
-                total += 3;
-                break;
-            case CRITICAL :
-                total += 4;
-                break;
-            default :
-                throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
-        }
-        return true;
-    }
+		return total;
+	}
+
+	public boolean handleResult(Result<?> result) {
+		AlertLevel alertLevel = result.getAlertLevel();
+		switch(alertLevel) {
+			case NONE :
+				throw new AssertionError("Should only get non-optimal results");
+			case LOW :
+				total++;
+				break;
+			case MEDIUM :
+				total += 2;
+				break;
+			case HIGH :
+				total += 3;
+				break;
+			case CRITICAL :
+				total += 4;
+				break;
+			default :
+				throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+		}
+		return true;
+	}
 }

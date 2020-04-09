@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011, 2019 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2019, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -21,7 +21,7 @@ public class RandomHeuristicFunction implements HeuristicFunction {
 	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(8)));
 
 	@Override
-    public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-        return fastRandom.nextDouble();
-    }
+	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+		return fastRandom.nextDouble();
+	}
 }

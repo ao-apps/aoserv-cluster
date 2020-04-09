@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 by AO Industries, Inc.,
+ * Copyright 2008-2011, 2020 by AO Industries, Inc.,
  * 7262 Bull Pen Cir, Mobile, Alabama, 36695, U.S.A.
  * All rights reserved.
  */
@@ -20,22 +20,22 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-    int count;
+	int count;
 
-    public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-        AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-        count = g;
+		count = g;
 
-        // Add each result
-        analysis.getAllResults(this, AlertLevel.LOW);
+		// Add each result
+		analysis.getAllResults(this, AlertLevel.LOW);
 
-        return count;
-    }
+		return count;
+	}
 
-    public boolean handleResult(Result<?> result) {
-        assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
-        count++;
-        return true;
-    }
+	public boolean handleResult(Result<?> result) {
+		assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
+		count++;
+		return true;
+	}
 }
