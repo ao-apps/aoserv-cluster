@@ -39,6 +39,7 @@ public class ExponentialDeviationWithNoneHeuristicFunction implements HeuristicF
 
 	private double total;
 
+	@Override
 	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
 		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
@@ -52,6 +53,7 @@ public class ExponentialDeviationWithNoneHeuristicFunction implements HeuristicF
 		return total;
 	}
 
+	@Override
 	public boolean handleResult(Result<?> result) {
 		AlertLevel alertLevel = result.getAlertLevel();
 		switch(alertLevel) {

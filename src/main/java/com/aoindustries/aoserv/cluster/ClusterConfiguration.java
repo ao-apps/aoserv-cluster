@@ -56,7 +56,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		newArray = existingList.toArray(newArray);
 		newArray[size] = newValue;
 		//Arrays.sort(newArray);
-		return new UnmodifiableArrayList<V>(newArray);
+		return new UnmodifiableArrayList<>(newArray);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		newArray = existingList.toArray(newArray);
 		newArray[index] = newValue;
 		//Arrays.sort(newArray);
-		return new UnmodifiableArrayList<V>(newArray);
+		return new UnmodifiableArrayList<>(newArray);
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		V[] newArray = (V[])Array.newInstance(clazz, size);
 		newArray = original.toArray(newArray);
 		Arrays.sort(newArray);
-		return new UnmodifiableArrayList<V>(newArray);
+		return new UnmodifiableArrayList<>(newArray);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		if(size==1) return Collections.singletonList(original.get(0));
 		V[] newArray = (V[])Array.newInstance(clazz, size);
 		newArray = original.toArray(newArray);
-		return new UnmodifiableArrayList<V>(newArray);
+		return new UnmodifiableArrayList<>(newArray);
 	}
 
 	private static int computeHashCode(Cluster cluster, List<DomUConfiguration> unmodifiableDomUConfigurations) {
@@ -309,7 +309,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 					oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
 				);
 			}
-			newDomUDiskConfigurations = new UnmodifiableArrayList<DomUDiskConfiguration>(array);
+			newDomUDiskConfigurations = new UnmodifiableArrayList<>(array);
 		}
 		return new ClusterConfiguration(
 			cluster,
@@ -406,7 +406,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		}
 
 		// Find all unallocated physical volumes
-		SortedMap<Dom0Disk,List<PhysicalVolume>> unallocatedDom0Disks = new TreeMap<Dom0Disk,List<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
+		SortedMap<Dom0Disk,List<PhysicalVolume>> unallocatedDom0Disks = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
 		for(Dom0Disk dom0Disk : newSecondaryDom0.unmodifiableDom0Disks.values()) {
 			for(PhysicalVolume physicalVolume : dom0Disk.unmodifiablePhysicalVolumes.values()) {
 				// Find if allocated
@@ -437,7 +437,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 				if(!allocated) {
 					//SortedMap<Dom0Disk,SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<Dom0Disk,SortedSet<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
 					List<PhysicalVolume> unallocatedPhysicalVolumes = unallocatedDom0Disks.get(dom0Disk);
-					if(unallocatedPhysicalVolumes==null) unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<PhysicalVolume>());
+					if(unallocatedPhysicalVolumes==null) unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<>());
 					unallocatedPhysicalVolumes.add(physicalVolume);
 				}
 			}
@@ -450,13 +450,13 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 			// No free physical volumes
 			return Collections.emptyList();
 		}
-		List<ClusterConfiguration> mappedConfigurations = new ArrayList<ClusterConfiguration>();
+		List<ClusterConfiguration> mappedConfigurations = new ArrayList<>();
 		int alreadyContainsCount = 0;
 		// Reused on inner loop
-		List<DomUDiskConfiguration> newDomUDiskConfigurations = new ArrayList<DomUDiskConfiguration>();
-		List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations = new ArrayList<PhysicalVolumeConfiguration>();
+		List<DomUDiskConfiguration> newDomUDiskConfigurations = new ArrayList<>();
+		List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations = new ArrayList<>();
 		// Work through each Dom0Disk as a starting point
-		List<Dom0Disk> unallocatedDom0DisksList = new ArrayList<Dom0Disk>(unallocatedDom0Disks.keySet());
+		List<Dom0Disk> unallocatedDom0DisksList = new ArrayList<>(unallocatedDom0Disks.keySet());
 START_DISK:
 		for(int startDiskIndex = 0; startDiskIndex<size; startDiskIndex++) {
 			// These are all used to iterate through the physical volumes during allocation
@@ -684,6 +684,7 @@ DOMU_DISK:
 	 *   <li>cluster</li>
 	 * </ol>
 	 */
+	@Override
 	public int compareTo(ClusterConfiguration other) {
 		if(this==other) return 0;
 		return cluster.compareTo(other.cluster);

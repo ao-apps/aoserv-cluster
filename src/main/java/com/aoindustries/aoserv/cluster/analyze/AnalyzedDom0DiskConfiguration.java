@@ -154,9 +154,9 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 						if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 							if(!
 								resultHandler.handleResult(
-									new ObjectResult<Integer>(
+									new ObjectResult<>(
 										domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
-										minDiskSpeed==-1 ? null : Integer.valueOf(minDiskSpeed),
+										minDiskSpeed==-1 ? null : minDiskSpeed,
 										null,
 										(double)tooSlowExtents/(double)totalExtents,
 										alertLevel
@@ -182,6 +182,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 	/**
 	 * Sorts by cluster name, dom0 hostname, device, identifyHashCode.
 	 */
+	@Override
 	public int compareTo(AnalyzedDom0DiskConfiguration other) {
 		if(this==other) return 0;
 

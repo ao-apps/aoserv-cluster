@@ -24,6 +24,7 @@ public class BooleanResult extends Result<Boolean> {
 	/**
 	 * Gets the current value for the resource.
 	 */
+	@Override
 	public Boolean getValue() {
 		return value;
 	}
@@ -31,6 +32,7 @@ public class BooleanResult extends Result<Boolean> {
 	/**
 	 * Gets the maximum value for the resource.
 	 */
+	@Override
 	public Boolean getMaxValue() {
 		return maxValue;
 	}

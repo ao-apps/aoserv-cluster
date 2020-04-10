@@ -32,6 +32,7 @@ public class ExponentialHeuristicFunction implements HeuristicFunction, ResultHa
 
 	private long total;
 
+	@Override
 	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
 		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
@@ -44,6 +45,7 @@ public class ExponentialHeuristicFunction implements HeuristicFunction, ResultHa
 		return total;
 	}
 
+	@Override
 	public boolean handleResult(Result<?> result) {
 		AlertLevel alertLevel = result.getAlertLevel();
 		switch(alertLevel) {

@@ -39,14 +39,17 @@ public class PhysicalVolumeConfigurationShort extends PhysicalVolumeConfiguratio
 		this.extents = extents;
 	}
 
+	@Override
 	public long getFirstLogicalExtent() {
 		return firstLogicalExtent;
 	}
 
+	@Override
 	public long getFirstPhysicalExtent() {
 		return firstPhysicalExtent;
 	}
 
+	@Override
 	public long getExtents() {
 		return extents;
 	}

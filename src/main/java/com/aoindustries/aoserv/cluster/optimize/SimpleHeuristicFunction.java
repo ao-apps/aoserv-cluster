@@ -22,6 +22,7 @@ public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler
 
 	int count;
 
+	@Override
 	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
 		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
@@ -33,6 +34,7 @@ public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler
 		return count;
 	}
 
+	@Override
 	public boolean handleResult(Result<?> result) {
 		assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
 		count++;

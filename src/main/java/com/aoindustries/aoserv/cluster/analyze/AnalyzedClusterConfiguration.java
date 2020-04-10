@@ -56,7 +56,7 @@ public class AnalyzedClusterConfiguration {
 				dom0s[index++] = new AnalyzedDom0Configuration(clusterConfiguration, dom0);
 			}
 			assert index==size : "index!=size: "+index+"!="+size;
-			analyzedDom0Configurations = new UnmodifiableArrayList<AnalyzedDom0Configuration>(dom0s);
+			analyzedDom0Configurations = new UnmodifiableArrayList<>(dom0s);
 		}
 	}
 
@@ -93,15 +93,13 @@ public class AnalyzedClusterConfiguration {
 	 */
 	@SuppressWarnings({"unchecked"})
 	public boolean isOptimal() {
-		final boolean[] isOptimal = {true};
+		boolean[] isOptimal = {true};
 		getAllResults(
-			new ResultHandler() {
-				public boolean handleResult(Result result) {
-					assert result.getAlertLevel()!=AlertLevel.NONE : "result.alertLevel should not be NONE";
-					assert isOptimal[0] : "isOptimal[0] is false, handleResult called more than once";
-					isOptimal[0] = false;
-					return false;
-				}
+			(Result<?> result) -> {
+				assert result.getAlertLevel()!=AlertLevel.NONE : "result.alertLevel should not be NONE";
+				assert isOptimal[0] : "isOptimal[0] is false, handleResult called more than once";
+				isOptimal[0] = false;
+				return false;
 			},
 			AlertLevel.LOW
 		);
@@ -113,15 +111,13 @@ public class AnalyzedClusterConfiguration {
 	 */
 	@SuppressWarnings({"unchecked"})
 	public boolean hasCritical() {
-		final boolean[] hasCritical = new boolean[1];
+		boolean[] hasCritical = new boolean[1];
 		getAllResults(
-			new ResultHandler() {
-				public boolean handleResult(Result result) {
-					assert result.getAlertLevel()==AlertLevel.CRITICAL : "result.alertLevel should be CRITICAL but it is "+result.getAlertLevel();
-					assert !hasCritical[0] : "hasCritical[0] is true, handleResult called more than once";
-					hasCritical[0] = true;
-					return false;
-				}
+			(Result<?> result) -> {
+				assert result.getAlertLevel()==AlertLevel.CRITICAL : "result.alertLevel should be CRITICAL but it is "+result.getAlertLevel();
+				assert !hasCritical[0] : "hasCritical[0] is true, handleResult called more than once";
+				hasCritical[0] = true;
+				return false;
 			},
 			AlertLevel.CRITICAL
 		);

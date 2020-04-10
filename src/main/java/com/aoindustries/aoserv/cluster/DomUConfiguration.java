@@ -119,6 +119,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
 		;
 	}
 
+	@Override
 	public int compareTo(DomUConfiguration other) {
 		if(this==other) return 0;
 		return domU.compareTo(other.domU);

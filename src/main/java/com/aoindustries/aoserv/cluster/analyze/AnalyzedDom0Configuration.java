@@ -76,7 +76,7 @@ public class AnalyzedDom0Configuration {
 	public boolean getSecondaryRamResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
 		if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
 			int allocatedPrimaryRam = 0;
-			Map<String,Integer> allocatedSecondaryRams = new HashMap<String,Integer>();
+			Map<String,Integer> allocatedSecondaryRams = new HashMap<>();
 			for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
 				if(domUConfiguration.getPrimaryDom0()==dom0) {
 					allocatedPrimaryRam+=domUConfiguration.getDomU().getPrimaryRam();
@@ -153,7 +153,7 @@ public class AnalyzedDom0Configuration {
 					if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 						if(
 							!resultHandler.handleResult(
-								new ObjectResult<ProcessorType>(
+								new ObjectResult<>(
 									domU.getHostname(),
 									minProcessorType,
 									processorType,
@@ -192,7 +192,7 @@ public class AnalyzedDom0Configuration {
 				if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 					if(
 						!resultHandler.handleResult(
-							new ObjectResult<ProcessorArchitecture>(
+							new ObjectResult<>(
 								domU.getHostname(),
 								minProcessorArchitecture,
 								processorArchitecture,
@@ -215,7 +215,7 @@ public class AnalyzedDom0Configuration {
 				if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 					if(
 						!resultHandler.handleResult(
-							new ObjectResult<ProcessorArchitecture>(
+							new ObjectResult<>(
 								domU.getHostname(),
 								minProcessorArchitecture,
 								processorArchitecture,
@@ -264,9 +264,9 @@ public class AnalyzedDom0Configuration {
 					if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 						if(
 							!resultHandler.handleResult(
-								new ObjectResult<Integer>(
+								new ObjectResult<>(
 									domU.getHostname(),
-									minSpeed==-1 ? null : Integer.valueOf(minSpeed),
+									minSpeed==-1 ? null : minSpeed,
 									processorSpeed,
 									deviation,
 									alertLevel
@@ -306,9 +306,9 @@ public class AnalyzedDom0Configuration {
 					if(alertLevel.compareTo(minimumAlertLevel)>=0) {
 						if(
 							!resultHandler.handleResult(
-								new ObjectResult<Integer>(
+								new ObjectResult<>(
 									domU.getHostname(),
-									minCores==-1 ? null : Integer.valueOf(minCores),
+									minCores==-1 ? null : minCores,
 									processorCores,
 									(double)(minCores-processorCores)/(double)minCores,
 									alertLevel
@@ -458,7 +458,7 @@ public class AnalyzedDom0Configuration {
 				array[index++] = new AnalyzedDom0DiskConfiguration(clusterConfiguration, dom0Disk);
 			}
 			assert index==size : "index!=size: "+index+"!="+size;
-			return new UnmodifiableArrayList<AnalyzedDom0DiskConfiguration>(array);
+			return new UnmodifiableArrayList<>(array);
 		}
 	}
 

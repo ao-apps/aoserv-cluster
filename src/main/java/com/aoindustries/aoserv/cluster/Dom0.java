@@ -29,7 +29,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 	final boolean supportsHvm;
 	final Map<String,Dom0Disk> unmodifiableDom0Disks;
 
-	private static final boolean hasNull(Collection C) {
+	private static boolean hasNull(Collection<?> C) {
 		for(Object O : C) if(O==null) return true;
 		return false;
 	}

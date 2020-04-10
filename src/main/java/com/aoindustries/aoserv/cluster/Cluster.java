@@ -38,7 +38,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	private static <K,V> Map<K,V> addToUnmodifiableMap(Map<K,V> existingMap, K newKey, V newValue) {
 		if(existingMap.isEmpty()) return Collections.singletonMap(newKey, newValue);
 		if(existingMap.containsKey(newKey)) throw new AssertionError("Map already contains key: "+newKey);
-		Map<K,V> newMap = new HashMap<K,V>(existingMap);
+		Map<K,V> newMap = new HashMap<>(existingMap);
 		newMap.put(newKey, newValue);
 		return Collections.unmodifiableMap(newMap);
 	}
@@ -51,7 +51,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	private static <K,V> Map<K,V> replaceInUnmodifiableMap(Map<K,V> existingMap, K key, V newValue) {
 		if(!existingMap.containsKey(key)) throw new AssertionError("Map doesn't contain key: "+key);
 		if(existingMap.size()==1) return Collections.singletonMap(key, newValue);
-		Map<K,V> newMap = new HashMap<K,V>(existingMap);
+		Map<K,V> newMap = new HashMap<>(existingMap);
 		newMap.put(key, newValue);
 		return Collections.unmodifiableMap(newMap);
 	}

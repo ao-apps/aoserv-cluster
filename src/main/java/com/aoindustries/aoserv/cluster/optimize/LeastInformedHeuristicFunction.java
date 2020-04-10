@@ -15,6 +15,7 @@ import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
  */
 public class LeastInformedHeuristicFunction implements HeuristicFunction {
 
+	@Override
 	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
 		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 

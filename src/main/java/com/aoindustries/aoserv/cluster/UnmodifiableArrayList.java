@@ -27,6 +27,7 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
 		a = array;
 	}
 
+	@Override
 	public int size() {
 		return a.length;
 	}
@@ -50,6 +51,7 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
 		return a;
 	}
 
+	@Override
 	public E get(int index) {
 		return a[index];
 	}

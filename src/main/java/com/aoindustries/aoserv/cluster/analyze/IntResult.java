@@ -24,6 +24,7 @@ public class IntResult extends Result<Integer> {
 	/**
 	 * Gets the current value for the resource.
 	 */
+	@Override
 	public Integer getValue() {
 		return value;
 	}
@@ -31,6 +32,7 @@ public class IntResult extends Result<Integer> {
 	/**
 	 * Gets the maximum value for the resource.
 	 */
+	@Override
 	public Integer getMaxValue() {
 		return maxValue;
 	}

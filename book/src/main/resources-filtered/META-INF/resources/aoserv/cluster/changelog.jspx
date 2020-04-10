@@ -55,6 +55,7 @@ along with aoserv-cluster.  If not, see <http://www.gnu.org/licenses />.
 				<ul>
 					<li>Project moved to GitHub and Maven.</li>
 					<li>Converted to tab indentation.</li>
+					<li>Updated to Java 8 coding standards.</li>
 				</ul>
 			</changelog:release>
 		</c:if>

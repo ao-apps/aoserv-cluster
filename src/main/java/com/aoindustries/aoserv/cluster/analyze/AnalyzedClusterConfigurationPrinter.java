@@ -74,7 +74,7 @@ public class AnalyzedClusterConfigurationPrinter {
 		lineWidth += 3;
 		if(alertLevel!=null) {
 			out.print(alertLevel);
-			lineWidth += alertLevel.toString().length();
+			lineWidth += alertLevel.length();
 		}
 		while(lineWidth<95) {
 			out.print(' ');
@@ -83,7 +83,7 @@ public class AnalyzedClusterConfigurationPrinter {
 		out.println('|');
 	}
 
-	private static void println(int indent, Result result, PrintWriter out) {
+	private static void println(int indent, Result<?> result, PrintWriter out) {
 		println(indent, result.getLabel(), result.getValue(), result.getMaxValue(), result.getAlertLevel().toString(), out);
 	}
 
@@ -97,6 +97,7 @@ public class AnalyzedClusterConfigurationPrinter {
 			this.out = out;
 		}
 
+		@Override
 		public boolean handleResult(Result<?> result) {
 			println(indent, result, out);
 			return true;
@@ -105,7 +106,7 @@ public class AnalyzedClusterConfigurationPrinter {
 
 	static class SortedResultPrinter implements ResultHandler<Object> {
 
-		private final List<Result<?>> results = new ArrayList<Result<?>>();
+		private final List<Result<?>> results = new ArrayList<>();
 		private final int indent;
 		private final PrintWriter out;
 
@@ -114,6 +115,7 @@ public class AnalyzedClusterConfigurationPrinter {
 			this.out = out;
 		}
 
+		@Override
 		public boolean handleResult(Result<?> result) {
 			results.add(result);
 			return true;
@@ -121,7 +123,7 @@ public class AnalyzedClusterConfigurationPrinter {
 
 		void sortAndPrint() {
 			Collections.sort(results);
-			for(Result result : results) println(indent, result, out);
+			for(Result<?> result : results) println(indent, result, out);
 			results.clear();
 		}
 	}
@@ -178,7 +180,7 @@ public class AnalyzedClusterConfigurationPrinter {
 
 				// Dom0Disks
 				println(2, "Disks", null, null, null, out);
-				List<AnalyzedDom0DiskConfiguration> dom0Disks = new ArrayList<AnalyzedDom0DiskConfiguration>(dom0.getDom0Disks());
+				List<AnalyzedDom0DiskConfiguration> dom0Disks = new ArrayList<>(dom0.getDom0Disks());
 				Collections.sort(dom0Disks);
 				for(AnalyzedDom0DiskConfiguration dom0Disk : dom0Disks) {
 					assert dom0Disk!=null : "AnalyzedClusterConfigurationPrinter.print: dom0Disk is null";

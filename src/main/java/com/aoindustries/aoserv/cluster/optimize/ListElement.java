@@ -45,6 +45,7 @@ public class ListElement implements Comparable<ListElement> {
 	/**
 	 * Sorted by heuristic value, lowest to highest.
 	 */
+	@Override
 	public int compareTo(ListElement other) {
 		double h1 = heuristic;
 		double h2 = other.heuristic;

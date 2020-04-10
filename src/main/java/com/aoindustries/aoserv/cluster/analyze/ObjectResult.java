@@ -24,6 +24,7 @@ public class ObjectResult<T> extends Result<T> {
 	/**
 	 * Gets the current value for the resource or <code>null</code> if unavailable.
 	 */
+	@Override
 	public T getValue() {
 		return value;
 	}
@@ -31,6 +32,7 @@ public class ObjectResult<T> extends Result<T> {
 	/**
 	 * Gets the maximum value for the resource or <code>null</code> if unavailable.
 	 */
+	@Override
 	public T getMaxValue() {
 		return maxValue;
 	}

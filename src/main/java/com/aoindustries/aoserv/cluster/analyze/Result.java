@@ -10,7 +10,7 @@ package com.aoindustries.aoserv.cluster.analyze;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class Result<T> implements Comparable<Result> {
+abstract public class Result<T> implements Comparable<Result<?>> {
 
 	final private String label;
 	final private double deviation;
@@ -54,7 +54,8 @@ abstract public class Result<T> implements Comparable<Result> {
 	/**
 	 * Sorted by label.
 	 */
-	final public int compareTo(Result other) {
+	@Override
+	final public int compareTo(Result<?> other) {
 		return label.compareTo(other.label);
 	}
 

@@ -101,15 +101,15 @@ public class ClusterOptimizer {
 	public ListElement getOptimizedClusterConfiguration(OptimizedClusterConfigurationHandler handler) {
 
 		// Reused inside loop below
-		List<ClusterConfiguration> children = new ArrayList<ClusterConfiguration>();
-		List<Transition> childTransitions = new ArrayList<Transition>();
+		List<ClusterConfiguration> children = new ArrayList<>();
+		List<Transition> childTransitions = new ArrayList<>();
 
 		// Return value is stored here upon success or remains null on failure
 		ListElement shortestPath = null;
 
 		// Initialize the open list
-		PriorityQueue<ListElement> openQueue = new PriorityQueue<ListElement>();
-		Map<ClusterConfiguration,ListElement> openMap = new HashMap<ClusterConfiguration,ListElement>();
+		PriorityQueue<ListElement> openQueue = new PriorityQueue<>();
+		Map<ClusterConfiguration,ListElement> openMap = new HashMap<>();
 		{
 			ListElement openListElement = new ListElement(
 				null,
@@ -122,7 +122,7 @@ public class ClusterOptimizer {
 		}
 
 		// Initialize the closed list
-		Map<ClusterConfiguration,ListElement> closedMap = new HashMap<ClusterConfiguration,ListElement>();
+		Map<ClusterConfiguration,ListElement> closedMap = new HashMap<>();
 
 		long loopCounter = 0;
 		long existingOpenCount = 0;
