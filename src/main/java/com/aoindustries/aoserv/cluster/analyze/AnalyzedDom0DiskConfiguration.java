@@ -195,7 +195,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 	}
 
 	/**
-	 * @see AnalyzedCluster#getAllResults()
+	 * @see AnalyzedClusterConfiguration#getAllResults(com.aoindustries.aoserv.cluster.analyze.ResultHandler, com.aoindustries.aoserv.cluster.analyze.AlertLevel)
 	 * 
 	 * @return true if more results are wanted, or false to receive no more results.
 	 */

@@ -68,7 +68,7 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
 	 * 
-	 * @see  #equals(DomUDiskConfiguration)
+	 * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
 	 */
 	@Override
 	final public boolean equals(Object O) {

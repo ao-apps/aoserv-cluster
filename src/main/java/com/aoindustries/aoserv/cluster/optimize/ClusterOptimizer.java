@@ -31,19 +31,19 @@ import java.util.Random;
  * </p>
  * <p>
  * The search is performed by exploring two possible moves:
+ * </p>
  * <ol>
  *   <li>Swap DomU between primary and secondary Dom0 (live-migrate if same architecture or shutdown/create if different)</li>
  *   <li>Move the secondary storage to a different Dom0</li>
  * </ol>
- * </p>
  * <p>
  * The following transitions are possible, but can also occur less directly as
  * a result of the previous two transitions.  These are not yet implemented.
+ * </p>
  * <ol>
  *   <li>pvmove primary storage to different physical volumes</li>
  *   <li>pvmove secondary storage to different physical volumes</li>
  * </ol>
- * </p>
  * <p>
  * To reduce the number of non-live-migrate swaps, this search could try to move
  * between same architectures in preference to different architectures.

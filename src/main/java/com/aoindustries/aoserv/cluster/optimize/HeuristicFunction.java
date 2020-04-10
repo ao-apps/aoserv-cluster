@@ -20,7 +20,7 @@ public interface HeuristicFunction {
 	 * If it uses the provided <code>g</code> g(n) it will result in Algorithm A.
 	 * If it also always uses h(n) &lt;= h*(n) it will result in Algorithm A*.
 	 * 
-	 * @param  analysis  The <code>AnalyzedCluster</code> representing the current state.
+	 * @param  clusterConfiguration   The <code>ClusterConfiguration</code> representing the current state.
 	 * @param  g         The number of moves already made.
 	 *
 	 * @return  The estimated number of moves to an optimal state
