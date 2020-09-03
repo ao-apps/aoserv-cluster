@@ -167,6 +167,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 	/**
 	 * Gets an unmodifiable list of all configured DomUs.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public List<DomUConfiguration> getDomUConfigurations() {
 		return unmodifiableDomUConfigurations;
 	}
@@ -377,6 +378,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 	 *
 	 * @return  the new configuration(s)
 	 */
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public Iterable<ClusterConfiguration> moveSecondary(DomU domU, Dom0 newSecondaryDom0) {
 		// Find existing configuration
 		DomUConfiguration domUConfiguration = null;
@@ -460,7 +462,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 			}
 		}
 		// Sort by partition number
-		for(List<PhysicalVolume> sortMe : unallocatedDom0Disks.values()) Collections.sort(sortMe);
+		for(List<PhysicalVolume> sortMe : unallocatedDom0Disks.values()) {
+			Collections.sort(sortMe);
+		}
 
 		int size = unallocatedDom0Disks.size();
 		if(size==0) {

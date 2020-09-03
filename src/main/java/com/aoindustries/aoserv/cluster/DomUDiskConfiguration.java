@@ -24,6 +24,8 @@ package com.aoindustries.aoserv.cluster;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * One Xen domU disk configuration.
@@ -33,6 +35,8 @@ import java.util.List;
 public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>, Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger(DomUDiskConfiguration.class.getName());
 
 	final DomUDisk domUDisk;
 	final List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations;
@@ -70,7 +74,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
 			for(int d=c; d<size; d++) {
 				PhysicalVolumeConfiguration pv2 = physicalVolumeConfigurations.get(d);
 				if(pv1.overlaps(pv2)) {
-					System.out.println(pv1+" overlaps "+pv2);
+					if(logger.isLoggable(Level.FINER)) logger.finer(pv1 + " overlaps " + pv2);
 					return true;
 				}
 			}
@@ -132,6 +136,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
 	/**
 	 * Gets the unmodifiable sorted list of physical volumes that back this device.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public List<PhysicalVolumeConfiguration> getPrimaryPhysicalVolumeConfigurations() {
 		return primaryPhysicalVolumeConfigurations;
 	}
@@ -139,6 +144,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
 	/**
 	 * Gets the unmodifiable sorted list of physical volumes that back this device.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public List<PhysicalVolumeConfiguration> getSecondaryPhysicalVolumeConfigurations() {
 		return secondaryPhysicalVolumeConfigurations;
 	}

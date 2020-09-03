@@ -140,7 +140,9 @@ public class AnalyzedClusterConfigurationPrinter {
 
 		void sortAndPrint() {
 			Collections.sort(results);
-			for(Result<?> result : results) println(indent, result, out);
+			for(Result<?> result : results) {
+				println(indent, result, out);
+			}
 			results.clear();
 		}
 	}

@@ -89,6 +89,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
 	/**
 	 * Gets the unmodifiable list of disk configurations currently set on this domu.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public List<DomUDiskConfiguration> getDomUDiskConfigurations() {
 		return unmodifiableDomUDiskConfigurations;
 	}

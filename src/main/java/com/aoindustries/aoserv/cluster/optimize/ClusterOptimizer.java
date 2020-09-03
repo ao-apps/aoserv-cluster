@@ -115,6 +115,7 @@ public class ClusterOptimizer {
 	 * 
 	 * @param  handler  if null, returns the first path found, not necessarily the shortest
 	 */
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public ListElement getOptimizedClusterConfiguration(OptimizedClusterConfigurationHandler handler) {
 
 		// Reused inside loop below

@@ -145,6 +145,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	/**
 	 * Gets an unmodifiable set of Dom0s.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public Map<String,Dom0> getDom0s() {
 		return unmodifiableDom0s;
 	}
@@ -194,6 +195,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	/**
 	 * Gets an unmodifiable set of DomUs.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public Map<String,DomU> getDomUs() {
 		return unmodifiableDomUs;
 	}

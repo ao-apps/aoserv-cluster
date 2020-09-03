@@ -47,7 +47,9 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 	final Map<String,Dom0Disk> unmodifiableDom0Disks;
 
 	private static boolean hasNull(Collection<?> C) {
-		for(Object O : C) if(O==null) return true;
+		for(Object O : C) {
+			if(O == null) return true;
+		}
 		return false;
 	}
 
@@ -135,6 +137,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 	/**
 	 * Gets the unmodifiable list of disks.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public Map<String,Dom0Disk> getDom0Disks() {
 		return unmodifiableDom0Disks;
 	}

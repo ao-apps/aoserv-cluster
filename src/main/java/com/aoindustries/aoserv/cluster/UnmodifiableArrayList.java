@@ -77,13 +77,13 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
 	public int indexOf(Object o) {
 		int len = a.length;
 		if (o==null) {
-			for (int i=0; i<len; i++)
-				if (a[i]==null)
-					return i;
+			for (int i=0; i<len; i++) {
+				if (a[i]==null) return i;
+			}
 		} else {
-			for (int i=0; i<len; i++)
-				if (o.equals(a[i]))
-					return i;
+			for (int i=0; i<len; i++) {
+				if (o.equals(a[i])) return i;
+			}
 		}
 		return -1;
 	}

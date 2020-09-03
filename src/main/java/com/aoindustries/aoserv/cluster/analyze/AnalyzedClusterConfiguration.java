@@ -87,6 +87,7 @@ public class AnalyzedClusterConfiguration {
 	/**
 	 * Gets the unmodifiable list of analyzed Dom0 configuration results.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public List<AnalyzedDom0Configuration> getAnalyzedDom0Configurations() {
 		return analyzedDom0Configurations;
 	}

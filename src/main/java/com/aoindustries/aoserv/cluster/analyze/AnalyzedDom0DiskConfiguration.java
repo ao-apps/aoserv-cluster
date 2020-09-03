@@ -219,7 +219,6 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
 	 */
 	public boolean getAllResults(ResultHandler<Object> resultHandler, AlertLevel minimumAlertLevel) {
 		if(!getAllocatedWeightResult(resultHandler, minimumAlertLevel)) return false;
-		if(!getDiskSpeedResults(resultHandler, minimumAlertLevel)) return false;
-		return true;
+		return getDiskSpeedResults(resultHandler, minimumAlertLevel);
 	}
 }

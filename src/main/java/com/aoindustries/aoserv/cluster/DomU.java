@@ -163,6 +163,7 @@ public class DomU implements Comparable<DomU>, Serializable {
 	/**
 	 * Gets the unmodifiable set of virtual disks.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public Map<String,DomUDisk> getDomUDisks() {
 		return unmodifiableDomUDisks;
 	}

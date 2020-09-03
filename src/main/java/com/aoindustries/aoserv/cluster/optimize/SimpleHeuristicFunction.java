@@ -37,7 +37,7 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-	int count;
+	private int count;
 
 	@Override
 	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {

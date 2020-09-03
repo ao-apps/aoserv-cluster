@@ -82,6 +82,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
 	/**
 	 * Gets the unmodifable set of physical volumes for this disk.
 	 */
+	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
 	public Map<Short,PhysicalVolume> getPhysicalVolumes() {
 		return unmodifiablePhysicalVolumes;
 	}
