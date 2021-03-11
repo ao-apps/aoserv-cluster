@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -93,7 +93,7 @@ public class AnalyzedDom0Configuration {
 	public boolean getSecondaryRamResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
 		if(minimumAlertLevel.compareTo(AlertLevel.HIGH)<=0) {
 			int allocatedPrimaryRam = 0;
-			Map<String,Integer> allocatedSecondaryRams = new HashMap<>();
+			Map<String, Integer> allocatedSecondaryRams = new HashMap<>();
 			for(DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
 				if(domUConfiguration.getPrimaryDom0()==dom0) {
 					allocatedPrimaryRam+=domUConfiguration.getDomU().getPrimaryRam();
@@ -112,7 +112,7 @@ public class AnalyzedDom0Configuration {
 			int totalRam = dom0.getRam();
 			int freePrimaryRam = totalRam - allocatedPrimaryRam;
 
-			for(Map.Entry<String,Integer> entry : allocatedSecondaryRams.entrySet()) {
+			for(Map.Entry<String, Integer> entry : allocatedSecondaryRams.entrySet()) {
 				String failedHostname = entry.getKey();
 				int allocatedSecondary = entry.getValue();
 				AlertLevel alertLevel = allocatedSecondary>freePrimaryRam ? AlertLevel.HIGH : AlertLevel.NONE;
@@ -458,10 +458,10 @@ public class AnalyzedDom0Configuration {
 	}
 
 	/**
-	 * Gets the unsorted, unmodifable list of results for each disk.
+	 * Gets the unsorted, unmodifiable list of results for each disk.
 	 */
 	public List<AnalyzedDom0DiskConfiguration> getDom0Disks() {
-		Map<String,Dom0Disk> clusterDom0Disks = dom0.getDom0Disks();
+		Map<String, Dom0Disk> clusterDom0Disks = dom0.getDom0Disks();
 		int size = clusterDom0Disks.size();
 		if(size==0) return Collections.emptyList();
 		else if(size==1) {

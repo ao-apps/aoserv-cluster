@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -44,7 +44,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 	final int processorSpeed;
 	final int processorCores;
 	final boolean supportsHvm;
-	final Map<String,Dom0Disk> unmodifiableDom0Disks;
+	final Map<String, Dom0Disk> unmodifiableDom0Disks;
 
 	private static boolean hasNull(Collection<?> C) {
 		for(Object O : C) {
@@ -68,7 +68,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 		int processorSpeed,
 		int processorCores,
 		boolean supportsHvm,
-		Map<String,Dom0Disk> unmodifiableDom0Disks
+		Map<String, Dom0Disk> unmodifiableDom0Disks
 	) {
 		assert clusterName!=null : "clusterName is null";
 		assert hostname!=null : "hostname is null";
@@ -138,7 +138,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 	 * Gets the unmodifiable list of disks.
 	 */
 	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
-	public Map<String,Dom0Disk> getDom0Disks() {
+	public Map<String, Dom0Disk> getDom0Disks() {
 		return unmodifiableDom0Disks;
 	}
 

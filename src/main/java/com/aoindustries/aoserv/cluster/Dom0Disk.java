@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -39,7 +39,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
 	final String dom0Hostname;
 	final String device;
 	final int diskSpeed;
-	final Map<Short,PhysicalVolume> unmodifiablePhysicalVolumes;
+	final Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes;
 
 	/**
 	 * unmodifiablePhysicalVolumes MUST BE UNMODIFIABLE
@@ -51,7 +51,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
 		String dom0Hostname,
 		String device,
 		int diskSpeed,
-		Map<Short,PhysicalVolume> unmodifiablePhysicalVolumes
+		Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes
 	) {
 		this.clusterName = clusterName;
 		this.dom0Hostname = dom0Hostname;
@@ -80,10 +80,10 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
 	}
 
 	/**
-	 * Gets the unmodifable set of physical volumes for this disk.
+	 * Gets the unmodifiable set of physical volumes for this disk.
 	 */
 	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
-	public Map<Short,PhysicalVolume> getPhysicalVolumes() {
+	public Map<Short, PhysicalVolume> getPhysicalVolumes() {
 		return unmodifiablePhysicalVolumes;
 	}
 

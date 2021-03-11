@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -56,7 +56,7 @@ public class AnalyzedClusterConfiguration {
 		this.clusterConfiguration = clusterConfiguration;
 		// Analyze each Dom0
 		Cluster cluster = clusterConfiguration.getCluster();
-		Map<String,Dom0> clusterDom0s = cluster.getDom0s();
+		Map<String, Dom0> clusterDom0s = cluster.getDom0s();
 		int size = clusterDom0s.size();
 		if(size==0) analyzedDom0Configurations = Collections.emptyList();
 		else if(size==1) {

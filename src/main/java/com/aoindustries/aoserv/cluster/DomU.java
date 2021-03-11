@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -44,7 +44,7 @@ public class DomU implements Comparable<DomU>, Serializable {
 	final short processorCores;
 	final short processorWeight;
 	final boolean requiresHvm;
-	final Map<String,DomUDisk> unmodifiableDomUDisks;
+	final Map<String, DomUDisk> unmodifiableDomUDisks;
 	final boolean primaryDom0Locked;
 	final boolean secondaryDom0Locked;
 
@@ -66,7 +66,7 @@ public class DomU implements Comparable<DomU>, Serializable {
 		boolean requiresHvm,
 		boolean primaryDom0Locked,
 		boolean secondaryDom0Locked,
-		Map<String,DomUDisk> unmodifiableDomUDisks
+		Map<String, DomUDisk> unmodifiableDomUDisks
 	) {
 		if(primaryRam<1) throw new IllegalArgumentException(this+": primaryRam should be >=1: "+primaryRam);
 		if(secondaryRam!=-1 && secondaryRam<1) throw new IllegalArgumentException(this+": secondaryRam should be -1 or >=1: "+secondaryRam);
@@ -164,7 +164,7 @@ public class DomU implements Comparable<DomU>, Serializable {
 	 * Gets the unmodifiable set of virtual disks.
 	 */
 	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
-	public Map<String,DomUDisk> getDomUDisks() {
+	public Map<String, DomUDisk> getDomUDisks() {
 		return unmodifiableDomUDisks;
 	}
 

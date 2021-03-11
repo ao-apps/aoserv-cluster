@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -127,7 +127,7 @@ public class ClusterOptimizer {
 
 		// Initialize the open list
 		PriorityQueue<ListElement> openQueue = new PriorityQueue<>();
-		Map<ClusterConfiguration,ListElement> openMap = new HashMap<>();
+		Map<ClusterConfiguration, ListElement> openMap = new HashMap<>();
 		{
 			ListElement openListElement = new ListElement(
 				null,
@@ -140,7 +140,7 @@ public class ClusterOptimizer {
 		}
 
 		// Initialize the closed list
-		Map<ClusterConfiguration,ListElement> closedMap = new HashMap<>();
+		Map<ClusterConfiguration, ListElement> closedMap = new HashMap<>();
 
 		long loopCounter = 0;
 		long existingOpenCount = 0;
@@ -189,9 +189,9 @@ public class ClusterOptimizer {
 				//);
 				// openQueue and openMap
 				int shortestPathLen = shortestPath.pathLen;
-				Iterator<Map.Entry<ClusterConfiguration,ListElement>> openIter = openMap.entrySet().iterator();
+				Iterator<Map.Entry<ClusterConfiguration, ListElement>> openIter = openMap.entrySet().iterator();
 				while(openIter.hasNext()) {
-					Map.Entry<ClusterConfiguration,ListElement> entry = openIter.next();
+					Map.Entry<ClusterConfiguration, ListElement> entry = openIter.next();
 					ListElement listElement = entry.getValue();
 					int lePathLen = listElement.pathLen;
 					if(lePathLen>=shortestPathLen) {
@@ -200,9 +200,9 @@ public class ClusterOptimizer {
 					}
 				}
 				// closedMap
-				Iterator<Map.Entry<ClusterConfiguration,ListElement>> closedIter = closedMap.entrySet().iterator();
+				Iterator<Map.Entry<ClusterConfiguration, ListElement>> closedIter = closedMap.entrySet().iterator();
 				while(closedIter.hasNext()) {
-					Map.Entry<ClusterConfiguration,ListElement> entry = closedIter.next();
+					Map.Entry<ClusterConfiguration, ListElement> entry = closedIter.next();
 					if(entry.getValue().pathLen>=shortestPathLen) closedIter.remove();
 				}
 				//System.out.println(
@@ -323,7 +323,7 @@ public class ClusterOptimizer {
 					}
 				}
 
-				for(Map.Entry<String,Dom0> entry : clusterConfiguration.getCluster().getDom0s().entrySet()) {
+				for(Map.Entry<String, Dom0> entry : clusterConfiguration.getCluster().getDom0s().entrySet()) {
 					String dom0Hostname = entry.getKey();
 					Dom0 dom0 = entry.getValue();
 					// Can't move to current primary or secondary

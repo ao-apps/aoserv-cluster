@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -392,8 +392,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		}
 		assert domUConfiguration!=null : this+": DomUConfiguration not found: "+domU;
 
-		Map<String,DomUDisk> domUDisks = domU.getDomUDisks();
-		Iterator<Map.Entry<String,DomUDisk>> domUDisksIter = domUDisks.entrySet().iterator();
+		Map<String, DomUDisk> domUDisks = domU.getDomUDisks();
+		Iterator<Map.Entry<String, DomUDisk>> domUDisksIter = domUDisks.entrySet().iterator();
 		if(!domUDisksIter.hasNext()) {
 			// Short-cut if domU has no disks
 			List<DomUDiskConfiguration> newDomUDiskConfigurations = Collections.emptyList();
@@ -425,7 +425,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 		}
 
 		// Find all unallocated physical volumes
-		SortedMap<Dom0Disk,List<PhysicalVolume>> unallocatedDom0Disks = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
+		SortedMap<Dom0Disk, List<PhysicalVolume>> unallocatedDom0Disks = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
 		for(Dom0Disk dom0Disk : newSecondaryDom0.unmodifiableDom0Disks.values()) {
 			for(PhysicalVolume physicalVolume : dom0Disk.unmodifiablePhysicalVolumes.values()) {
 				// Find if allocated
@@ -454,7 +454,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 					}
 				}
 				if(!allocated) {
-					//SortedMap<Dom0Disk,SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<Dom0Disk,SortedSet<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
+					//SortedMap<Dom0Disk, SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<Dom0Disk, SortedSet<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
 					List<PhysicalVolume> unallocatedPhysicalVolumes = unallocatedDom0Disks.get(dom0Disk);
 					if(unallocatedPhysicalVolumes==null) unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<>());
 					unallocatedPhysicalVolumes.add(physicalVolume);

@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -41,21 +41,21 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	private static final long serialVersionUID = 2L;
 
 	// These are here just for generic-type-specific versions
-	private static final Map<String,Dom0> emptyDom0Map = Collections.emptyMap();
-	private static final Map<String,Dom0Disk> emptyDom0DiskMap = Collections.emptyMap();
-	private static final Map<Short,PhysicalVolume> emptyPhysicalVolumeMap = Collections.emptyMap();
-	private static final Map<String,DomU> emptyDomUMap = Collections.emptyMap();
-	private static final Map<String,DomUDisk> emptyDomUDiskMap = Collections.emptyMap();
+	private static final Map<String, Dom0> emptyDom0Map = Collections.emptyMap();
+	private static final Map<String, Dom0Disk> emptyDom0DiskMap = Collections.emptyMap();
+	private static final Map<Short, PhysicalVolume> emptyPhysicalVolumeMap = Collections.emptyMap();
+	private static final Map<String, DomU> emptyDomUMap = Collections.emptyMap();
+	private static final Map<String, DomUDisk> emptyDomUDiskMap = Collections.emptyMap();
 
 	/**
 	 * Gets an unmodifiable map that combines the existing map with the new object
 	 * If the existing map is empty, will use Collections.singletonMap, otherwise
 	 * creates a new HashMap and returns it wrapped by Collections.unmodifiableMap.
 	 */
-	private static <K,V> Map<K,V> addToUnmodifiableMap(Map<K,V> existingMap, K newKey, V newValue) {
+	private static <K, V> Map<K, V> addToUnmodifiableMap(Map<K, V> existingMap, K newKey, V newValue) {
 		if(existingMap.isEmpty()) return Collections.singletonMap(newKey, newValue);
 		if(existingMap.containsKey(newKey)) throw new AssertionError("Map already contains key: "+newKey);
-		Map<K,V> newMap = new HashMap<>(existingMap);
+		Map<K, V> newMap = new HashMap<>(existingMap);
 		newMap.put(newKey, newValue);
 		return Collections.unmodifiableMap(newMap);
 	}
@@ -65,19 +65,19 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	 * entry, will use Collections.singletonMap, otherwise creates a new HashMap and
 	 * returns it wrapped by Collections.unmodifiableMap.
 	 */
-	private static <K,V> Map<K,V> replaceInUnmodifiableMap(Map<K,V> existingMap, K key, V newValue) {
+	private static <K, V> Map<K, V> replaceInUnmodifiableMap(Map<K, V> existingMap, K key, V newValue) {
 		if(!existingMap.containsKey(key)) throw new AssertionError("Map doesn't contain key: "+key);
 		if(existingMap.size()==1) return Collections.singletonMap(key, newValue);
-		Map<K,V> newMap = new HashMap<>(existingMap);
+		Map<K, V> newMap = new HashMap<>(existingMap);
 		newMap.put(key, newValue);
 		return Collections.unmodifiableMap(newMap);
 	}
 
 	final String name;
 	//final SortedSet<Rack> unmodifiableRacks = Collections.unmodifiableSortedSet(racks);
-	final Map<String,Dom0> unmodifiableDom0s;
-	final Map<String,DomU> unmodifiableDomUs;
-	//final Map<String,SortedSet<DomU>> unmodifiableDomUGroups = Collections.unmodifiableMap(domUGroups);
+	final Map<String, Dom0> unmodifiableDom0s;
+	final Map<String, DomU> unmodifiableDomUs;
+	//final Map<String, SortedSet<DomU>> unmodifiableDomUGroups = Collections.unmodifiableMap(domUGroups);
 
 	/**
 	 * Creates a new, empty cluster.
@@ -94,7 +94,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	 * Creates a cluster with the provided details.  No defensive copy of the provided objects
 	 * is created, and they MUST BE UNMODIFIABLE!
 	 */
-	private Cluster(String name, Map<String,Dom0> unmodifiableDom0s, Map<String,DomU> unmodifiableDomUs) {
+	private Cluster(String name, Map<String, Dom0> unmodifiableDom0s, Map<String, DomU> unmodifiableDomUs) {
 		this.name = name;
 		this.unmodifiableDom0s = unmodifiableDom0s;
 		this.unmodifiableDomUs = unmodifiableDomUs;
@@ -146,7 +146,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	 * Gets an unmodifiable set of Dom0s.
 	 */
 	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
-	public Map<String,Dom0> getDom0s() {
+	public Map<String, Dom0> getDom0s() {
 		return unmodifiableDom0s;
 	}
 
@@ -196,7 +196,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	 * Gets an unmodifiable set of DomUs.
 	 */
 	@SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
-	public Map<String,DomU> getDomUs() {
+	public Map<String, DomU> getDomUs() {
 		return unmodifiableDomUs;
 	}
 
@@ -401,7 +401,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 	/**
 	 * Gets an unmodifiable view of the DomU groups.
 	 */
-	/*public Map<String,SortedSet<DomU>> unmodifiableDomUGroups() {
+	/*public Map<String, SortedSet<DomU>> unmodifiableDomUGroups() {
 		return unmodifiableDomUGroups;
 	}*/
 }
