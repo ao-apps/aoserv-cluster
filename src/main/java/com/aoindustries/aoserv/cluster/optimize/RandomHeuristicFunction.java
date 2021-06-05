@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -22,8 +22,8 @@
  */
 package com.aoindustries.aoserv.cluster.optimize;
 
+import com.aoapps.lang.io.IoUtils;
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
-import com.aoindustries.io.IoUtils;
 import java.security.SecureRandom;
 import java.util.Random;
 

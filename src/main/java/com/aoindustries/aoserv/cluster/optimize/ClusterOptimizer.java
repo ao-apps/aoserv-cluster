@@ -22,12 +22,12 @@
  */
 package com.aoindustries.aoserv.cluster.optimize;
 
+import com.aoapps.lang.io.IoUtils;
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
 import com.aoindustries.aoserv.cluster.Dom0;
 import com.aoindustries.aoserv.cluster.DomU;
 import com.aoindustries.aoserv.cluster.DomUConfiguration;
 import com.aoindustries.aoserv.cluster.analyze.AnalyzedClusterConfiguration;
-import com.aoindustries.io.IoUtils;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
