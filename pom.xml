@@ -33,6 +33,7 @@ along with aoserv-cluster.  If not, see <http://www.gnu.org/licenses />.
 	<packaging>bundle</packaging>
 
 	<properties>
+		<module.name>com.aoindustries.aoserv.cluster</module.name>
 		<javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://aoindustries.com/aoserv/">AOServ</a>
 / <a target="${javadoc.target}" href="${project.url}">Cluster</a>]]></javadoc.breadcrumbs>
 		<description.html><![CDATA[Cluster optimizer for the <a target="${javadoc.target}" href="https://aoindustries.com/aoserv/">AOServ Platform</a>.]]></description.html>
