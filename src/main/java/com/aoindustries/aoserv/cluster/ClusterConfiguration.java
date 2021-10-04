@@ -135,7 +135,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 
 	final Cluster cluster;
 	final List<DomUConfiguration> unmodifiableDomUConfigurations;
-	transient private int hashCode;
+	private transient int hashCode;
 
 	public ClusterConfiguration(Cluster cluster) {
 		this(cluster, emptyDomUConfigurationList);

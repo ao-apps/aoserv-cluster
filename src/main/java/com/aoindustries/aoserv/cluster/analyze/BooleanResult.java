@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,8 +29,8 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class BooleanResult extends Result<Boolean> {
 
-	final private boolean value;
-	final private boolean maxValue;
+	private final boolean value;
+	private final boolean maxValue;
 
 	BooleanResult(String label, boolean value, boolean maxValue, double deviation, AlertLevel alertLevel) {
 		super(label, deviation, alertLevel);

@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,11 +27,11 @@ package com.aoindustries.aoserv.cluster.analyze;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class Result<T> implements Comparable<Result<?>> {
+public abstract class Result<T> implements Comparable<Result<?>> {
 
-	final private String label;
-	final private double deviation;
-	final private AlertLevel alertLevel;
+	private final String label;
+	private final double deviation;
+	private final AlertLevel alertLevel;
 
 	Result(String label, double deviation, AlertLevel alertLevel) {
 		assert !(alertLevel!=AlertLevel.NONE && deviation<=0) : "Any result with an alert level > NONE should have a positive, non-zero deviation";
@@ -41,30 +41,30 @@ abstract public class Result<T> implements Comparable<Result<?>> {
 		this.alertLevel = alertLevel;
 	}
 
-	final public String getLabel() {
+	public final String getLabel() {
 		return label;
 	}
 
 	/**
 	 * Gets the current value for the resource or <code>null</code> if unavailable.
 	 */
-	abstract public T getValue();
+	public abstract T getValue();
 
 	/**
 	 * Gets the maximum value for the resource or <code>null</code> if unavailable.
 	 */
-	abstract public T getMaxValue();
+	public abstract T getMaxValue();
 
 	/**
 	 * Gets the relative amount of devation the value is from the expected/maximum value.
 	 * If the deviation is otherwise unknown or doesn't make sense for the type of resource,
 	 * should be 1.0.
 	 */
-	final public double getDeviation() {
+	public final double getDeviation() {
 		return deviation;
 	}
 
-	final public AlertLevel getAlertLevel() {
+	public final AlertLevel getAlertLevel() {
 		return alertLevel;
 	}
 
@@ -72,12 +72,12 @@ abstract public class Result<T> implements Comparable<Result<?>> {
 	 * Sorted by label.
 	 */
 	@Override
-	final public int compareTo(Result<?> other) {
+	public final int compareTo(Result<?> other) {
 		return label.compareTo(other.label);
 	}
 
 	@Override
-	final public String toString() {
+	public final String toString() {
 		T value = getValue();
 		T maxValue = getMaxValue();
 		return

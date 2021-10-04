@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -30,14 +30,14 @@ import java.io.Serializable;
  *
  * @author  AO Industries, Inc.
  */
-abstract public class PhysicalVolumeConfiguration implements Comparable<PhysicalVolumeConfiguration>, Serializable {
+public abstract class PhysicalVolumeConfiguration implements Comparable<PhysicalVolumeConfiguration>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
 	 * 16-bit and 32-bit representation when possible to save heap.
-	 * 
+	 *
 	 * If heap space is every an issue, can use even more specialized versions like:
 	 *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
 	 *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
@@ -74,30 +74,30 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 	}
 
 	@Override
-	final public String toString() {
+	public final String toString() {
 		return physicalVolume.toString()+"("+getFirstLogicalExtent()+","+getFirstPhysicalExtent()+","+getExtents()+")";
 	}
 
-	final public PhysicalVolume getPhysicalVolume() {
+	public final PhysicalVolume getPhysicalVolume() {
 		return physicalVolume;
 	}
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
 	 */
 	@Override
-	final public boolean equals(Object O) {
+	public final boolean equals(Object O) {
 		return O!=null && (O instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)O);
 	}
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(Object)
 	 */
-	final public boolean equals(PhysicalVolumeConfiguration other) {
+	public final boolean equals(PhysicalVolumeConfiguration other) {
 		if(this==other) return true;
 		if(other==null) return false;
 		return
@@ -109,7 +109,7 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 	}
 
 	@Override
-	final public int hashCode() {
+	public final int hashCode() {
 		return
 			+ 127*physicalVolume.hashCode()
 			+ 31*(int)getFirstLogicalExtent()
@@ -118,11 +118,11 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 		;
 	}
 
-	abstract public long getFirstLogicalExtent();
+	public abstract long getFirstLogicalExtent();
 
-	abstract public long getFirstPhysicalExtent();
+	public abstract long getFirstPhysicalExtent();
 
-	abstract public long getExtents();
+	public abstract long getExtents();
 
 	/**
 	 * Sorted ascending by:
@@ -134,7 +134,7 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 	 * </ol>
 	 */
 	@Override
-	final public int compareTo(PhysicalVolumeConfiguration other) {
+	public final int compareTo(PhysicalVolumeConfiguration other) {
 		// Identity
 		if(this==other) return 0;
 		// physicalVolume
@@ -193,7 +193,7 @@ abstract public class PhysicalVolumeConfiguration implements Comparable<Physical
 	/**
 	 * Returns true if either the logical or the physical extents overlap.
 	 */
-	final public boolean overlaps(PhysicalVolumeConfiguration other) {
+	public final boolean overlaps(PhysicalVolumeConfiguration other) {
 		long myExtents = getExtents();
 		long otherExtents = other.getExtents();
 		return

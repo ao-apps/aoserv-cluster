@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,8 +29,8 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class ObjectResult<T> extends Result<T> {
 
-	final private T value;
-	final private T maxValue;
+	private final T value;
+	private final T maxValue;
 
 	ObjectResult(String label, T value, T maxValue, double deviation, AlertLevel alertLevel) {
 		super(label, deviation, alertLevel);
