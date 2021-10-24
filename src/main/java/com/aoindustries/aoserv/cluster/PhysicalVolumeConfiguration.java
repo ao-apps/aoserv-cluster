@@ -175,9 +175,9 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
 			int start2 = random.nextInt(c);
 			int extents2 = random.nextInt(c)+1;
 			boolean overlaps = overlaps(start1, extents1, start2, extents2);
-			Rectangle R1 = new Rectangle(start1, 0, extents1, 1);
-			Rectangle R2 = new Rectangle(start2, 0, extents2, 1);
-			boolean overlaps2 = R1.intersects(R2);
+			Rectangle r1 = new Rectangle(start1, 0, extents1, 1);
+			Rectangle r2 = new Rectangle(start2, 0, extents2, 1);
+			boolean overlaps2 = r1.intersects(r2);
 			if(overlaps!=overlaps2) {
 				System.out.println("Not equal:");
 				System.out.println("    start1 = "+start1);

@@ -109,10 +109,10 @@ public class ClusterOptimizer {
 	 *
 	 * TODO: Add in transition cost because the best path depends not on the number of steps, but the total time of the steps.
 	 * TODO: This could be a real-world estimate on how many seconds the operation would take.
-	 * 
+	 *
 	 * TODO: If something MUST take a path through a CRITICAL state, try to use path with shortest time in CRITICAL
 	 * TODO: based on time estimates above.
-	 * 
+	 *
 	 * @param  handler  if null, returns the first path found, not necessarily the shortest
 	 */
 	@SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -152,17 +152,17 @@ public class ClusterOptimizer {
 		while(!openQueue.isEmpty()) {
 			loopCounter++;
 			assert openQueue.size()==openMap.size() : "openQueue and openMap have different sizes";
-			ListElement X = openQueue.remove();
-			openMap.remove(X.clusterConfiguration);
-			assert shortestPath==null || X.pathLen<shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
+			ListElement x = openQueue.remove();
+			openMap.remove(x.clusterConfiguration);
+			assert shortestPath == null || x.pathLen < shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
 			long currentTime = System.currentTimeMillis();
 			long timeSince = currentTime - lastDisplayTime;
 			if(timeSince<0 || timeSince>=60000) {
 				System.out.println(
 					"        open:"+openMap.size()
 					+ " closed:"+closedMap.size()
-					+ " transitions:"+X.pathLen
-					+ " heuristic:"+X.heuristic
+					+ " transitions:" + x.pathLen
+					+ " heuristic:" + x.heuristic
 					+ " existingOpen:"+existingOpenCount
 					+ " existingClosed:"+existingClosedCount
 					+ " openQueueRemove:"+openQueueRemoveCount
@@ -171,14 +171,14 @@ public class ClusterOptimizer {
 				lastDisplayTime = currentTime;
 			}
 			// Is this the goal?
-			AnalyzedClusterConfiguration analyzedX = new AnalyzedClusterConfiguration(X.clusterConfiguration);
+			AnalyzedClusterConfiguration analyzedX = new AnalyzedClusterConfiguration(x.clusterConfiguration);
 			if(analyzedX.isOptimal()) {
-				shortestPath = X;
+				shortestPath = x;
 
 				// Give handler a chance to cancel before trimming
 				if(
 					handler==null
-					|| !handler.handleOptimizedClusterConfiguration(X, loopCounter)
+					|| !handler.handleOptimizedClusterConfiguration(x, loopCounter)
 				) break;
 
 				// Trim anything out of open/closed that has transitions.length>=this path
@@ -211,12 +211,12 @@ public class ClusterOptimizer {
 				//    + " closedMap:"+closedMap.size()
 				//);
 			} else {
-				if(!USE_SKIP_SAME_HEURISTIC_HACK || lastHeurisic!=X.heuristic) {
-					if(USE_SKIP_SAME_HEURISTIC_HACK) lastHeurisic = X.heuristic;
+				if(!USE_SKIP_SAME_HEURISTIC_HACK || lastHeurisic != x.heuristic) {
+					if(USE_SKIP_SAME_HEURISTIC_HACK) lastHeurisic = x.heuristic;
 					// generate children of X if depth limit not reached
 					// max depth is determined by any path already found
-					if(shortestPath==null || (X.pathLen+1)<shortestPath.pathLen) { // + 1 to match size of newTransitions below
-						generateChildren(X.clusterConfiguration, children, childTransitions, randomizeChildren);
+					if(shortestPath == null || (x.pathLen + 1) < shortestPath.pathLen) { // + 1 to match size of newTransitions below
+						generateChildren(x.clusterConfiguration, children, childTransitions, randomizeChildren);
 						//System.out.println("        children: "+children.size());
 						boolean xEndsCritical = allowPathThroughCritical ? true : analyzedX.hasCritical();
 						// for each child of X do
@@ -229,7 +229,7 @@ public class ClusterOptimizer {
 								if(existingOpen!=null) {
 									existingOpenCount++;
 									// if the child was reached by a shorter path
-									if((X.pathLen+1)<existingOpen.pathLen) { // + 1 to match size of newTransitions below
+									if((x.pathLen + 1) < existingOpen.pathLen) { // + 1 to match size of newTransitions below
 										// then give the state of open the shorter path
 
 										// removing and adding back to open because a short path affects the heuristic and therefore
@@ -238,10 +238,10 @@ public class ClusterOptimizer {
 										openQueueRemoveCount++;
 
 										ListElement openListElement = new ListElement(
-											X,
+											x,
 											childTransitions.get(i),
 											child,
-											heuristicFunction.getHeuristic(child, X.pathLen+1)
+											heuristicFunction.getHeuristic(child, x.pathLen + 1)
 										);
 										openQueue.add(openListElement);
 										openMap.put(child, openListElement);
@@ -251,15 +251,15 @@ public class ClusterOptimizer {
 									if(existingClosed!=null) {
 										existingClosedCount++;
 										// If the child was reached by a shorter path then
-										if((X.pathLen+1)<existingClosed.pathLen) {
+										if((x.pathLen + 1) < existingClosed.pathLen) {
 											// remove the state from closed
 											closedMap.remove(child);
 											// add the child to open
 											ListElement openListElement = new ListElement(
-												X,
+												x,
 												childTransitions.get(i),
 												child,
-												heuristicFunction.getHeuristic(child, X.pathLen+1)
+												heuristicFunction.getHeuristic(child, x.pathLen + 1)
 											);
 											openQueue.add(openListElement);
 											openMap.put(child, openListElement);
@@ -268,10 +268,10 @@ public class ClusterOptimizer {
 										// the child is not on open or closed
 										// add the child to open
 										ListElement openListElement = new ListElement(
-											X,
+											x,
 											childTransitions.get(i),
 											child,
-											heuristicFunction.getHeuristic(child, X.pathLen+1)
+											heuristicFunction.getHeuristic(child, x.pathLen + 1)
 										);
 										openQueue.add(openListElement);
 										openMap.put(child, openListElement);
@@ -283,7 +283,7 @@ public class ClusterOptimizer {
 				}
 			}
 			// put X on closed
-			closedMap.put(X.clusterConfiguration, X);
+			closedMap.put(x.clusterConfiguration, x);
 		}
 		return shortestPath;
 	}
