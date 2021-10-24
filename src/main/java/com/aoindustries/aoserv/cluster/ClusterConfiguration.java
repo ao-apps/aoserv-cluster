@@ -175,7 +175,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 	/**
 	 * Gets the cluster configuration for the provided DomU.  To conserve
 	 * heap space at the expense of more time, this runs in O(n).
-	 * 
+	 *
 	 * @return  the DomUConfiguration or null if not found
 	 */
 	public DomUConfiguration getDomUConfiguration(DomU domU) {
@@ -348,11 +348,11 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 	/**
 	 * Moves the secondary to another machine if it is possible to map all of the extents for the DomUDisks onto free physical
 	 * volumes in Dom0.
-	 * 
+	 *
 	 * Because there can be many mappings between DomUDisk and PhysicalVolumes, in factorial combinations,
 	 * this method has a large impact on the branch factor for the cluster optimizer.  However, it also
 	 * affects which solutions may be found or transitioned through in the path to a solution.
-	 * 
+	 *
 	 * This implementation is meant to be as simple as possible.  It focuses on reducing the search space
 	 * while possibly missing some valid configurations.  It works as follows:
 	 * <ol>
@@ -366,7 +366,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 	 *     </ol>
 	 *   </li>
 	 * </ol>
-	 * 
+	 *
 	 * In the future, a more advanced configuration could try to reduce the combinations while (hopefully) not losing any possible solution by:
 	 * <ol>
 	 *   <li>Always allocating DomUDisks of the same min speed, extents, and weight in order by device</li>
@@ -664,17 +664,17 @@ DOMU_DISK:
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(ClusterConfiguration)
 	 */
 	@Override
-	public boolean equals(Object O) {
-		return O!=null && (O instanceof ClusterConfiguration) && equals((ClusterConfiguration)O);
+	public boolean equals(Object obj) {
+		return (obj instanceof ClusterConfiguration) && equals((ClusterConfiguration)obj);
 	}
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(Object)
 	 */
 	public boolean equals(ClusterConfiguration other) {

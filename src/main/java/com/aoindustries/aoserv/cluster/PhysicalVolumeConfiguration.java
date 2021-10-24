@@ -88,8 +88,8 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
 	 * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
 	 */
 	@Override
-	public final boolean equals(Object O) {
-		return O!=null && (O instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)O);
+	public final boolean equals(Object obj) {
+		return (obj instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)obj);
 	}
 
 	/**

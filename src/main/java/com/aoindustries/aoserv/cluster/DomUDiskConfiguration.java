@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -151,17 +151,17 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(DomUDiskConfiguration)
 	 */
 	@Override
-	public boolean equals(Object O) {
-		return O!=null && (O instanceof DomUDiskConfiguration) && equals((DomUDiskConfiguration)O);
+	public boolean equals(Object obj) {
+		return (obj instanceof DomUDiskConfiguration) && equals((DomUDiskConfiguration)obj);
 	}
 
 	/**
 	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 * 
+	 *
 	 * @see  #equals(Object)
 	 */
 	public boolean equals(DomUDiskConfiguration other) {
