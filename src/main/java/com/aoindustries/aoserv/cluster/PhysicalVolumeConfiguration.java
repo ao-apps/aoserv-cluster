@@ -159,36 +159,12 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
 		return 0;
 	}
 
-	private static boolean overlaps(long start1, long extents1, long start2, long extents2) {
+	static boolean overlaps(long start1, long extents1, long start2, long extents2) {
 		return
 			(start2+extents2)>start1
 			&& (start1+extents1)>start2
 		;
 	}
-
-	/*
-	public static void main(String[] args) {
-		Random random = new SecureRandom();
-		for(int c=1; c<100000; c++) {
-			int start1 = random.nextInt(c);
-			int extents1 = random.nextInt(c)+1;
-			int start2 = random.nextInt(c);
-			int extents2 = random.nextInt(c)+1;
-			boolean overlaps = overlaps(start1, extents1, start2, extents2);
-			Rectangle r1 = new Rectangle(start1, 0, extents1, 1);
-			Rectangle r2 = new Rectangle(start2, 0, extents2, 1);
-			boolean overlaps2 = r1.intersects(r2);
-			if(overlaps!=overlaps2) {
-				System.out.println("Not equal:");
-				System.out.println("    start1 = "+start1);
-				System.out.println("    extents1 = "+extents1);
-				System.out.println("    start2 = "+start2);
-				System.out.println("    extents2 = "+extents2);
-			}
-		}
-		System.out.println("All OK");
-	}
-	 */
 
 	/**
 	 * Returns true if either the logical or the physical extents overlap.

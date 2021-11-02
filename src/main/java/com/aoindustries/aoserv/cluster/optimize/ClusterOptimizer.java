@@ -288,7 +288,10 @@ public class ClusterOptimizer {
 		return shortestPath;
 	}
 
-	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(8)));
+	/**
+	 * A fast pseudo-random number generator for non-cryptographic purposes.
+	 */
+	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
 	private void generateChildren(ClusterConfiguration clusterConfiguration, List<ClusterConfiguration> children, List<Transition> childTransitions, boolean randomizeChildren) {
 		children.clear();

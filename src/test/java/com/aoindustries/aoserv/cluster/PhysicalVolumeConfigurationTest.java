@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2019, 2020, 2021  AO Industries, Inc.
+ * Copyright (C) 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -20,28 +20,45 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with aoserv-cluster.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.aoindustries.aoserv.cluster.optimize;
+package com.aoindustries.aoserv.cluster;
 
 import com.aoapps.lang.io.IoUtils;
-import com.aoindustries.aoserv.cluster.ClusterConfiguration;
+import java.awt.Rectangle;
 import java.security.SecureRandom;
 import java.util.Random;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 /**
- * This simply returns a random number between 0 and 1.  The results may be different
- * for each call on the same configuration - this may have unexpected consequences.
- *
  * @author  AO Industries, Inc.
  */
-public class RandomHeuristicFunction implements HeuristicFunction {
+@SuppressWarnings("deprecation")
+public class PhysicalVolumeConfigurationTest {
 
 	/**
 	 * A fast pseudo-random number generator for non-cryptographic purposes.
 	 */
 	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		return fastRandom.nextDouble();
+	@Test
+	public void testOverlaps() {
+		for(int c = 1; c < 100000; c++) {
+			int start1 = fastRandom.nextInt(c);
+			int extents1 = fastRandom.nextInt(c)+1;
+			int start2 = fastRandom.nextInt(c);
+			int extents2 = fastRandom.nextInt(c)+1;
+			boolean overlaps = PhysicalVolumeConfiguration.overlaps(start1, extents1, start2, extents2);
+			Rectangle r1 = new Rectangle(start1, 0, extents1, 1);
+			Rectangle r2 = new Rectangle(start2, 0, extents2, 1);
+			boolean overlaps2 = r1.intersects(r2);
+			if(overlaps != overlaps2) {
+				fail(
+					"Not equal: start1 = " + start1
+					+ ", extents1 = " + extents1
+					+ ", start2 = " + start2
+					+ ", extents2 = " + extents2
+				);
+			}
+		}
 	}
 }
