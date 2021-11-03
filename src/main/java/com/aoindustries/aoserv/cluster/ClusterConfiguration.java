@@ -454,7 +454,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 					}
 				}
 				if(!allocated) {
-					//SortedMap<Dom0Disk, SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<Dom0Disk, SortedSet<PhysicalVolume>>(); // Natural sort of Dom0Disk is by speed then device
+					//SortedMap<Dom0Disk, SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
 					List<PhysicalVolume> unallocatedPhysicalVolumes = unallocatedDom0Disks.get(dom0Disk);
 					if(unallocatedPhysicalVolumes==null) unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<>());
 					unallocatedPhysicalVolumes.add(physicalVolume);

@@ -31,7 +31,7 @@ import java.util.Map;
  * A cluster contains all of the definitions for virtual and physical resources
  * required and available, but nothing about the current mapping between them.
  * ClusterConfiguration keeps track of the current mappings.
- * 
+ *
  * A cluster is immutable.  All setters return a new instance of a cluster.
  *
  * @author  AO Industries, Inc.
@@ -395,7 +395,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
 		for(DomU domU : domUGroup) {
 			if(domU.getCluster()!=this) throw new IllegalArgumentException(this+": DomU is not in this cluster: "+domU);
 		}
-		domUGroups.put(name, Collections.unmodifiableSortedSet(new TreeSet<DomU>(domUGroup)));
+		domUGroups.put(name, Collections.unmodifiableSortedSet(new TreeSet<>(domUGroup)));
 	}*/
 
 	/**
