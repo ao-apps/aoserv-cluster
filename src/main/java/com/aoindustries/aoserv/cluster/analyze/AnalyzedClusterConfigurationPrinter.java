@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -33,12 +33,10 @@ import java.util.List;
  *
  * @author  AO Industries, Inc.
  */
-public class AnalyzedClusterConfigurationPrinter {
+public abstract class AnalyzedClusterConfigurationPrinter {
 
-	/**
-	 * Make no instances.
-	 */
-	private AnalyzedClusterConfigurationPrinter() {}
+	/** Make no instances. */
+	private AnalyzedClusterConfigurationPrinter() {throw new AssertionError();}
 
 	private static void println(int indent, String label, Object value, Object maxValue, String alertLevel, PrintWriter out) {
 		out.print("| ");
