@@ -35,44 +35,44 @@ import java.io.Serializable;
  */
 public class PhysicalVolumeConfigurationInt extends PhysicalVolumeConfiguration implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	final int firstLogicalExtent;
-	final int firstPhysicalExtent;
-	final int extents;
+  final int firstLogicalExtent;
+  final int firstPhysicalExtent;
+  final int extents;
 
-	PhysicalVolumeConfigurationInt(
-		PhysicalVolume physicalVolume,
-		int firstLogicalExtent,
-		int firstPhysicalExtent,
-		int extents
-	) {
-		super(physicalVolume);
-		assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-		assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-		assert extents>0 : "extents<=0: "+extents;
-		assert
-			firstLogicalExtent>Short.MAX_VALUE
-			|| firstPhysicalExtent>Short.MAX_VALUE
-			|| extents>Short.MAX_VALUE
-			: "At least one of firstLogicalExtent, firstPhysicalExtent, and extents must be greater than Short.MAX_VALUE";
-		this.firstLogicalExtent = firstLogicalExtent;
-		this.firstPhysicalExtent = firstPhysicalExtent;
-		this.extents = extents;
-	}
+  PhysicalVolumeConfigurationInt(
+    PhysicalVolume physicalVolume,
+    int firstLogicalExtent,
+    int firstPhysicalExtent,
+    int extents
+  ) {
+    super(physicalVolume);
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
+    assert extents>0 : "extents <= 0: "+extents;
+    assert
+      firstLogicalExtent>Short.MAX_VALUE
+      || firstPhysicalExtent>Short.MAX_VALUE
+      || extents>Short.MAX_VALUE
+      : "At least one of firstLogicalExtent, firstPhysicalExtent, and extents must be greater than Short.MAX_VALUE";
+    this.firstLogicalExtent = firstLogicalExtent;
+    this.firstPhysicalExtent = firstPhysicalExtent;
+    this.extents = extents;
+  }
 
-	@Override
-	public long getFirstLogicalExtent() {
-		return firstLogicalExtent;
-	}
+  @Override
+  public long getFirstLogicalExtent() {
+    return firstLogicalExtent;
+  }
 
-	@Override
-	public long getFirstPhysicalExtent() {
-		return firstPhysicalExtent;
-	}
+  @Override
+  public long getFirstPhysicalExtent() {
+    return firstPhysicalExtent;
+  }
 
-	@Override
-	public long getExtents() {
-		return extents;
-	}
+  @Override
+  public long getExtents() {
+    return extents;
+  }
 }

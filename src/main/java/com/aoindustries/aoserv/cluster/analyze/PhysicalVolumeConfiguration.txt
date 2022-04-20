@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,94 +32,94 @@ import java.io.Serializable;
  */
 public class PhysicalVolumeConfiguration implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private final PhysicalVolume physicalVolume;
+  private final PhysicalVolume physicalVolume;
 
-	/**
-	 * The list of DomUDisk that use part of this PhysicalVolume.
-	 * They must all be on the same DomU.
-	 */
-	private final Set<DomUDisk> domUDisks = new HashSet<DomUDisk>();
+  /**
+   * The list of DomUDisk that use part of this PhysicalVolume.
+   * They must all be on the same DomU.
+   */
+  private final Set<DomUDisk> domUDisks = new HashSet<DomUDisk>();
 
-	/**
-	 * Extents allocation is effected by both primary and secondary allocation,
-	 * this cannot be overcommitted.
-	 */
-	private int allocatedExtents;
+  /**
+   * Extents allocation is effected by both primary and secondary allocation,
+   * this cannot be overcommitted.
+   */
+  private int allocatedExtents;
 
-	PhysicalVolumeConfiguration(
-		PhysicalVolume physicalVolume
-	) {
-		this.physicalVolume = physicalVolume;
-	}
+  PhysicalVolumeConfiguration(
+    PhysicalVolume physicalVolume
+  ) {
+    this.physicalVolume = physicalVolume;
+  }
 
-	@Override
-	public String toString() {
-		return physicalVolume.toString();
-	}
+  @Override
+  public String toString() {
+    return physicalVolume.toString();
+  }
 
-	public PhysicalVolume getPhysicalVolume() {
-		return physicalVolume;
-	}
+  public PhysicalVolume getPhysicalVolume() {
+    return physicalVolume;
+  }
 
-	/*
-	@Override
-	public boolean equals(Object O) {
-		if(O==null) return false;
-		if(!(O instanceof PhysicalVolume)) return false;
-		PhysicalVolume other = (PhysicalVolume)O;
-		return
-			dom0Disk.equals(other.dom0Disk)
-			&& partition==other.partition
-		;
-	}*/
+  /*
+  @Override
+  public boolean equals(Object O) {
+    if (O==null) return false;
+    if (!(O instanceof PhysicalVolume)) return false;
+    PhysicalVolume other = (PhysicalVolume)O;
+    return
+      dom0Disk.equals(other.dom0Disk)
+      && partition==other.partition
+    ;
+  }*/
 
-	/**
-	 * @see Cluster#deepEquals
-	 */
-	/*
-	boolean deepEquals(PhysicalVolume other) {
-		return partition==other.partition && extents==other.extents;
-	}*/
+  /**
+   * @see Cluster#deepEquals
+   */
+  /*
+  boolean deepEquals(PhysicalVolume other) {
+    return partition==other.partition && extents==other.extents;
+  }*/
 
-	/*
-	@Override
-	public int hashCode() {
-		return dom0Disk.hashCode() * 31 + partition;
-	}*/
+  /*
+  @Override
+  public int hashCode() {
+    return dom0Disk.hashCode() * 31 + partition;
+  }*/
 
-	/**
-	 * Gets the number of extents that have been allocated.
-	 */
-	public int getAllocatedExtents() {
-		return allocatedExtents;
-	}
+  /**
+   * Gets the number of extents that have been allocated.
+   */
+  public int getAllocatedExtents() {
+    return allocatedExtents;
+  }
 
-	/**
-	 * Adds a disk to the allocation.
-	 * 
-	 * @see DomU#addDomUDisk
-	 */
-	void addDomUDisk(DomUDisk domUDisk, int allocateExtents, int weight) {
-		// Must not be added more than once
-		if(domUDisks.contains(domUDisk)) throw new IllegalArgumentException(this+": DomUDisk has already been added to this PhysicalVolume");
+  /**
+   * Adds a disk to the allocation.
+   * 
+   * @see DomU#addDomUDisk
+   */
+  void addDomUDisk(DomUDisk domUDisk, int allocateExtents, int weight) {
+    // Must not be added more than once
+    if (domUDisks.contains(domUDisk)) throw new IllegalArgumentException(this+": DomUDisk has already been added to this PhysicalVolume");
 
-		// All disks on this physical volume must be for the same DomU
-		DomU domU = domUDisk.getDomU();
-		for(DomUDisk existing : domUDisks) {
-			if(!existing.getDomU().equals(domU)) throw new IllegalArgumentException(this+": Not all DomUDisk for this PhysicalVolume are on the same DomU");
-		}
+    // All disks on this physical volume must be for the same DomU
+    DomU domU = domUDisk.getDomU();
+    for (DomUDisk existing : domUDisks) {
+      if (!existing.getDomU().equals(domU)) throw new IllegalArgumentException(this+": Not all DomUDisk for this PhysicalVolume are on the same DomU");
+    }
 
-		// Add to the set of DomUDisk
-		domUDisks.add(domUDisk);
+    // Add to the set of DomUDisk
+    domUDisks.add(domUDisk);
 
-		// Add the extents allocation
-		int newAllocatedExtents = allocatedExtents + allocateExtents;
-		if(newAllocatedExtents>extents) throw new IllegalArgumentException(this+": Not enough available extents for requested allocation");
-		allocatedExtents = newAllocatedExtents;
+    // Add the extents allocation
+    int newAllocatedExtents = allocatedExtents + allocateExtents;
+    if (newAllocatedExtents>extents) throw new IllegalArgumentException(this+": Not enough available extents for requested allocation");
+    allocatedExtents = newAllocatedExtents;
 
-		// Add to the disk weight allocation
-		getDom0Disk().addDomUDisk(domUDisk, weight);
-	}
+    // Add to the disk weight allocation
+    getDom0Disk().addDomUDisk(domUDisk, weight);
+  }
 }

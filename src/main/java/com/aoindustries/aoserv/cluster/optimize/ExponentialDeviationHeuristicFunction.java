@@ -51,45 +51,45 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class ExponentialDeviationHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-	private static final double BASE = 1.5;
+  private static final double BASE = 1.5;
 
-	private double total;
+  private double total;
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+  @Override
+  public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+    AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-		// Include g to prefer shorter paths - this is meant to be just a tie breaker and to minimally
-		// affect the path otherwise
-		total = g*.00001;
+    // Include g to prefer shorter paths - this is meant to be just a tie breaker and to minimally
+    // affect the path otherwise
+    total = g*.00001;
 
-		// Add each result
-		analysis.getAllResults(this, AlertLevel.LOW);
+    // Add each result
+    analysis.getAllResults(this, AlertLevel.LOW);
 
-		return total;
-	}
+    return total;
+  }
 
-	@Override
-	public boolean handleResult(Result<?> result) {
-		AlertLevel alertLevel = result.getAlertLevel();
-		switch(alertLevel) {
-			case NONE :
-				throw new AssertionError("Should only get non-optimal results");
-			case LOW :
-				total += result.getDeviation();
-				break;
-			case MEDIUM :
-				total += BASE * result.getDeviation();
-				break;
-			case HIGH :
-				total += BASE*BASE * result.getDeviation();
-				break;
-			case CRITICAL :
-				total += 1024 + BASE*BASE*BASE * result.getDeviation(); // Try to avoid this at all costs
-				break;
-			default :
-				throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
-		}
-		return true;
-	}
+  @Override
+  public boolean handleResult(Result<?> result) {
+    AlertLevel alertLevel = result.getAlertLevel();
+    switch (alertLevel) {
+      case NONE :
+        throw new AssertionError("Should only get non-optimal results");
+      case LOW :
+        total += result.getDeviation();
+        break;
+      case MEDIUM :
+        total += BASE * result.getDeviation();
+        break;
+      case HIGH :
+        total += BASE*BASE * result.getDeviation();
+        break;
+      case CRITICAL :
+        total += 1024 + BASE*BASE*BASE * result.getDeviation(); // Try to avoid this at all costs
+        break;
+      default :
+        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+    }
+    return true;
+  }
 }

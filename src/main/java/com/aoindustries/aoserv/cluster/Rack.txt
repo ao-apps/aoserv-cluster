@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2022  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -34,65 +34,65 @@ import java.io.Serializable;
  */
 public class Rack implements Comparable<Rack>, Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	final Cluster cluster;
-	final String id;
+  final Cluster cluster;
+  final String id;
 
-	/**
-	 * @see Cluster#addRack
-	 */
-	Rack(Cluster cluster, String id) {
-		this.cluster = cluster;
-		this.id = id;
-	}
+  /**
+   * @see Cluster#addRack
+   */
+  Rack(Cluster cluster, String id) {
+    this.cluster = cluster;
+    this.id = id;
+  }
 
-	public Cluster getCluster() {
-		return cluster;
-	}
+  public Cluster getCluster() {
+    return cluster;
+  }
 
-	/**
-	 * Gets the per-cluster unique ID.
-	 */
-	public String getId() {
-		return id;
-	}
+  /**
+   * Gets the per-cluster unique ID.
+   */
+  public String getId() {
+    return id;
+  }
 
-	@Override
-	public String toString() {
-		return cluster.toString()+'/'+id;
-	}
+  @Override
+  public String toString() {
+    return cluster.toString()+'/'+id;
+  }
 
-	@Override
-	public boolean equals(Object O) {
-		if(O==null) return false;
-		if(!(O instanceof Rack)) return false;
-		Rack other = (Rack)O;
-		return
-			cluster==other.cluster
-			&& id.equals(other.id)
-		;
-	}
+  @Override
+  public boolean equals(Object O) {
+    if (O==null) return false;
+    if (!(O instanceof Rack)) return false;
+    Rack other = (Rack)O;
+    return
+      cluster==other.cluster
+      && id.equals(other.id)
+    ;
+  }
 
-	@Override
-	public int hashCode() {
-		return cluster.hashCode() * 31 + id.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return cluster.hashCode() * 31 + id.hashCode();
+  }
 
-	/**
-	 * Sorted ascending by:
-	 * <ol>
-	 *   <li>clusterName</li>
-	 *   <li>id</li>
-	 * </ol>
-	 */
-	@Override
-	public int compareTo(Rack other) {
-		if(this==other) return 0;
+  /**
+   * Sorted ascending by:
+   * <ol>
+   *   <li>clusterName</li>
+   *   <li>id</li>
+   * </ol>
+   */
+  @Override
+  public int compareTo(Rack other) {
+    if (this==other) return 0;
 
-		int diff = cluster.compareTo(other.cluster);
-		if(diff!=0) return diff;
+    int diff = cluster.compareTo(other.cluster);
+    if (diff!=0) return diff;
 
-		return id.compareTo(other.id);
-	}
+    return id.compareTo(other.id);
+  }
 }

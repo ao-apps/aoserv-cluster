@@ -30,63 +30,63 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public abstract class Result<T> implements Comparable<Result<?>> {
 
-	private final String label;
-	private final double deviation;
-	private final AlertLevel alertLevel;
+  private final String label;
+  private final double deviation;
+  private final AlertLevel alertLevel;
 
-	Result(String label, double deviation, AlertLevel alertLevel) {
-		assert !(alertLevel!=AlertLevel.NONE && deviation<=0) : "Any result with an alert level > NONE should have a positive, non-zero deviation";
-		assert !(alertLevel==AlertLevel.NONE && deviation>0) : "Any result with an alert level = NONE should have a negative or zero deviation";
-		this.label = label;
-		this.deviation = deviation;
-		this.alertLevel = alertLevel;
-	}
+  Result(String label, double deviation, AlertLevel alertLevel) {
+    assert !(alertLevel != AlertLevel.NONE && deviation <= 0) : "Any result with an alert level > NONE should have a positive, non-zero deviation";
+    assert !(alertLevel == AlertLevel.NONE && deviation>0) : "Any result with an alert level = NONE should have a negative or zero deviation";
+    this.label = label;
+    this.deviation = deviation;
+    this.alertLevel = alertLevel;
+  }
 
-	public final String getLabel() {
-		return label;
-	}
+  public final String getLabel() {
+    return label;
+  }
 
-	/**
-	 * Gets the current value for the resource or <code>null</code> if unavailable.
-	 */
-	public abstract T getValue();
+  /**
+   * Gets the current value for the resource or <code>null</code> if unavailable.
+   */
+  public abstract T getValue();
 
-	/**
-	 * Gets the maximum value for the resource or <code>null</code> if unavailable.
-	 */
-	public abstract T getMaxValue();
+  /**
+   * Gets the maximum value for the resource or <code>null</code> if unavailable.
+   */
+  public abstract T getMaxValue();
 
-	/**
-	 * Gets the relative amount of devation the value is from the expected/maximum value.
-	 * If the deviation is otherwise unknown or doesn't make sense for the type of resource,
-	 * should be 1.0.
-	 */
-	public final double getDeviation() {
-		return deviation;
-	}
+  /**
+   * Gets the relative amount of devation the value is from the expected/maximum value.
+   * If the deviation is otherwise unknown or doesn't make sense for the type of resource,
+   * should be 1.0.
+   */
+  public final double getDeviation() {
+    return deviation;
+  }
 
-	public final AlertLevel getAlertLevel() {
-		return alertLevel;
-	}
+  public final AlertLevel getAlertLevel() {
+    return alertLevel;
+  }
 
-	/**
-	 * Sorted by label.
-	 */
-	@Override
-	public final int compareTo(Result<?> other) {
-		return label.compareTo(other.label);
-	}
+  /**
+   * Sorted by label.
+   */
+  @Override
+  public final int compareTo(Result<?> other) {
+    return label.compareTo(other.label);
+  }
 
-	@Override
-	public final String toString() {
-		T value = getValue();
-		T maxValue = getMaxValue();
-		return
-			alertLevel
-			+ ": " + label
-			+ " "  + (value==null ? "NA" : value)
-			+ "/"  + (maxValue==null ? "NA" : maxValue)
-			+ " "  + deviation
-		;
-	}
+  @Override
+  public final String toString() {
+    T value = getValue();
+    T maxValue = getMaxValue();
+    return
+      alertLevel
+      + ": " + label
+      + " "  + (value == null ? "NA" : value)
+      + "/"  + (maxValue == null ? "NA" : maxValue)
+      + " "  + deviation
+    ;
+  }
 }

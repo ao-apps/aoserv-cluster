@@ -36,13 +36,13 @@ import java.util.Random;
  */
 public class RandomHeuristicFunction implements HeuristicFunction {
 
-	/**
-	 * A fast pseudo-random number generator for non-cryptographic purposes.
-	 */
-	private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
+  /**
+   * A fast pseudo-random number generator for non-cryptographic purposes.
+   */
+  private static final Random fastRandom = new Random(IoUtils.bufferToLong(new SecureRandom().generateSeed(Long.BYTES)));
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		return fastRandom.nextDouble();
-	}
+  @Override
+  public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+    return fastRandom.nextDouble();
+  }
 }

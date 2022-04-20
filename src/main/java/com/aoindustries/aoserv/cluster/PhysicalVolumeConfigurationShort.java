@@ -36,39 +36,39 @@ import java.io.Serializable;
  */
 public class PhysicalVolumeConfigurationShort extends PhysicalVolumeConfiguration implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	final short firstLogicalExtent;
-	final short firstPhysicalExtent;
-	final short extents;
+  final short firstLogicalExtent;
+  final short firstPhysicalExtent;
+  final short extents;
 
-	PhysicalVolumeConfigurationShort(
-		PhysicalVolume physicalVolume,
-		short firstLogicalExtent,
-		short firstPhysicalExtent,
-		short extents
-	) {
-		super(physicalVolume);
-		assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-		assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-		assert extents>0 : "extents<=0: "+extents;
-		this.firstLogicalExtent = firstLogicalExtent;
-		this.firstPhysicalExtent = firstPhysicalExtent;
-		this.extents = extents;
-	}
+  PhysicalVolumeConfigurationShort(
+    PhysicalVolume physicalVolume,
+    short firstLogicalExtent,
+    short firstPhysicalExtent,
+    short extents
+  ) {
+    super(physicalVolume);
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
+    assert extents>0 : "extents <= 0: "+extents;
+    this.firstLogicalExtent = firstLogicalExtent;
+    this.firstPhysicalExtent = firstPhysicalExtent;
+    this.extents = extents;
+  }
 
-	@Override
-	public long getFirstLogicalExtent() {
-		return firstLogicalExtent;
-	}
+  @Override
+  public long getFirstLogicalExtent() {
+    return firstLogicalExtent;
+  }
 
-	@Override
-	public long getFirstPhysicalExtent() {
-		return firstPhysicalExtent;
-	}
+  @Override
+  public long getFirstPhysicalExtent() {
+    return firstPhysicalExtent;
+  }
 
-	@Override
-	public long getExtents() {
-		return extents;
-	}
+  @Override
+  public long getExtents() {
+    return extents;
+  }
 }

@@ -33,152 +33,186 @@ import java.io.Serializable;
  */
 public abstract class PhysicalVolumeConfiguration implements Comparable<PhysicalVolumeConfiguration>, Serializable {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
-	 * 16-bit and 32-bit representation when possible to save heap.
-	 *
-	 * If heap space is every an issue, can use even more specialized versions like:
-	 *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
-	 *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
-	 */
-	public static PhysicalVolumeConfiguration newInstance(
-		PhysicalVolume physicalVolume,
-		long firstLogicalExtent,
-		long firstPhysicalExtent,
-		long extents
-	) {
-		assert firstLogicalExtent>=0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-		assert firstPhysicalExtent>=0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-		assert extents>0 : "extents<=0: "+extents;
-		// 16-bit
-		if(
-			firstLogicalExtent<=Short.MAX_VALUE
-			&& firstPhysicalExtent<=Short.MAX_VALUE
-			&& extents<=Short.MAX_VALUE
-		) return new PhysicalVolumeConfigurationShort(physicalVolume, (short)firstLogicalExtent, (short)firstPhysicalExtent, (short)extents);
-		// 32-bit
-		if(
-			firstLogicalExtent<=Integer.MAX_VALUE
-			&& firstPhysicalExtent<=Integer.MAX_VALUE
-			&& extents<=Integer.MAX_VALUE
-		) return new PhysicalVolumeConfigurationInt(physicalVolume, (int)firstLogicalExtent, (int)firstPhysicalExtent, (int)extents);
-		// 64-bit
-		return new PhysicalVolumeConfigurationLong(physicalVolume, firstLogicalExtent, firstPhysicalExtent, extents);
-	}
+  /**
+   * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
+   * 16-bit and 32-bit representation when possible to save heap.
+   *
+   * If heap space is every an issue, can use even more specialized versions like:
+   *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
+   *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
+   */
+  public static PhysicalVolumeConfiguration newInstance(
+    PhysicalVolume physicalVolume,
+    long firstLogicalExtent,
+    long firstPhysicalExtent,
+    long extents
+  ) {
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
+    assert extents>0 : "extents <= 0: "+extents;
+    // 16-bit
+    if (
+      firstLogicalExtent <= Short.MAX_VALUE
+      && firstPhysicalExtent <= Short.MAX_VALUE
+      && extents <= Short.MAX_VALUE
+    ) {
+      return new PhysicalVolumeConfigurationShort(
+          physicalVolume,
+          (short)firstLogicalExtent,
+          (short)firstPhysicalExtent,
+          (short)extents
+      );
+    }
+    // 32-bit
+    if (
+      firstLogicalExtent <= Integer.MAX_VALUE
+      && firstPhysicalExtent <= Integer.MAX_VALUE
+      && extents <= Integer.MAX_VALUE
+    ) {
+      return new PhysicalVolumeConfigurationInt(
+          physicalVolume,
+          (int)firstLogicalExtent,
+          (int)firstPhysicalExtent,
+          (int)extents
+      );
+    }
+    // 64-bit
+    return new PhysicalVolumeConfigurationLong(physicalVolume, firstLogicalExtent, firstPhysicalExtent, extents);
+  }
 
-	final PhysicalVolume physicalVolume;
+  final PhysicalVolume physicalVolume;
 
-	PhysicalVolumeConfiguration(PhysicalVolume physicalVolume) {
-		this.physicalVolume = physicalVolume;
-	}
+  PhysicalVolumeConfiguration(PhysicalVolume physicalVolume) {
+    this.physicalVolume = physicalVolume;
+  }
 
-	@Override
-	public final String toString() {
-		return physicalVolume.toString()+"("+getFirstLogicalExtent()+","+getFirstPhysicalExtent()+","+getExtents()+")";
-	}
+  @Override
+  public final String toString() {
+    return physicalVolume.toString()+"("+getFirstLogicalExtent()+","+getFirstPhysicalExtent()+","+getExtents()+")";
+  }
 
-	public final PhysicalVolume getPhysicalVolume() {
-		return physicalVolume;
-	}
+  public final PhysicalVolume getPhysicalVolume() {
+    return physicalVolume;
+  }
 
-	/**
-	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 *
-	 * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
-	 */
-	@Override
-	public final boolean equals(Object obj) {
-		return (obj instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)obj);
-	}
+  /**
+   * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
+   *
+   * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
+   */
+  @Override
+  public final boolean equals(Object obj) {
+    return (obj instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)obj);
+  }
 
-	/**
-	 * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
-	 *
-	 * @see  #equals(Object)
-	 */
-	public final boolean equals(PhysicalVolumeConfiguration other) {
-		if(this==other) return true;
-		if(other==null) return false;
-		return
-			physicalVolume==other.physicalVolume
-			&& getFirstLogicalExtent()==other.getFirstLogicalExtent()
-			&& getFirstPhysicalExtent()==other.getFirstPhysicalExtent()
-			&& getExtents()==other.getExtents()
-		;
-	}
+  /**
+   * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
+   *
+   * @see  #equals(Object)
+   */
+  public final boolean equals(PhysicalVolumeConfiguration other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null) {
+      return false;
+    }
+    return
+      physicalVolume == other.physicalVolume
+      && getFirstLogicalExtent() == other.getFirstLogicalExtent()
+      && getFirstPhysicalExtent() == other.getFirstPhysicalExtent()
+      && getExtents() == other.getExtents()
+    ;
+  }
 
-	@Override
-	public final int hashCode() {
-		return
-			+ 127*physicalVolume.hashCode()
-			+ 31*(int)getFirstLogicalExtent()
-			+ 7*(int)getFirstPhysicalExtent()
-			+ (int)getExtents()
-		;
-	}
+  @Override
+  public final int hashCode() {
+    return
+      + 127*physicalVolume.hashCode()
+      + 31*(int)getFirstLogicalExtent()
+      + 7*(int)getFirstPhysicalExtent()
+      + (int)getExtents()
+    ;
+  }
 
-	public abstract long getFirstLogicalExtent();
+  public abstract long getFirstLogicalExtent();
 
-	public abstract long getFirstPhysicalExtent();
+  public abstract long getFirstPhysicalExtent();
 
-	public abstract long getExtents();
+  public abstract long getExtents();
 
-	/**
-	 * Sorted ascending by:
-	 * <ol>
-	 *   <li>physicalVolume</li>
-	 *   <li>firstLogicalExtent</li>
-	 *   <li>firstPhysicalExtent</li>
-	 *   <li>extents</li>
-	 * </ol>
-	 */
-	@Override
-	public final int compareTo(PhysicalVolumeConfiguration other) {
-		// Identity
-		if(this==other) return 0;
-		// physicalVolume
-		int diff = physicalVolume.compareTo(other.physicalVolume);
-		if(diff!=0) return diff;
-		// firstLogicalExtent
-		long mine = getFirstLogicalExtent();
-		long others = other.getFirstLogicalExtent();
-		if(mine<others) return -1;
-		if(mine>others) return 1;
-		// secondLogicalExtent
-		mine = getFirstPhysicalExtent();
-		others = other.getFirstPhysicalExtent();
-		if(mine<others) return -1;
-		if(mine>others) return 1;
-		// extents
-		mine = getExtents();
-		others = other.getExtents();
-		if(mine<others) return -1;
-		if(mine>others) return 1;
-		// Otherwise equal
-		return 0;
-	}
+  /**
+   * Sorted ascending by:
+   * <ol>
+   *   <li>physicalVolume</li>
+   *   <li>firstLogicalExtent</li>
+   *   <li>firstPhysicalExtent</li>
+   *   <li>extents</li>
+   * </ol>
+   */
+  @Override
+  public final int compareTo(PhysicalVolumeConfiguration other) {
+    // Identity
+    if (this == other) {
+      return 0;
+    }
+    // physicalVolume
+    int diff = physicalVolume.compareTo(other.physicalVolume);
+    if (diff != 0) {
+      return diff;
+    }
+    // firstLogicalExtent
+    long mine = getFirstLogicalExtent();
+    long others = other.getFirstLogicalExtent();
+    if (mine<others) {
+      return -1;
+    }
+    if (mine>others) {
+      return 1;
+    }
+    // secondLogicalExtent
+    mine = getFirstPhysicalExtent();
+    others = other.getFirstPhysicalExtent();
+    if (mine<others) {
+      return -1;
+    }
+    if (mine>others) {
+      return 1;
+    }
+    // extents
+    mine = getExtents();
+    others = other.getExtents();
+    if (mine<others) {
+      return -1;
+    }
+    if (mine>others) {
+      return 1;
+    }
+    // Otherwise equal
+    return 0;
+  }
 
-	static boolean overlaps(long start1, long extents1, long start2, long extents2) {
-		return
-			(start2+extents2)>start1
-			&& (start1+extents1)>start2
-		;
-	}
+  static boolean overlaps(long start1, long extents1, long start2, long extents2) {
+    return
+      (start2+extents2)>start1
+      && (start1+extents1)>start2
+    ;
+  }
 
-	/**
-	 * Returns true if either the logical or the physical extents overlap.
-	 */
-	public final boolean overlaps(PhysicalVolumeConfiguration other) {
-		long myExtents = getExtents();
-		long otherExtents = other.getExtents();
-		return
-			overlaps(getFirstLogicalExtent(), myExtents, other.getFirstLogicalExtent(), otherExtents)
-			|| (
-				physicalVolume==other.physicalVolume
-				&& overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
-			)
-		;
-	}
+  /**
+   * Returns true if either the logical or the physical extents overlap.
+   */
+  public final boolean overlaps(PhysicalVolumeConfiguration other) {
+    long myExtents = getExtents();
+    long otherExtents = other.getExtents();
+    return
+      overlaps(getFirstLogicalExtent(), myExtents, other.getFirstLogicalExtent(), otherExtents)
+      || (
+        physicalVolume == other.physicalVolume
+        && overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
+      )
+    ;
+  }
 }

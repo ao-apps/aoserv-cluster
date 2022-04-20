@@ -30,10 +30,10 @@ package com.aoindustries.aoserv.cluster;
  * @author  AO Industries, Inc.
  */
 public enum ProcessorType {
-	PIII,
-	P4,
-	P4_XEON,
-	CORE,
-	CORE2,
-	XEON_LV
+  PIII,
+  P4,
+  P4_XEON,
+  CORE,
+  CORE2,
+  XEON_LV
 }

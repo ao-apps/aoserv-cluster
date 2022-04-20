@@ -28,8 +28,8 @@ package com.aoindustries.aoserv.cluster.optimize;
  */
 public interface OptimizedClusterConfigurationHandler {
 
-	/**
-	 * Handles one result.  Returns true if the optimization should continue.
-	 */
-	boolean handleOptimizedClusterConfiguration(ListElement path, long loopCount);
+  /**
+   * Handles one result.  Returns true if the optimization should continue.
+   */
+  boolean handleOptimizedClusterConfiguration(ListElement path, long loopCount);
 }

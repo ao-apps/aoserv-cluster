@@ -30,28 +30,28 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class IntResult extends Result<Integer> {
 
-	private final int value;
-	private final int maxValue;
+  private final int value;
+  private final int maxValue;
 
-	IntResult(String label, int value, int maxValue, double deviation, AlertLevel alertLevel) {
-		super(label, deviation, alertLevel);
-		this.value = value;
-		this.maxValue = maxValue;
-	}
+  IntResult(String label, int value, int maxValue, double deviation, AlertLevel alertLevel) {
+    super(label, deviation, alertLevel);
+    this.value = value;
+    this.maxValue = maxValue;
+  }
 
-	/**
-	 * Gets the current value for the resource.
-	 */
-	@Override
-	public Integer getValue() {
-		return value;
-	}
+  /**
+   * Gets the current value for the resource.
+   */
+  @Override
+  public Integer getValue() {
+    return value;
+  }
 
-	/**
-	 * Gets the maximum value for the resource.
-	 */
-	@Override
-	public Integer getMaxValue() {
-		return maxValue;
-	}
+  /**
+   * Gets the maximum value for the resource.
+   */
+  @Override
+  public Integer getMaxValue() {
+    return maxValue;
+  }
 }

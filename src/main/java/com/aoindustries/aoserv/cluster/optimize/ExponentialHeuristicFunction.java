@@ -48,42 +48,42 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class ExponentialHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-	private long total;
+  private long total;
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+  @Override
+  public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+    AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-		// Include g to prefer shorter paths
-		total = g;
+    // Include g to prefer shorter paths
+    total = g;
 
-		// Add each result
-		analysis.getAllResults(this, AlertLevel.LOW);
+    // Add each result
+    analysis.getAllResults(this, AlertLevel.LOW);
 
-		return total;
-	}
+    return total;
+  }
 
-	@Override
-	public boolean handleResult(Result<?> result) {
-		AlertLevel alertLevel = result.getAlertLevel();
-		switch(alertLevel) {
-			case NONE :
-				throw new AssertionError("Should only get non-optimal results");
-			case LOW :
-				total += 4;
-				break;
-			case MEDIUM :
-				total += 8;
-				break;
-			case HIGH :
-				total += 16;
-				break;
-			case CRITICAL :
-				total += 1024; // Try to avoid this at all costs
-				break;
-			default :
-				throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
-		}
-		return true;
-	}
+  @Override
+  public boolean handleResult(Result<?> result) {
+    AlertLevel alertLevel = result.getAlertLevel();
+    switch (alertLevel) {
+      case NONE :
+        throw new AssertionError("Should only get non-optimal results");
+      case LOW :
+        total += 4;
+        break;
+      case MEDIUM :
+        total += 8;
+        break;
+      case HIGH :
+        total += 16;
+        break;
+      case CRITICAL :
+        total += 1024; // Try to avoid this at all costs
+        break;
+      default :
+        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+    }
+    return true;
+  }
 }

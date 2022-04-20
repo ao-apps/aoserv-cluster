@@ -38,24 +38,24 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-	private int count;
+  private int count;
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+  @Override
+  public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+    AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-		count = g;
+    count = g;
 
-		// Add each result
-		analysis.getAllResults(this, AlertLevel.LOW);
+    // Add each result
+    analysis.getAllResults(this, AlertLevel.LOW);
 
-		return count;
-	}
+    return count;
+  }
 
-	@Override
-	public boolean handleResult(Result<?> result) {
-		assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
-		count++;
-		return true;
-	}
+  @Override
+  public boolean handleResult(Result<?> result) {
+    assert result.getAlertLevel().compareTo(AlertLevel.NONE)>0 : "Should only get non-optimal results, got "+result.getAlertLevel();
+    count++;
+    return true;
+  }
 }

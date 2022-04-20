@@ -38,7 +38,7 @@ package com.aoindustries.aoserv.cluster.optimize;
  */
 public abstract class Transition {
 
-	Transition() {
-		// Do nothing
-	}
+  Transition() {
+    // Do nothing
+  }
 }

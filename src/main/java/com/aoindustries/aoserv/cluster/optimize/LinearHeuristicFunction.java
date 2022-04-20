@@ -48,42 +48,42 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  */
 public class LinearHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {
 
-	private int total;
+  private int total;
 
-	@Override
-	public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
-		AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
+  @Override
+  public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
+    AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-		// Include g to prefer shorter paths
-		total = g;
+    // Include g to prefer shorter paths
+    total = g;
 
-		// Add each result
-		analysis.getAllResults(this, AlertLevel.LOW);
+    // Add each result
+    analysis.getAllResults(this, AlertLevel.LOW);
 
-		return total;
-	}
+    return total;
+  }
 
-	@Override
-	public boolean handleResult(Result<?> result) {
-		AlertLevel alertLevel = result.getAlertLevel();
-		switch(alertLevel) {
-			case NONE :
-				throw new AssertionError("Should only get non-optimal results");
-			case LOW :
-				total++;
-				break;
-			case MEDIUM :
-				total += 2;
-				break;
-			case HIGH :
-				total += 3;
-				break;
-			case CRITICAL :
-				total += 4;
-				break;
-			default :
-				throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
-		}
-		return true;
-	}
+  @Override
+  public boolean handleResult(Result<?> result) {
+    AlertLevel alertLevel = result.getAlertLevel();
+    switch (alertLevel) {
+      case NONE :
+        throw new AssertionError("Should only get non-optimal results");
+      case LOW :
+        total++;
+        break;
+      case MEDIUM :
+        total += 2;
+        break;
+      case HIGH :
+        total += 3;
+        break;
+      case CRITICAL :
+        total += 4;
+        break;
+      default :
+        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+    }
+    return true;
+  }
 }

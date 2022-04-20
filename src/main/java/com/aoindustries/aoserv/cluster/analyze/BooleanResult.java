@@ -30,28 +30,28 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class BooleanResult extends Result<Boolean> {
 
-	private final boolean value;
-	private final boolean maxValue;
+  private final boolean value;
+  private final boolean maxValue;
 
-	BooleanResult(String label, boolean value, boolean maxValue, double deviation, AlertLevel alertLevel) {
-		super(label, deviation, alertLevel);
-		this.value = value;
-		this.maxValue = maxValue;
-	}
+  BooleanResult(String label, boolean value, boolean maxValue, double deviation, AlertLevel alertLevel) {
+    super(label, deviation, alertLevel);
+    this.value = value;
+    this.maxValue = maxValue;
+  }
 
-	/**
-	 * Gets the current value for the resource.
-	 */
-	@Override
-	public Boolean getValue() {
-		return value;
-	}
+  /**
+   * Gets the current value for the resource.
+   */
+  @Override
+  public Boolean getValue() {
+    return value;
+  }
 
-	/**
-	 * Gets the maximum value for the resource.
-	 */
-	@Override
-	public Boolean getMaxValue() {
-		return maxValue;
-	}
+  /**
+   * Gets the maximum value for the resource.
+   */
+  @Override
+  public Boolean getMaxValue() {
+    return maxValue;
+  }
 }

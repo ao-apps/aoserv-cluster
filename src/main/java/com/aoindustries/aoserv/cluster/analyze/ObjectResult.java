@@ -30,28 +30,28 @@ package com.aoindustries.aoserv.cluster.analyze;
  */
 public class ObjectResult<T> extends Result<T> {
 
-	private final T value;
-	private final T maxValue;
+  private final T value;
+  private final T maxValue;
 
-	ObjectResult(String label, T value, T maxValue, double deviation, AlertLevel alertLevel) {
-		super(label, deviation, alertLevel);
-		this.value = value;
-		this.maxValue = maxValue;
-	}
+  ObjectResult(String label, T value, T maxValue, double deviation, AlertLevel alertLevel) {
+    super(label, deviation, alertLevel);
+    this.value = value;
+    this.maxValue = maxValue;
+  }
 
-	/**
-	 * Gets the current value for the resource or <code>null</code> if unavailable.
-	 */
-	@Override
-	public T getValue() {
-		return value;
-	}
+  /**
+   * Gets the current value for the resource or <code>null</code> if unavailable.
+   */
+  @Override
+  public T getValue() {
+    return value;
+  }
 
-	/**
-	 * Gets the maximum value for the resource or <code>null</code> if unavailable.
-	 */
-	@Override
-	public T getMaxValue() {
-		return maxValue;
-	}
+  /**
+   * Gets the maximum value for the resource or <code>null</code> if unavailable.
+   */
+  @Override
+  public T getMaxValue() {
+    return maxValue;
+  }
 }
