@@ -63,7 +63,7 @@ public class ExponentialDeviationWithNoneHeuristicFunction implements HeuristicF
 
     // Include g to prefer shorter paths - this is meant to be just a tie breaker and to minimally
     // affect the path otherwise
-    total = g*.00001;
+    total = g * .00001;
 
     // Add each result
     analysis.getAllResults(this, AlertLevel.NONE);
@@ -85,13 +85,13 @@ public class ExponentialDeviationWithNoneHeuristicFunction implements HeuristicF
         total += BASE * result.getDeviation();
         break;
       case HIGH :
-        total += BASE*BASE * result.getDeviation();
+        total += BASE * BASE * result.getDeviation();
         break;
       case CRITICAL :
-        total += 1024 + BASE*BASE*BASE * result.getDeviation(); // Try to avoid this at all costs
+        total += 1024 + BASE * BASE * BASE * result.getDeviation(); // Try to avoid this at all costs
         break;
       default :
-        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+        throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;
   }

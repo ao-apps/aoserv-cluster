@@ -43,15 +43,15 @@ public class PhysicalVolumeConfigurationShort extends PhysicalVolumeConfiguratio
   final short extents;
 
   PhysicalVolumeConfigurationShort(
-    PhysicalVolume physicalVolume,
-    short firstLogicalExtent,
-    short firstPhysicalExtent,
-    short extents
+      PhysicalVolume physicalVolume,
+      short firstLogicalExtent,
+      short firstPhysicalExtent,
+      short extents
   ) {
     super(physicalVolume);
-    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-    assert extents>0 : "extents <= 0: "+extents;
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: " + firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: " + firstPhysicalExtent;
+    assert extents > 0 : "extents <= 0: " + extents;
     this.firstLogicalExtent = firstLogicalExtent;
     this.firstPhysicalExtent = firstPhysicalExtent;
     this.extents = extents;

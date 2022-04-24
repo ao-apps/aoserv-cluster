@@ -63,10 +63,10 @@ public class AnalyzedClusterConfiguration {
       analyzedDom0Configurations = Collections.emptyList();
     } else if (size == 1) {
       analyzedDom0Configurations = Collections.singletonList(
-        new AnalyzedDom0Configuration(
-          clusterConfiguration,
-          clusterDom0s.values().iterator().next()
-        )
+          new AnalyzedDom0Configuration(
+              clusterConfiguration,
+              clusterDom0s.values().iterator().next()
+          )
       );
     } else {
       AnalyzedDom0Configuration[] dom0s = new AnalyzedDom0Configuration[clusterDom0s.size()];
@@ -74,7 +74,7 @@ public class AnalyzedClusterConfiguration {
       for (Dom0 dom0 : clusterDom0s.values()) {
         dom0s[index++] = new AnalyzedDom0Configuration(clusterConfiguration, dom0);
       }
-      assert index == size : "index != size: "+index+" != "+size;
+      assert index == size : "index != size: " + index + " != " + size;
       analyzedDom0Configurations = new UnmodifiableArrayList<>(dom0s);
     }
   }
@@ -117,13 +117,13 @@ public class AnalyzedClusterConfiguration {
   public boolean isOptimal() {
     boolean[] isOptimal = {true};
     getAllResults(
-      (Result<?> result) -> {
-        assert result.getAlertLevel() != AlertLevel.NONE : "result.alertLevel should not be NONE";
-        assert isOptimal[0] : "isOptimal[0] is false, handleResult called more than once";
-        isOptimal[0] = false;
-        return false;
-      },
-      AlertLevel.LOW
+        (Result<?> result) -> {
+          assert result.getAlertLevel() != AlertLevel.NONE : "result.alertLevel should not be NONE";
+          assert isOptimal[0] : "isOptimal[0] is false, handleResult called more than once";
+          isOptimal[0] = false;
+          return false;
+        },
+        AlertLevel.LOW
     );
     return isOptimal[0];
   }
@@ -135,13 +135,13 @@ public class AnalyzedClusterConfiguration {
   public boolean hasCritical() {
     boolean[] hasCritical = new boolean[1];
     getAllResults(
-      (Result<?> result) -> {
-        assert result.getAlertLevel() == AlertLevel.CRITICAL : "result.alertLevel should be CRITICAL but it is "+result.getAlertLevel();
-        assert !hasCritical[0] : "hasCritical[0] is true, handleResult called more than once";
-        hasCritical[0] = true;
-        return false;
-      },
-      AlertLevel.CRITICAL
+        (Result<?> result) -> {
+          assert result.getAlertLevel() == AlertLevel.CRITICAL : "result.alertLevel should be CRITICAL but it is " + result.getAlertLevel();
+          assert !hasCritical[0] : "hasCritical[0] is true, handleResult called more than once";
+          hasCritical[0] = true;
+          return false;
+        },
+        AlertLevel.CRITICAL
     );
     return hasCritical[0];
   }

@@ -82,7 +82,7 @@ public class ExponentialHeuristicFunction implements HeuristicFunction, ResultHa
         total += 1024; // Try to avoid this at all costs
         break;
       default :
-        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+        throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;
   }

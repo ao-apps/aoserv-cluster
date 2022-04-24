@@ -58,7 +58,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
       return Collections.singletonMap(newKey, newValue);
     }
     if (existingMap.containsKey(newKey)) {
-      throw new AssertionError("Map already contains key: "+newKey);
+      throw new AssertionError("Map already contains key: " + newKey);
     }
     Map<K, V> newMap = new HashMap<>(existingMap);
     newMap.put(newKey, newValue);
@@ -72,7 +72,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
    */
   private static <K, V> Map<K, V> replaceInUnmodifiableMap(Map<K, V> existingMap, K key, V newValue) {
     if (!existingMap.containsKey(key)) {
-      throw new AssertionError("Map doesn't contain key: "+key);
+      throw new AssertionError("Map doesn't contain key: " + key);
     }
     if (existingMap.size() == 1) {
       return Collections.singletonMap(key, newValue);
@@ -86,6 +86,7 @@ public class Cluster implements Comparable<Cluster>, Serializable {
   //final SortedSet<Rack> unmodifiableRacks = Collections.unmodifiableSortedSet(racks);
   final Map<String, Dom0> unmodifiableDom0s;
   final Map<String, DomU> unmodifiableDomUs;
+
   //final Map<String, SortedSet<DomU>> unmodifiableDomUGroups = Collections.unmodifiableMap(domUGroups);
 
   /**
@@ -93,9 +94,9 @@ public class Cluster implements Comparable<Cluster>, Serializable {
    */
   public Cluster(String name) {
     this(
-      name,
-      emptyDom0Map,
-      emptyDomUMap
+        name,
+        emptyDom0Map,
+        emptyDomUMap
     );
   }
 
@@ -174,34 +175,34 @@ public class Cluster implements Comparable<Cluster>, Serializable {
    * Adds a Dom0 to the cluster returning the reference to the new cluster object.
    */
   public Cluster addDom0(
-    String hostname,
-    /*Rack rack,*/
-    int ram,
-    ProcessorType processorType,
-    ProcessorArchitecture processorArchitecture,
-    int processorSpeed,
-    int processorCores,
-    boolean supportsHvm
+      String hostname,
+      /*Rack rack,*/
+      int ram,
+      ProcessorType processorType,
+      ProcessorArchitecture processorArchitecture,
+      int processorSpeed,
+      int processorCores,
+      boolean supportsHvm
   ) {
     return new Cluster(
-      name,
-      addToUnmodifiableMap(
-        unmodifiableDom0s,
-        hostname,
-        new Dom0(
-          name,
-          hostname,
-          /*rack,*/
-          ram,
-          processorType,
-          processorArchitecture,
-          processorSpeed,
-          processorCores,
-          supportsHvm,
-          emptyDom0DiskMap
-        )
-      ),
-      unmodifiableDomUs
+        name,
+        addToUnmodifiableMap(
+            unmodifiableDom0s,
+            hostname,
+            new Dom0(
+                name,
+                hostname,
+                /*rack,*/
+                ram,
+                processorType,
+                processorArchitecture,
+                processorSpeed,
+                processorCores,
+                supportsHvm,
+                emptyDom0DiskMap
+            )
+        ),
+        unmodifiableDomUs
     );
   }
 
@@ -224,40 +225,40 @@ public class Cluster implements Comparable<Cluster>, Serializable {
    * Adds a DomU to the cluster returning the reference to new cluster.
    */
   public Cluster addDomU(
-    String hostname,
-    int primaryRam,
-    int secondaryRam,
-    ProcessorType minimumProcessorType,
-    ProcessorArchitecture minimumProcessorArchitecture,
-    int minimumProcessorSpeed,
-    short processorCores,
-    short processorWeight,
-    boolean requiresHvm,
-    boolean primaryDom0Locked,
-    boolean secondaryDom0Locked
+      String hostname,
+      int primaryRam,
+      int secondaryRam,
+      ProcessorType minimumProcessorType,
+      ProcessorArchitecture minimumProcessorArchitecture,
+      int minimumProcessorSpeed,
+      short processorCores,
+      short processorWeight,
+      boolean requiresHvm,
+      boolean primaryDom0Locked,
+      boolean secondaryDom0Locked
   ) {
     return new Cluster(
-      name,
-      unmodifiableDom0s,
-      addToUnmodifiableMap(
-        unmodifiableDomUs,
-        hostname,
-        new DomU(
-          name,
-          hostname,
-          primaryRam,
-          secondaryRam,
-          minimumProcessorType,
-          minimumProcessorArchitecture,
-          minimumProcessorSpeed,
-          processorCores,
-          processorWeight,
-          requiresHvm,
-          primaryDom0Locked,
-          secondaryDom0Locked,
-          emptyDomUDiskMap
+        name,
+        unmodifiableDom0s,
+        addToUnmodifiableMap(
+            unmodifiableDomUs,
+            hostname,
+            new DomU(
+                name,
+                hostname,
+                primaryRam,
+                secondaryRam,
+                minimumProcessorType,
+                minimumProcessorArchitecture,
+                minimumProcessorSpeed,
+                processorCores,
+                processorWeight,
+                requiresHvm,
+                primaryDom0Locked,
+                secondaryDom0Locked,
+                emptyDomUDiskMap
+            )
         )
-      )
     );
   }
 
@@ -267,37 +268,37 @@ public class Cluster implements Comparable<Cluster>, Serializable {
   public Cluster addDom0Disk(String hostname, String device, int diskSpeed) {
     Dom0 dom0 = unmodifiableDom0s.get(hostname);
     if (dom0 == null) {
-      throw new IllegalArgumentException(this+": Dom0 not found: "+hostname);
+      throw new IllegalArgumentException(this + ": Dom0 not found: " + hostname);
     }
     return new Cluster(
-      name,
-      replaceInUnmodifiableMap(
-        unmodifiableDom0s,
-        hostname,
-        new Dom0(
-          name,
-          hostname,
-          /*rack,*/
-          dom0.ram,
-          dom0.processorType,
-          dom0.processorArchitecture,
-          dom0.processorSpeed,
-          dom0.processorCores,
-          dom0.supportsHvm,
-          addToUnmodifiableMap(
-            dom0.getDom0Disks(),
-            device,
-            new Dom0Disk(
-              name,
-              hostname,
-              device,
-              diskSpeed,
-              emptyPhysicalVolumeMap
+        name,
+        replaceInUnmodifiableMap(
+            unmodifiableDom0s,
+            hostname,
+            new Dom0(
+                name,
+                hostname,
+                /*rack,*/
+                dom0.ram,
+                dom0.processorType,
+                dom0.processorArchitecture,
+                dom0.processorSpeed,
+                dom0.processorCores,
+                dom0.supportsHvm,
+                addToUnmodifiableMap(
+                    dom0.getDom0Disks(),
+                    device,
+                    new Dom0Disk(
+                        name,
+                        hostname,
+                        device,
+                        diskSpeed,
+                        emptyPhysicalVolumeMap
+                    )
+                )
             )
-          )
-        )
-      ),
-      unmodifiableDomUs
+        ),
+        unmodifiableDomUs
     );
   }
 
@@ -307,53 +308,53 @@ public class Cluster implements Comparable<Cluster>, Serializable {
   public Cluster addPhysicalVolume(String hostname, String device, short partition, long extents) {
     Dom0 dom0 = unmodifiableDom0s.get(hostname);
     if (dom0 == null) {
-      throw new IllegalArgumentException(this+": Dom0 not found: "+hostname);
+      throw new IllegalArgumentException(this + ": Dom0 not found: " + hostname);
     }
 
     Dom0Disk dom0Disk = dom0.getDom0Disk(device);
     if (dom0Disk == null) {
-      throw new IllegalArgumentException(dom0+": Disk not found: "+device);
+      throw new IllegalArgumentException(dom0 + ": Disk not found: " + device);
     }
 
     return new Cluster(
-      name,
-      replaceInUnmodifiableMap(
-        unmodifiableDom0s,
-        hostname,
-        new Dom0(
-          name,
-          hostname,
-          /*rack,*/
-          dom0.ram,
-          dom0.processorType,
-          dom0.processorArchitecture,
-          dom0.processorSpeed,
-          dom0.processorCores,
-          dom0.supportsHvm,
-          replaceInUnmodifiableMap(
-            dom0.getDom0Disks(),
-            device,
-            new Dom0Disk(
-              name,
-              hostname,
-              device,
-              dom0Disk.diskSpeed,
-              addToUnmodifiableMap(
-                dom0Disk.getPhysicalVolumes(),
-                partition,
-                new PhysicalVolume(
-                  name,
-                  hostname,
-                  device,
-                  partition,
-                  extents
+        name,
+        replaceInUnmodifiableMap(
+            unmodifiableDom0s,
+            hostname,
+            new Dom0(
+                name,
+                hostname,
+                /*rack,*/
+                dom0.ram,
+                dom0.processorType,
+                dom0.processorArchitecture,
+                dom0.processorSpeed,
+                dom0.processorCores,
+                dom0.supportsHvm,
+                replaceInUnmodifiableMap(
+                    dom0.getDom0Disks(),
+                    device,
+                    new Dom0Disk(
+                        name,
+                        hostname,
+                        device,
+                        dom0Disk.diskSpeed,
+                        addToUnmodifiableMap(
+                            dom0Disk.getPhysicalVolumes(),
+                            partition,
+                            new PhysicalVolume(
+                                name,
+                                hostname,
+                                device,
+                                partition,
+                                extents
+                            )
+                        )
+                    )
                 )
-              )
             )
-          )
-        )
-      ),
-      unmodifiableDomUs
+        ),
+        unmodifiableDomUs
     );
   }
 
@@ -361,49 +362,49 @@ public class Cluster implements Comparable<Cluster>, Serializable {
    * Adds a disk to this virtual server, returns the new cluster.
    */
   public Cluster addDomUDisk(
-    String hostname,
-    String device,
-    int minimumDiskSpeed,
-    int extents,
-    short weight
+      String hostname,
+      String device,
+      int minimumDiskSpeed,
+      int extents,
+      short weight
   ) {
     DomU domU = unmodifiableDomUs.get(hostname);
     if (domU == null) {
-      throw new IllegalArgumentException(this+": DomU not found: "+hostname);
+      throw new IllegalArgumentException(this + ": DomU not found: " + hostname);
     }
     return new Cluster(
-      name,
-      unmodifiableDom0s,
-      replaceInUnmodifiableMap(
-        unmodifiableDomUs,
-        hostname,
-        new DomU(
-          name,
-          hostname,
-          domU.primaryRam,
-          domU.secondaryRam,
-          domU.minimumProcessorType,
-          domU.minimumProcessorArchitecture,
-          domU.minimumProcessorSpeed,
-          domU.processorCores,
-          domU.processorWeight,
-          domU.requiresHvm,
-          domU.primaryDom0Locked,
-          domU.secondaryDom0Locked,
-          addToUnmodifiableMap(
-            domU.getDomUDisks(),
-            device,
-            new DomUDisk(
-              name,
-              hostname,
-              device,
-              minimumDiskSpeed,
-              extents,
-              weight
+        name,
+        unmodifiableDom0s,
+        replaceInUnmodifiableMap(
+            unmodifiableDomUs,
+            hostname,
+            new DomU(
+                name,
+                hostname,
+                domU.primaryRam,
+                domU.secondaryRam,
+                domU.minimumProcessorType,
+                domU.minimumProcessorArchitecture,
+                domU.minimumProcessorSpeed,
+                domU.processorCores,
+                domU.processorWeight,
+                domU.requiresHvm,
+                domU.primaryDom0Locked,
+                domU.secondaryDom0Locked,
+                addToUnmodifiableMap(
+                    domU.getDomUDisks(),
+                    device,
+                    new DomUDisk(
+                        name,
+                        hostname,
+                        device,
+                        minimumDiskSpeed,
+                        extents,
+                        weight
+                    )
+                )
             )
-          )
         )
-      )
     );
   }
 

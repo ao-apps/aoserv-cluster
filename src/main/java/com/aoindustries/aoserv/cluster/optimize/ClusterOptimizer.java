@@ -131,10 +131,10 @@ public class ClusterOptimizer {
     Map<ClusterConfiguration, ListElement> openMap = new HashMap<>();
     {
       ListElement openListElement = new ListElement(
-        null,
-        null,
-        clusterConfiguration,
-        heuristicFunction.getHeuristic(clusterConfiguration, 0)
+          null,
+          null,
+          clusterConfiguration,
+          heuristicFunction.getHeuristic(clusterConfiguration, 0)
       );
       openQueue.add(openListElement);
       openMap.put(clusterConfiguration, openListElement);
@@ -158,16 +158,16 @@ public class ClusterOptimizer {
       assert shortestPath == null || x.pathLen < shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
       long currentTime = System.currentTimeMillis();
       long timeSince = currentTime - lastDisplayTime;
-      if (timeSince<0 || timeSince >= 60000) {
+      if (timeSince < 0 || timeSince >= 60000) {
         System.out.println(
-          "        open:"+openMap.size()
-          + " closed:"+closedMap.size()
-          + " transitions:" + x.pathLen
-          + " heuristic:" + x.heuristic
-          + " existingOpen:"+existingOpenCount
-          + " existingClosed:"+existingClosedCount
-          + " openQueueRemove:"+openQueueRemoveCount
-          + " skipCriticalPath:"+skipCriticalPathCount
+            "        open:" + openMap.size()
+                + " closed:" + closedMap.size()
+                + " transitions:" + x.pathLen
+                + " heuristic:" + x.heuristic
+                + " existingOpen:" + existingOpenCount
+                + " existingClosed:" + existingClosedCount
+                + " openQueueRemove:" + openQueueRemoveCount
+                + " skipCriticalPath:" + skipCriticalPathCount
         );
         lastDisplayTime = currentTime;
       }
@@ -178,8 +178,8 @@ public class ClusterOptimizer {
 
         // Give handler a chance to cancel before trimming
         if (
-          handler == null
-          || !handler.handleOptimizedClusterConfiguration(x, loopCounter)
+            handler == null
+                || !handler.handleOptimizedClusterConfiguration(x, loopCounter)
         ) {
           break;
         }
@@ -225,14 +225,14 @@ public class ClusterOptimizer {
           // generate children of X if depth limit not reached
           // max depth is determined by any path already found
           if (
-            // + 1 to match size of newTransitions below
-            shortestPath == null || (x.pathLen + 1) < shortestPath.pathLen
+              // + 1 to match size of newTransitions below
+              shortestPath == null || (x.pathLen + 1) < shortestPath.pathLen
           ) {
             generateChildren(x.clusterConfiguration, children, childTransitions, randomizeChildren);
             //System.out.println("        children: "+children.size());
             boolean xEndsCritical = allowPathThroughCritical ? true : analyzedX.hasCritical();
             // for each child of X do
-            for (int i=0, size=children.size(); i<size; i++) {
+            for (int i = 0, size = children.size(); i < size; i++) {
               ClusterConfiguration child = children.get(i);
               // Don't keep any path that has a transition from not having any critical to have at least one critical
               boolean childHasCritical = allowPathThroughCritical ? false : new AnalyzedClusterConfiguration(child).hasCritical();
@@ -242,8 +242,8 @@ public class ClusterOptimizer {
                   existingOpenCount++;
                   // if the child was reached by a shorter path
                   if (
-                    // + 1 to match size of newTransitions below
-                    (x.pathLen + 1) < existingOpen.pathLen
+                      // + 1 to match size of newTransitions below
+                      (x.pathLen + 1) < existingOpen.pathLen
                   ) {
                     // then give the state of open the shorter path
 
@@ -253,10 +253,10 @@ public class ClusterOptimizer {
                     openQueueRemoveCount++;
 
                     ListElement openListElement = new ListElement(
-                      x,
-                      childTransitions.get(i),
-                      child,
-                      heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                        x,
+                        childTransitions.get(i),
+                        child,
+                        heuristicFunction.getHeuristic(child, x.pathLen + 1)
                     );
                     openQueue.add(openListElement);
                     openMap.put(child, openListElement);
@@ -271,10 +271,10 @@ public class ClusterOptimizer {
                       closedMap.remove(child);
                       // add the child to open
                       ListElement openListElement = new ListElement(
-                        x,
-                        childTransitions.get(i),
-                        child,
-                        heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                          x,
+                          childTransitions.get(i),
+                          child,
+                          heuristicFunction.getHeuristic(child, x.pathLen + 1)
                       );
                       openQueue.add(openListElement);
                       openMap.put(child, openListElement);
@@ -283,10 +283,10 @@ public class ClusterOptimizer {
                     // the child is not on open or closed
                     // add the child to open
                     ListElement openListElement = new ListElement(
-                      x,
-                      childTransitions.get(i),
-                      child,
-                      heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                        x,
+                        childTransitions.get(i),
+                        child,
+                        heuristicFunction.getHeuristic(child, x.pathLen + 1)
                     );
                     openQueue.add(openListElement);
                     openMap.put(child, openListElement);
@@ -321,10 +321,10 @@ public class ClusterOptimizer {
         Dom0 primaryDom0 = domUConfiguration.getPrimaryDom0();
         Dom0 secondaryDom0 = domUConfiguration.getSecondaryDom0();
         if (
-          !domU.isPrimaryDom0Locked()
-          // TODO: Don't hard-code these
-          && !secondaryDom0.getHostname().equals("gw1.fc.aoindustries.com")
-          && !secondaryDom0.getHostname().equals("gw2.fc.aoindustries.com")
+            !domU.isPrimaryDom0Locked()
+                // TODO: Don't hard-code these
+                && !secondaryDom0.getHostname().equals("gw1.fc.aoindustries.com")
+                && !secondaryDom0.getHostname().equals("gw2.fc.aoindustries.com")
         ) {
           // Can't swap if either primary or secondary is locked
           ClusterConfiguration swappedClusterConfiguration = clusterConfiguration.liveMigrate(domU);
@@ -334,7 +334,7 @@ public class ClusterOptimizer {
             // It may be faster to build the list and randomize at the end instead of incuring the overhead of inserting into an ArrayList
             // However, since the two lists children and childrenTransitions need to be kept in sync, a simple call to
             // Collections.shuffle will not work
-            int index = fastRandom.nextInt(size+1);
+            int index = fastRandom.nextInt(size + 1);
             children.add(index, swappedClusterConfiguration);
             childTransitions.add(index, transition);
           } else {
@@ -348,17 +348,17 @@ public class ClusterOptimizer {
           Dom0 dom0 = entry.getValue();
           // Can't move to current primary or secondary
           if (
-            !dom0.equals(primaryDom0)
-            && !dom0.equals(secondaryDom0)
-            // TODO: Don't hard-code these
-            && !dom0Hostname.equals("gw1.fc.aoindustries.com")
-            && !dom0Hostname.equals("gw2.fc.aoindustries.com")
+              !dom0.equals(primaryDom0)
+                  && !dom0.equals(secondaryDom0)
+                  // TODO: Don't hard-code these
+                  && !dom0Hostname.equals("gw1.fc.aoindustries.com")
+                  && !dom0Hostname.equals("gw2.fc.aoindustries.com")
           ) {
             for (ClusterConfiguration movedClusterConfiguration : clusterConfiguration.moveSecondary(domU, dom0)) {
               Transition transition = new MoveSecondaryTransition(domU, secondaryDom0, dom0);
               int size = children.size();
               if (randomizeChildren && size != 0) {
-                int index = fastRandom.nextInt(size+1);
+                int index = fastRandom.nextInt(size + 1);
                 children.add(index, movedClusterConfiguration);
                 childTransitions.add(index, transition);
               } else {

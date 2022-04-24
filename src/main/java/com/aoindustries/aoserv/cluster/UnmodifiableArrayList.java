@@ -34,7 +34,7 @@ import java.util.RandomAccess;
  * @author  AO Industries, Inc.
  */
 public class UnmodifiableArrayList<E> extends AbstractList<E>
-  implements RandomAccess, Serializable
+    implements RandomAccess, Serializable
 {
   private static final long serialVersionUID = 1L;
 
@@ -64,7 +64,7 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
     int len = a.length;
     if (len < size) {
       return Arrays.copyOf(this.a, size,
-                 (Class<? extends T[]>) a.getClass());
+          (Class<? extends T[]>) a.getClass());
     }
     System.arraycopy(this.a, 0, a, 0, size);
     if (len > size) {
@@ -82,13 +82,13 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
   public int indexOf(Object o) {
     int len = a.length;
     if (o == null) {
-      for (int i=0; i<len; i++) {
+      for (int i = 0; i < len; i++) {
         if (a[i] == null) {
           return i;
         }
       }
     } else {
-      for (int i=0; i<len; i++) {
+      for (int i = 0; i < len; i++) {
         if (o.equals(a[i])) {
           return i;
         }

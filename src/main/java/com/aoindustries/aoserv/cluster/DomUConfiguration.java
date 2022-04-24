@@ -45,10 +45,10 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
    * unmodifiableDomUDiskConfigurations MUST BE UNMODIFIABLE
    */
   DomUConfiguration(
-    DomU domU,
-    Dom0 primaryDom0,
-    Dom0 secondaryDom0,
-    List<DomUDiskConfiguration> unmodifiableDomUDiskConfigurations
+      DomU domU,
+      Dom0 primaryDom0,
+      Dom0 secondaryDom0,
+      List<DomUDiskConfiguration> unmodifiableDomUDiskConfigurations
   ) {
     this.domU = domU;
 
@@ -57,7 +57,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
     this.primaryDom0 = primaryDom0;
 
     assert secondaryDom0 != null : "secondaryDom0 is null";
-    assert primaryDom0 != secondaryDom0 : "primaryDom0 == secondaryDom0: "+primaryDom0;
+    assert primaryDom0 != secondaryDom0 : "primaryDom0 == secondaryDom0: " + primaryDom0;
     assert secondaryDom0.clusterName.equals(domU.clusterName) : "secondaryDom0.clusterName != domU.clusterName";
     this.secondaryDom0 = secondaryDom0;
 
@@ -102,7 +102,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
    */
   @Override
   public boolean equals(Object obj) {
-    return (obj instanceof DomUConfiguration) && equals((DomUConfiguration)obj);
+    return (obj instanceof DomUConfiguration) && equals((DomUConfiguration) obj);
   }
 
   /**
@@ -145,10 +145,10 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   @Override
   public int hashCode() {
     return
-      73*domU.hashCode()
-      + 37*primaryDom0.hashCode()
-      + 31*secondaryDom0.hashCode()
-      + unmodifiableDomUDiskConfigurations.hashCode()
+        73 * domU.hashCode()
+            + 37 * primaryDom0.hashCode()
+            + 31 * secondaryDom0.hashCode()
+            + unmodifiableDomUDiskConfigurations.hashCode()
     ;
   }
 

@@ -68,21 +68,21 @@ public class AnalyzedDom0Configuration {
     int allocatedPrimaryRam = 0;
     for (DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
       if (domUConfiguration.getPrimaryDom0() == dom0) {
-        allocatedPrimaryRam+=domUConfiguration.getDomU().getPrimaryRam();
+        allocatedPrimaryRam += domUConfiguration.getDomU().getPrimaryRam();
       }
     }
     int totalRam = dom0.getRam();
     int overcommittedRam = allocatedPrimaryRam - totalRam;
-    AlertLevel alertLevel = overcommittedRam>0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
+    AlertLevel alertLevel = overcommittedRam > 0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
     if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
       return resultHandler.handleResult(
-        new IntResult(
-          "Primary RAM",
-          allocatedPrimaryRam,
-          totalRam,
-          ((double)overcommittedRam / (double)totalRam),
-          alertLevel
-        )
+          new IntResult(
+              "Primary RAM",
+              allocatedPrimaryRam,
+              totalRam,
+              ((double) overcommittedRam / (double) totalRam),
+              alertLevel
+          )
       );
     } else {
       return true;
@@ -101,15 +101,15 @@ public class AnalyzedDom0Configuration {
       Map<String, Integer> allocatedSecondaryRams = new HashMap<>();
       for (DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
         if (domUConfiguration.getPrimaryDom0() == dom0) {
-          allocatedPrimaryRam+=domUConfiguration.getDomU().getPrimaryRam();
+          allocatedPrimaryRam += domUConfiguration.getDomU().getPrimaryRam();
         } else if (domUConfiguration.getSecondaryDom0() == dom0) {
           int secondaryRam = domUConfiguration.getDomU().getSecondaryRam();
           if (secondaryRam != -1) {
             String failedHostname = domUConfiguration.getPrimaryDom0().getHostname();
             Integer totalSecondary = allocatedSecondaryRams.get(failedHostname);
             allocatedSecondaryRams.put(
-              failedHostname,
-              totalSecondary == null ? secondaryRam : (totalSecondary+secondaryRam)
+                failedHostname,
+                totalSecondary == null ? secondaryRam : (totalSecondary + secondaryRam)
             );
           }
         }
@@ -120,18 +120,18 @@ public class AnalyzedDom0Configuration {
       for (Map.Entry<String, Integer> entry : allocatedSecondaryRams.entrySet()) {
         String failedHostname = entry.getKey();
         int allocatedSecondary = entry.getValue();
-        AlertLevel alertLevel = allocatedSecondary>freePrimaryRam ? AlertLevel.HIGH : AlertLevel.NONE;
+        AlertLevel alertLevel = allocatedSecondary > freePrimaryRam ? AlertLevel.HIGH : AlertLevel.NONE;
         if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
           if (
-            !resultHandler.handleResult(
-              new IntResult(
-                failedHostname,
-                allocatedSecondary,
-                freePrimaryRam,
-                (double)(allocatedSecondary-freePrimaryRam)/(double)totalRam,
-                alertLevel
+              !resultHandler.handleResult(
+                  new IntResult(
+                      failedHostname,
+                      allocatedSecondary,
+                      freePrimaryRam,
+                      (double) (allocatedSecondary - freePrimaryRam) / (double) totalRam,
+                      alertLevel
+                  )
               )
-            )
           ) {
             return false;
           }
@@ -156,11 +156,11 @@ public class AnalyzedDom0Configuration {
       for (DomUConfiguration domUConfiguration : domUConfigurations) {
         DomU domU = domUConfiguration.getDomU();
         if (
-          domUConfiguration.getPrimaryDom0() == dom0
-          || (
-            domUConfiguration.getSecondaryDom0() == dom0
-            && domU.getSecondaryRam() != -1
-          )
+            domUConfiguration.getPrimaryDom0() == dom0
+                || (
+                domUConfiguration.getSecondaryDom0() == dom0
+                    && domU.getSecondaryRam() != -1
+            )
         ) {
           ProcessorType minProcessorType = domU.getMinimumProcessorType();
           AlertLevel alertLevel;
@@ -171,20 +171,20 @@ public class AnalyzedDom0Configuration {
           } else {
             // The further apart the generations, the higher the deviation
             int diff = minProcessorType.ordinal() - processorType.ordinal();
-            alertLevel = diff>0 ? AlertLevel.LOW : AlertLevel.NONE;
+            alertLevel = diff > 0 ? AlertLevel.LOW : AlertLevel.NONE;
             deviation = diff;
           }
           if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
             if (
-              !resultHandler.handleResult(
-                new ObjectResult<>(
-                  domU.getHostname(),
-                  minProcessorType,
-                  processorType,
-                  deviation,
-                  alertLevel
+                !resultHandler.handleResult(
+                    new ObjectResult<>(
+                        domU.getHostname(),
+                        minProcessorType,
+                        processorType,
+                        deviation,
+                        alertLevel
+                    )
                 )
-              )
             ) {
               return false;
             }
@@ -214,43 +214,43 @@ public class AnalyzedDom0Configuration {
         AlertLevel alertLevel;
         // The further apart the architectures, the higher the deviation
         int diff = minProcessorArchitecture.ordinal() - processorArchitecture.ordinal();
-        alertLevel = diff>0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
+        alertLevel = diff > 0 ? AlertLevel.CRITICAL : AlertLevel.NONE;
         if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
           if (
-            !resultHandler.handleResult(
-              new ObjectResult<>(
-                domU.getHostname(),
-                minProcessorArchitecture,
-                processorArchitecture,
-                (double)diff,
-                alertLevel
+              !resultHandler.handleResult(
+                  new ObjectResult<>(
+                      domU.getHostname(),
+                      minProcessorArchitecture,
+                      processorArchitecture,
+                      (double) diff,
+                      alertLevel
+                  )
               )
-            )
           ) {
             return false;
           }
         }
       } else if (
-        domUConfiguration.getSecondaryDom0() == dom0
-        && domU.getSecondaryRam() != -1
+          domUConfiguration.getSecondaryDom0() == dom0
+              && domU.getSecondaryRam() != -1
       ) {
         // Secondary is HIGH
         ProcessorArchitecture minProcessorArchitecture = domU.getMinimumProcessorArchitecture();
         AlertLevel alertLevel;
         // The further apart the architectures, the higher the deviation
         int diff = minProcessorArchitecture.ordinal() - processorArchitecture.ordinal();
-        alertLevel = diff>0 ? AlertLevel.HIGH : AlertLevel.NONE;
+        alertLevel = diff > 0 ? AlertLevel.HIGH : AlertLevel.NONE;
         if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
           if (
-            !resultHandler.handleResult(
-              new ObjectResult<>(
-                domU.getHostname(),
-                minProcessorArchitecture,
-                processorArchitecture,
-                (double)diff,
-                alertLevel
+              !resultHandler.handleResult(
+                  new ObjectResult<>(
+                      domU.getHostname(),
+                      minProcessorArchitecture,
+                      processorArchitecture,
+                      (double) diff,
+                      alertLevel
+                  )
               )
-            )
           ) {
             return false;
           }
@@ -275,11 +275,11 @@ public class AnalyzedDom0Configuration {
       for (DomUConfiguration domUConfiguration : domUConfigurations) {
         DomU domU = domUConfiguration.getDomU();
         if (
-          domUConfiguration.getPrimaryDom0() == dom0
-          || (
-            domUConfiguration.getSecondaryDom0() == dom0
-            && domU.getSecondaryRam() != -1
-          )
+            domUConfiguration.getPrimaryDom0() == dom0
+                || (
+                domUConfiguration.getSecondaryDom0() == dom0
+                    && domU.getSecondaryRam() != -1
+            )
         ) {
           int minSpeed = domU.getMinimumProcessorSpeed();
           AlertLevel alertLevel;
@@ -288,20 +288,20 @@ public class AnalyzedDom0Configuration {
             alertLevel = AlertLevel.NONE;
             deviation = 0;
           } else {
-            alertLevel = processorSpeed<minSpeed ? AlertLevel.LOW : AlertLevel.NONE;
-            deviation = (double)(minSpeed-processorSpeed)/(double)minSpeed;
+            alertLevel = processorSpeed < minSpeed ? AlertLevel.LOW : AlertLevel.NONE;
+            deviation = (double) (minSpeed - processorSpeed) / (double) minSpeed;
           }
           if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
             if (
-              !resultHandler.handleResult(
-                new ObjectResult<>(
-                  domU.getHostname(),
-                  minSpeed == -1 ? null : minSpeed,
-                  processorSpeed,
-                  deviation,
-                  alertLevel
+                !resultHandler.handleResult(
+                    new ObjectResult<>(
+                        domU.getHostname(),
+                        minSpeed == -1 ? null : minSpeed,
+                        processorSpeed,
+                        deviation,
+                        alertLevel
+                    )
                 )
-              )
             ) {
               return false;
             }
@@ -327,25 +327,25 @@ public class AnalyzedDom0Configuration {
       for (DomUConfiguration domUConfiguration : domUConfigurations) {
         DomU domU = domUConfiguration.getDomU();
         if (
-          domUConfiguration.getPrimaryDom0() == dom0
-          || (
-            domUConfiguration.getSecondaryDom0() == dom0
-            && domU.getSecondaryRam() != -1
-          )
+            domUConfiguration.getPrimaryDom0() == dom0
+                || (
+                domUConfiguration.getSecondaryDom0() == dom0
+                    && domU.getSecondaryRam() != -1
+            )
         ) {
           int minCores = domU.getProcessorCores();
-          AlertLevel alertLevel = minCores != -1 && processorCores<minCores ? AlertLevel.MEDIUM : AlertLevel.NONE;
+          AlertLevel alertLevel = minCores != -1 && processorCores < minCores ? AlertLevel.MEDIUM : AlertLevel.NONE;
           if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
             if (
-              !resultHandler.handleResult(
-                new ObjectResult<>(
-                  domU.getHostname(),
-                  minCores == -1 ? null : minCores,
-                  processorCores,
-                  (double)(minCores-processorCores)/(double)minCores,
-                  alertLevel
+                !resultHandler.handleResult(
+                    new ObjectResult<>(
+                        domU.getHostname(),
+                        minCores == -1 ? null : minCores,
+                        processorCores,
+                        (double) (minCores - processorCores) / (double) minCores,
+                        alertLevel
+                    )
                 )
-              )
             ) {
               return false;
             }
@@ -367,21 +367,21 @@ public class AnalyzedDom0Configuration {
       for (DomUConfiguration domUConfiguration : clusterConfiguration.getDomUConfigurations()) {
         if (domUConfiguration.getPrimaryDom0() == dom0) {
           DomU domU = domUConfiguration.getDomU();
-          allocatedPrimaryWeight += (int)domU.getProcessorCores() * (int)domU.getProcessorWeight();
+          allocatedPrimaryWeight += (int) domU.getProcessorCores() * (int) domU.getProcessorWeight();
         }
       }
       int totalWeight = dom0.getProcessorCores() * 1024;
       int overcommittedWeight = allocatedPrimaryWeight - totalWeight;
-      AlertLevel alertLevel = overcommittedWeight>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+      AlertLevel alertLevel = overcommittedWeight > 0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
       if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
         return resultHandler.handleResult(
-          new IntResult(
-            "Primary Processor Weight",
-            allocatedPrimaryWeight,
-            totalWeight,
-            ((double)overcommittedWeight / (double)totalWeight),
-            alertLevel
-          )
+            new IntResult(
+                "Primary Processor Weight",
+                allocatedPrimaryWeight,
+                totalWeight,
+                ((double) overcommittedWeight / (double) totalWeight),
+                alertLevel
+            )
         );
       }
     }
@@ -422,22 +422,22 @@ public class AnalyzedDom0Configuration {
         }
         if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
           if (
-            !resultHandler.handleResult(
-              new BooleanResult(
-                domU.getHostname(),
-                requiresHvm,
-                supportsHvm,
-                deviation,
-                alertLevel
+              !resultHandler.handleResult(
+                  new BooleanResult(
+                      domU.getHostname(),
+                      requiresHvm,
+                      supportsHvm,
+                      deviation,
+                      alertLevel
+                  )
               )
-            )
           ) {
             return false;
           }
         }
       } else if (
-        domUConfiguration.getSecondaryDom0() == dom0
-        && domU.getSecondaryRam() != -1
+          domUConfiguration.getSecondaryDom0() == dom0
+              && domU.getSecondaryRam() != -1
       ) {
         boolean requiresHvm = domU.getRequiresHvm();
         AlertLevel alertLevel;
@@ -460,15 +460,15 @@ public class AnalyzedDom0Configuration {
         }
         if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
           if (
-            !resultHandler.handleResult(
-              new BooleanResult(
-                domU.getHostname(),
-                requiresHvm,
-                supportsHvm,
-                deviation,
-                alertLevel
+              !resultHandler.handleResult(
+                  new BooleanResult(
+                      domU.getHostname(),
+                      requiresHvm,
+                      supportsHvm,
+                      deviation,
+                      alertLevel
+                  )
               )
-            )
           ) {
             return false;
           }
@@ -488,7 +488,7 @@ public class AnalyzedDom0Configuration {
       return Collections.emptyList();
     } else if (size == 1) {
       return Collections.singletonList(
-        new AnalyzedDom0DiskConfiguration(clusterConfiguration, clusterDom0Disks.values().iterator().next())
+          new AnalyzedDom0DiskConfiguration(clusterConfiguration, clusterDom0Disks.values().iterator().next())
       );
     } else {
       AnalyzedDom0DiskConfiguration[] array = new AnalyzedDom0DiskConfiguration[size];
@@ -496,7 +496,7 @@ public class AnalyzedDom0Configuration {
       for (Dom0Disk dom0Disk : clusterDom0Disks.values()) {
         array[index++] = new AnalyzedDom0DiskConfiguration(clusterConfiguration, dom0Disk);
       }
-      assert index == size : "index != size: "+index+" != "+size;
+      assert index == size : "index != size: " + index + " != " + size;
       return new UnmodifiableArrayList<>(array);
     }
   }

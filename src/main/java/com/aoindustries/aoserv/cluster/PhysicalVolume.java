@@ -42,7 +42,7 @@ public class PhysicalVolume implements Comparable<PhysicalVolume>, Serializable 
    * @see Dom0Disk#addPhysicalVolume
    */
   PhysicalVolume(String clusterName, String dom0Hostname, String device, short partition, long extents) {
-    assert extents>0 : "extents <= 0: "+extents;
+    assert extents > 0 : "extents <= 0: " + extents;
     this.clusterName = clusterName;
     this.dom0Hostname = dom0Hostname;
     this.device = device;
@@ -76,7 +76,7 @@ public class PhysicalVolume implements Comparable<PhysicalVolume>, Serializable 
   }
 
   static String toString(String clusterName, String dom0Hostname, String device, short partition) {
-    return Dom0Disk.toString(clusterName, dom0Hostname, device)+partition;
+    return Dom0Disk.toString(clusterName, dom0Hostname, device) + partition;
   }
 
   /**

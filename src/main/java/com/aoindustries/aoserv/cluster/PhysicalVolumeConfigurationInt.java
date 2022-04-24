@@ -42,20 +42,20 @@ public class PhysicalVolumeConfigurationInt extends PhysicalVolumeConfiguration 
   final int extents;
 
   PhysicalVolumeConfigurationInt(
-    PhysicalVolume physicalVolume,
-    int firstLogicalExtent,
-    int firstPhysicalExtent,
-    int extents
+      PhysicalVolume physicalVolume,
+      int firstLogicalExtent,
+      int firstPhysicalExtent,
+      int extents
   ) {
     super(physicalVolume);
-    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-    assert extents>0 : "extents <= 0: "+extents;
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: " + firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: " + firstPhysicalExtent;
+    assert extents > 0 : "extents <= 0: " + extents;
     assert
-      firstLogicalExtent>Short.MAX_VALUE
-      || firstPhysicalExtent>Short.MAX_VALUE
-      || extents>Short.MAX_VALUE
-      : "At least one of firstLogicalExtent, firstPhysicalExtent, and extents must be greater than Short.MAX_VALUE";
+        firstLogicalExtent > Short.MAX_VALUE
+            || firstPhysicalExtent > Short.MAX_VALUE
+            || extents > Short.MAX_VALUE
+        : "At least one of firstLogicalExtent, firstPhysicalExtent, and extents must be greater than Short.MAX_VALUE";
     this.firstLogicalExtent = firstLogicalExtent;
     this.firstPhysicalExtent = firstPhysicalExtent;
     this.extents = extents;

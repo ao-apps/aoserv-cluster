@@ -38,9 +38,9 @@ public class MoveSecondaryTransition extends Transition {
   private final Dom0 newSecondaryDom0;
 
   MoveSecondaryTransition(
-    DomU domU,
-    Dom0 oldSecondaryDom0,
-    Dom0 newSecondaryDom0
+      DomU domU,
+      Dom0 oldSecondaryDom0,
+      Dom0 newSecondaryDom0
   ) {
     this.domU = domU;
     this.oldSecondaryDom0 = oldSecondaryDom0;
@@ -61,6 +61,6 @@ public class MoveSecondaryTransition extends Transition {
 
   @Override
   public String toString() {
-    return "Move "+domU.getHostname()+" secondary from "+oldSecondaryDom0.getHostname()+" to "+newSecondaryDom0.getHostname();
+    return "Move " + domU.getHostname() + " secondary from " + oldSecondaryDom0.getHostname() + " to " + newSecondaryDom0.getHostname();
   }
 }

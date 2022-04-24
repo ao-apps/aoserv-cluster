@@ -48,8 +48,8 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    */
   private static boolean isSorted(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
     int size = physicalVolumeConfigurations.size();
-    for (int c=1; c<size; c++) {
-      if (physicalVolumeConfigurations.get(c-1).compareTo(physicalVolumeConfigurations.get(c))>0) {
+    for (int c = 1; c < size; c++) {
+      if (physicalVolumeConfigurations.get(c - 1).compareTo(physicalVolumeConfigurations.get(c)) > 0) {
         return false;
       }
     }
@@ -72,9 +72,9 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    */
   private static boolean overlaps(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
     int size = physicalVolumeConfigurations.size();
-    for (int c=1;c<size;c++) {
-      PhysicalVolumeConfiguration pv1 = physicalVolumeConfigurations.get(c-1);
-      for (int d=c; d<size; d++) {
+    for (int c = 1; c < size; c++) {
+      PhysicalVolumeConfiguration pv1 = physicalVolumeConfigurations.get(c - 1);
+      for (int d = c; d < size; d++) {
         PhysicalVolumeConfiguration pv2 = physicalVolumeConfigurations.get(d);
         if (pv1.overlaps(pv2)) {
           if (logger.isLoggable(Level.FINER)) {
@@ -92,15 +92,15 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    */
   private static boolean allSameDom0(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations) {
     int size = physicalVolumeConfigurations.size();
-    if (size>1) {
+    if (size > 1) {
       PhysicalVolume pv = physicalVolumeConfigurations.get(0).physicalVolume;
       String clusterName = pv.clusterName;
       String dom0Hostname = pv.dom0Hostname;
-      for (int c=1; c<size; c++) {
+      for (int c = 1; c < size; c++) {
         pv = physicalVolumeConfigurations.get(1).physicalVolume;
         if (
-          !clusterName.equals(pv.clusterName)
-          || !dom0Hostname.equals(pv.dom0Hostname)
+            !clusterName.equals(pv.clusterName)
+                || !dom0Hostname.equals(pv.dom0Hostname)
         ) {
           return false;
         }
@@ -114,14 +114,14 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    * They must also both be sorted to ensure proper results from hashCode and equals.
    */
   DomUDiskConfiguration(
-    DomUDisk domUDisk,
-    List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
-    List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
+      DomUDisk domUDisk,
+      List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
+      List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
   ) {
     assert isSorted(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
     assert isSorted(secondaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
-    assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk="+domUDisk+", domUDisk.extents="+domUDisk.extents+", primaryPhysicalVolumeConfigurations="+primaryPhysicalVolumeConfigurations;
-    assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk="+domUDisk+", domUDisk.extents="+domUDisk.extents+", secondaryPhysicalVolumeConfigurations="+secondaryPhysicalVolumeConfigurations;
+    assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk + ", domUDisk.extents=" + domUDisk.extents + ", primaryPhysicalVolumeConfigurations=" + primaryPhysicalVolumeConfigurations;
+    assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk + ", domUDisk.extents=" + domUDisk.extents + ", secondaryPhysicalVolumeConfigurations=" + secondaryPhysicalVolumeConfigurations;
     assert !overlaps(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations contains overlapping segments";
     assert !overlaps(secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations contains overlapping segments";
     assert allSameDom0(primaryPhysicalVolumeConfigurations) : "not all primaryPhysicalVolumeConfigurations are on the same Dom0";
@@ -163,7 +163,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    */
   @Override
   public boolean equals(Object obj) {
-    return (obj instanceof DomUDiskConfiguration) && equals((DomUDiskConfiguration)obj);
+    return (obj instanceof DomUDiskConfiguration) && equals((DomUDiskConfiguration) obj);
   }
 
   /**
@@ -173,22 +173,22 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
    */
   public boolean equals(DomUDiskConfiguration other) {
     return
-      this == other
-      || (
-        other != null
-        && domUDisk == other.domUDisk
-        && primaryPhysicalVolumeConfigurations.equals(other.primaryPhysicalVolumeConfigurations)
-        && secondaryPhysicalVolumeConfigurations.equals(other.secondaryPhysicalVolumeConfigurations)
-      )
+        this == other
+            || (
+            other != null
+                && domUDisk == other.domUDisk
+                && primaryPhysicalVolumeConfigurations.equals(other.primaryPhysicalVolumeConfigurations)
+                && secondaryPhysicalVolumeConfigurations.equals(other.secondaryPhysicalVolumeConfigurations)
+        )
     ;
   }
 
   @Override
   public int hashCode() {
     return
-      + 127*domUDisk.hashCode()
-      + 31*primaryPhysicalVolumeConfigurations.hashCode()
-      + secondaryPhysicalVolumeConfigurations.hashCode()
+        +127 * domUDisk.hashCode()
+            + 31 * primaryPhysicalVolumeConfigurations.hashCode()
+            + secondaryPhysicalVolumeConfigurations.hashCode()
     ;
   }
 

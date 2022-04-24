@@ -104,16 +104,16 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
         }
       }
       int overcommitDiskWeight = allocatedDiskWeight - 1024;
-      AlertLevel alertLevel = overcommitDiskWeight>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+      AlertLevel alertLevel = overcommitDiskWeight > 0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
       if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
         return resultHandler.handleResult(
-          new IntResult(
-            "Allocated Weight",
-            allocatedDiskWeight,
-            1024,
-            (double)overcommitDiskWeight / (double)1024,
-            alertLevel
-          )
+            new IntResult(
+                "Allocated Weight",
+                allocatedDiskWeight,
+                1024,
+                (double) overcommitDiskWeight / (double) 1024,
+                alertLevel
+            )
         );
       }
     }
@@ -128,7 +128,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
   public boolean getDiskSpeedResults(ResultHandler<? super Integer> resultHandler, AlertLevel minimumAlertLevel) {
     if (minimumAlertLevel.compareTo(AlertLevel.MEDIUM) <= 0) {
       List<DomUConfiguration> domUConfigurations = clusterConfiguration.getDomUConfigurations();
-      for (int c=0, sizeC=domUConfigurations.size(); c<sizeC; c++) {
+      for (int c = 0, sizeC = domUConfigurations.size(); c < sizeC; c++) {
         DomUConfiguration domUConfiguration = domUConfigurations.get(c);
         // Must be either primary or secondary on this
         boolean isPrimary;
@@ -142,7 +142,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
           continue;
         }
         List<DomUDiskConfiguration> domUDiskConfigurations = domUConfiguration.getDomUDiskConfigurations();
-        for (int d=0, sizeD=domUDiskConfigurations.size(); d<sizeD; d++) {
+        for (int d = 0, sizeD = domUDiskConfigurations.size(); d < sizeD; d++) {
           DomUDiskConfiguration domUDiskConfiguration = domUDiskConfigurations.get(d);
           DomUDisk domUDisk = domUDiskConfiguration.getDomUDisk();
           long totalExtents = domUDisk.getExtents();
@@ -155,7 +155,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
           } else {
             physicalVolumeConfigurations = domUDiskConfiguration.getSecondaryPhysicalVolumeConfigurations();
           }
-          for (int e=0, sizeE=physicalVolumeConfigurations.size(); e<sizeE; e++) {
+          for (int e = 0, sizeE = physicalVolumeConfigurations.size(); e < sizeE; e++) {
             PhysicalVolumeConfiguration physicalVolumeConfiguration = physicalVolumeConfigurations.get(e);
             PhysicalVolume physicalVolume = physicalVolumeConfiguration.getPhysicalVolume();
             if (physicalVolume.getDevice().equals(dom0Disk.getDevice())) {
@@ -167,7 +167,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
               }
               long pvExtents = physicalVolumeConfiguration.getExtents();
               int diskSpeed = dom0Disk.getDiskSpeed();
-              if (diskSpeed<minDiskSpeed) {
+              if (diskSpeed < minDiskSpeed) {
                 tooSlowExtents += pvExtents;
               }
               extentsFound += pvExtents;
@@ -177,19 +177,19 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
               }
             }
           }
-          if (extentsFound>0) {
-            AlertLevel alertLevel = minDiskSpeed != -1 && tooSlowExtents>0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
+          if (extentsFound > 0) {
+            AlertLevel alertLevel = minDiskSpeed != -1 && tooSlowExtents > 0 ? AlertLevel.MEDIUM : AlertLevel.NONE;
             if (alertLevel.compareTo(minimumAlertLevel) >= 0) {
               if (!
-                resultHandler.handleResult(
-                  new ObjectResult<>(
-                    domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
-                    minDiskSpeed == -1 ? null : minDiskSpeed,
-                    null,
-                    (double)tooSlowExtents/(double)totalExtents,
-                    alertLevel
+                  resultHandler.handleResult(
+                      new ObjectResult<>(
+                          domUDisk.getDomUHostname() + ":" + domUDisk.getDevice(),
+                          minDiskSpeed == -1 ? null : minDiskSpeed,
+                          null,
+                          (double) tooSlowExtents / (double) totalExtents,
+                          alertLevel
+                      )
                   )
-                )
               ) {
                 return false;
               }

@@ -47,14 +47,14 @@ public class ListElement implements Comparable<ListElement> {
   final double heuristic;
 
   ListElement(
-    ListElement previous,
-    Transition transition,
-    ClusterConfiguration clusterConfiguration,
-    double heuristic
+      ListElement previous,
+      Transition transition,
+      ClusterConfiguration clusterConfiguration,
+      double heuristic
   ) {
     this.previous = previous;
     this.transition = transition;
-    this.pathLen = previous == null ? 0 : (previous.pathLen+1);
+    this.pathLen = previous == null ? 0 : (previous.pathLen + 1);
     assert clusterConfiguration != null : "clusterConfiguration is null";
     this.clusterConfiguration = clusterConfiguration;
     this.heuristic = heuristic;
@@ -67,10 +67,10 @@ public class ListElement implements Comparable<ListElement> {
   public int compareTo(ListElement other) {
     double h1 = heuristic;
     double h2 = other.heuristic;
-    if (h1<h2) {
+    if (h1 < h2) {
       return -1;
     }
-    if (h2<h1) {
+    if (h2 < h1) {
       return 1;
     }
     return 0;

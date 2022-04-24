@@ -62,16 +62,16 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
    * @see Cluster#addDom0
    */
   Dom0(
-    String clusterName,
-    String hostname,
-    /*Rack rack,*/
-    int ram,
-    ProcessorType processorType,
-    ProcessorArchitecture processorArchitecture,
-    int processorSpeed,
-    int processorCores,
-    boolean supportsHvm,
-    Map<String, Dom0Disk> unmodifiableDom0Disks
+      String clusterName,
+      String hostname,
+      /*Rack rack,*/
+      int ram,
+      ProcessorType processorType,
+      ProcessorArchitecture processorArchitecture,
+      int processorSpeed,
+      int processorCores,
+      boolean supportsHvm,
+      Map<String, Dom0Disk> unmodifiableDom0Disks
   ) {
     assert clusterName != null : "clusterName is null";
     assert hostname != null : "hostname is null";
@@ -160,7 +160,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
   }
 
   static String toString(String clusterName, String hostname) {
-    return Cluster.toString(clusterName) /*rack.toString()*/+'/'+hostname;
+    return Cluster.toString(clusterName) /*rack.toString()*/+ '/' + hostname;
   }
 
   /**

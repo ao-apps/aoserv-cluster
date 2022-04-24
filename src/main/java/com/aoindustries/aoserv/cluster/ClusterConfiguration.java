@@ -72,7 +72,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     if (size == 0) {
       return Collections.singletonList(newValue);
     }
-    V[] newArray = (V[])Array.newInstance(clazz, size+1);
+    V[] newArray = (V[]) Array.newInstance(clazz, size + 1);
     newArray = existingList.toArray(newArray);
     newArray[size] = newValue;
     //Arrays.sort(newArray);
@@ -88,11 +88,11 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     int size = existingList.size();
     assert size != 0 : "List is empty";
     if (size == 1) {
-      assert index == 0 : "List size is 1 but index != 0: "+index;
+      assert index == 0 : "List size is 1 but index != 0: " + index;
       return Collections.singletonList(newValue);
     }
-    assert index >= 0 && index<size : "Index out of range: "+index;
-    V[] newArray = (V[])Array.newInstance(clazz, size);
+    assert index >= 0 && index < size : "Index out of range: " + index;
+    V[] newArray = (V[]) Array.newInstance(clazz, size);
     newArray = existingList.toArray(newArray);
     newArray[index] = newValue;
     //Arrays.sort(newArray);
@@ -112,7 +112,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     if (size == 1) {
       return Collections.singletonList(original.get(0));
     }
-    V[] newArray = (V[])Array.newInstance(clazz, size);
+    V[] newArray = (V[]) Array.newInstance(clazz, size);
     newArray = original.toArray(newArray);
     Arrays.sort(newArray);
     return new UnmodifiableArrayList<>(newArray);
@@ -131,13 +131,13 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     if (size == 1) {
       return Collections.singletonList(original.get(0));
     }
-    V[] newArray = (V[])Array.newInstance(clazz, size);
+    V[] newArray = (V[]) Array.newInstance(clazz, size);
     newArray = original.toArray(newArray);
     return new UnmodifiableArrayList<>(newArray);
   }
 
   private static int computeHashCode(Cluster cluster, List<DomUConfiguration> unmodifiableDomUConfigurations) {
-    return 31*cluster.hashCode() + unmodifiableDomUConfigurations.hashCode();
+    return 31 * cluster.hashCode() + unmodifiableDomUConfigurations.hashCode();
   }
 
   // These are here just for generic-type-specific versions
@@ -209,23 +209,23 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
 
   public ClusterConfiguration addDomUConfiguration(DomU domU, Dom0 primaryDom0, Dom0 secondaryDom0) {
     // Make sure DomU not already added
-    assert !contains(unmodifiableDomUConfigurations, domU) : this+": DomU already exists in this configuration: "+domU;
+    assert !contains(unmodifiableDomUConfigurations, domU) : this + ": DomU already exists in this configuration: " + domU;
 
-    assert domU.clusterName.equals(cluster.name) : this+": DomU is not part of this cluster: "+domU;
-    assert primaryDom0.clusterName.equals(cluster.name) : this+": primaryDom0 is not part of this cluster: "+primaryDom0;
-    assert secondaryDom0.clusterName.equals(cluster.name) : this+": secondaryDom0 is not part of this cluster: "+secondaryDom0;
+    assert domU.clusterName.equals(cluster.name) : this + ": DomU is not part of this cluster: " + domU;
+    assert primaryDom0.clusterName.equals(cluster.name) : this + ": primaryDom0 is not part of this cluster: " + primaryDom0;
+    assert secondaryDom0.clusterName.equals(cluster.name) : this + ": secondaryDom0 is not part of this cluster: " + secondaryDom0;
     return new ClusterConfiguration(
-      cluster,
-      addToUnmodifiableList(
-        DomUConfiguration.class,
-        unmodifiableDomUConfigurations,
-        new DomUConfiguration(
-          domU,
-          primaryDom0,
-          secondaryDom0,
-          emptyDomUDiskConfigurationList
+        cluster,
+        addToUnmodifiableList(
+            DomUConfiguration.class,
+            unmodifiableDomUConfigurations,
+            new DomUConfiguration(
+                domU,
+                primaryDom0,
+                secondaryDom0,
+                emptyDomUDiskConfigurationList
+            )
         )
-      )
     );
   }
 
@@ -241,8 +241,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   private static boolean allDom0Match(List<PhysicalVolumeConfiguration> physicalVolumeConfigurations, Dom0 dom0) {
     for (PhysicalVolumeConfiguration pvc : physicalVolumeConfigurations) {
       if (
-        !pvc.physicalVolume.clusterName.equals(dom0.clusterName)
-        || !pvc.physicalVolume.dom0Hostname.equals(dom0.hostname)
+          !pvc.physicalVolume.clusterName.equals(dom0.clusterName)
+              || !pvc.physicalVolume.dom0Hostname.equals(dom0.hostname)
       ) {
         return false;
       }
@@ -251,27 +251,27 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   }
 
   public ClusterConfiguration addDomUDiskConfiguration(
-    DomU domU,
-    DomUDisk domUDisk,
-    List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
-    List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
+      DomU domU,
+      DomUDisk domUDisk,
+      List<PhysicalVolumeConfiguration> primaryPhysicalVolumeConfigurations,
+      List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations
   ) {
-    assert domUDisk.clusterName.equals(domU.clusterName) : this+": DomUDisk.clusterName != DomU.clusterName: "+domUDisk.clusterName+" != "+domU.clusterName;
-    assert domUDisk.domUHostname.equals(domU.hostname) : this+": DomUDisk.domUHostname != DomU.hostname: "+domUDisk.domUHostname+" != "+domU.hostname;
+    assert domUDisk.clusterName.equals(domU.clusterName) : this + ": DomUDisk.clusterName != DomU.clusterName: " + domUDisk.clusterName + " != " + domU.clusterName;
+    assert domUDisk.domUHostname.equals(domU.hostname) : this + ": DomUDisk.domUHostname != DomU.hostname: " + domUDisk.domUHostname + " != " + domU.hostname;
 
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
-    for (int len=unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex<len; unmodifiableDomUConfigurationsIndex++) {
+    for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
       DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
       if (tDomUConfiguration.domU == domU) {
         domUConfiguration = tDomUConfiguration;
         break;
       }
     }
-    assert domUConfiguration != null : this+": DomUConfiguration not found: "+domU;
+    assert domUConfiguration != null : this + ": DomUConfiguration not found: " + domU;
 
     // Make sure DomUDisk not already added
-    assert !contains(domUConfiguration.unmodifiableDomUDiskConfigurations, domUDisk) : domUConfiguration+": DomUDisk already exists in this configuration: "+domUDisk;
+    assert !contains(domUConfiguration.unmodifiableDomUDiskConfigurations, domUDisk) : domUConfiguration + ": DomUDisk already exists in this configuration: " + domUDisk;
 
     // Make a sorted, unmodifiable, defensive copy of the inputs
     List<PhysicalVolumeConfiguration> primaryPVCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, primaryPhysicalVolumeConfigurations);
@@ -282,26 +282,26 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     assert allDom0Match(secondaryPVCopy, domUConfiguration.secondaryDom0);
 
     return new ClusterConfiguration(
-      cluster,
-      replaceInUnmodifiableList(
-        DomUConfiguration.class,
-        unmodifiableDomUConfigurations,
-        unmodifiableDomUConfigurationsIndex,
-        new DomUConfiguration(
-          domUConfiguration.domU,
-          domUConfiguration.primaryDom0,
-          domUConfiguration.secondaryDom0,
-          addToUnmodifiableList(
-            DomUDiskConfiguration.class,
-            domUConfiguration.unmodifiableDomUDiskConfigurations,
-            new DomUDiskConfiguration(
-              domUDisk,
-              primaryPVCopy,
-              secondaryPVCopy
+        cluster,
+        replaceInUnmodifiableList(
+            DomUConfiguration.class,
+            unmodifiableDomUConfigurations,
+            unmodifiableDomUConfigurationsIndex,
+            new DomUConfiguration(
+                domUConfiguration.domU,
+                domUConfiguration.primaryDom0,
+                domUConfiguration.secondaryDom0,
+                addToUnmodifiableList(
+                    DomUDiskConfiguration.class,
+                    domUConfiguration.unmodifiableDomUDiskConfigurations,
+                    new DomUDiskConfiguration(
+                        domUDisk,
+                        primaryPVCopy,
+                        secondaryPVCopy
+                    )
+                )
             )
-          )
         )
-      )
     );
   }
 
@@ -312,14 +312,14 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     // Find existing configuration
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
-    for (int len=unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex<len; unmodifiableDomUConfigurationsIndex++) {
+    for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
       DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
       if (tDomUConfiguration.domU == domU) {
         domUConfiguration = tDomUConfiguration;
         break;
       }
     }
-    assert domUConfiguration != null : this+": DomUConfiguration not found: "+domU;
+    assert domUConfiguration != null : this + ": DomUConfiguration not found: " + domU;
 
     List<DomUDiskConfiguration> oldDomUDiskConfigurations = domUConfiguration.unmodifiableDomUDiskConfigurations;
     List<DomUDiskConfiguration> newDomUDiskConfigurations;
@@ -330,38 +330,38 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
       // Swap single
       DomUDiskConfiguration oldDomUDiskConfiguration = oldDomUDiskConfigurations.get(0);
       newDomUDiskConfigurations = Collections.singletonList(
-        new DomUDiskConfiguration(
-          oldDomUDiskConfiguration.domUDisk,
-          oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
-          oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
-        )
+          new DomUDiskConfiguration(
+              oldDomUDiskConfiguration.domUDisk,
+              oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
+              oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
+          )
       );
     } else {
       // Build new ArrayList
       DomUDiskConfiguration[] array = new DomUDiskConfiguration[size];
-      for (int c=0;c<size;c++) {
+      for (int c = 0; c < size; c++) {
         DomUDiskConfiguration oldDomUDiskConfiguration = oldDomUDiskConfigurations.get(c);
         array[c] = new DomUDiskConfiguration(
-          oldDomUDiskConfiguration.domUDisk,
-          oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
-          oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
+            oldDomUDiskConfiguration.domUDisk,
+            oldDomUDiskConfiguration.secondaryPhysicalVolumeConfigurations,
+            oldDomUDiskConfiguration.primaryPhysicalVolumeConfigurations
         );
       }
       newDomUDiskConfigurations = new UnmodifiableArrayList<>(array);
     }
     return new ClusterConfiguration(
-      cluster,
-      replaceInUnmodifiableList(
-        DomUConfiguration.class,
-        unmodifiableDomUConfigurations,
-        unmodifiableDomUConfigurationsIndex,
-        new DomUConfiguration(
-          domU,
-          domUConfiguration.secondaryDom0,
-          domUConfiguration.primaryDom0,
-          newDomUDiskConfigurations
+        cluster,
+        replaceInUnmodifiableList(
+            DomUConfiguration.class,
+            unmodifiableDomUConfigurations,
+            unmodifiableDomUConfigurationsIndex,
+            new DomUConfiguration(
+                domU,
+                domUConfiguration.secondaryDom0,
+                domUConfiguration.primaryDom0,
+                newDomUDiskConfigurations
+            )
         )
-      )
     );
   }
 
@@ -403,14 +403,14 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     // Find existing configuration
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
-    for (int len=unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex<len; unmodifiableDomUConfigurationsIndex++) {
+    for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
       DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
       if (tDomUConfiguration.domU == domU) {
         domUConfiguration = tDomUConfiguration;
         break;
       }
     }
-    assert domUConfiguration != null : this+": DomUConfiguration not found: "+domU;
+    assert domUConfiguration != null : this + ": DomUConfiguration not found: " + domU;
 
     Map<String, DomUDisk> domUDisks = domU.getDomUDisks();
     Iterator<Map.Entry<String, DomUDisk>> domUDisksIter = domUDisks.entrySet().iterator();
@@ -418,20 +418,20 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
       // Short-cut if domU has no disks
       List<DomUDiskConfiguration> newDomUDiskConfigurations = Collections.emptyList();
       return Collections.singletonList(
-        new ClusterConfiguration(
-          cluster,
-          replaceInUnmodifiableList(
-            DomUConfiguration.class,
-            unmodifiableDomUConfigurations,
-            unmodifiableDomUConfigurationsIndex,
-            new DomUConfiguration(
-              domU,
-              domUConfiguration.primaryDom0,
-              newSecondaryDom0,
-              newDomUDiskConfigurations
-            )
+          new ClusterConfiguration(
+              cluster,
+              replaceInUnmodifiableList(
+                  DomUConfiguration.class,
+                  unmodifiableDomUConfigurations,
+                  unmodifiableDomUConfigurationsIndex,
+                  new DomUConfiguration(
+                      domU,
+                      domUConfiguration.primaryDom0,
+                      newSecondaryDom0,
+                      newDomUDiskConfigurations
+                  )
+              )
           )
-        )
       );
     }
 
@@ -442,7 +442,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
       DomUDisk nextDomUDisk = domUDisksIter.next().getValue();
       int nextMinSpeed = nextDomUDisk.minimumDiskSpeed;
       if (nextMinSpeed != firstMinSpeed) {
-        throw new AssertionError("DomUDisks have different minimum speeds: "+firstDomUDisk+"="+firstMinSpeed+" while "+nextDomUDisk+"="+nextMinSpeed);
+        throw new AssertionError("DomUDisks have different minimum speeds: " + firstDomUDisk + "=" + firstMinSpeed + " while " + nextDomUDisk + "=" + nextMinSpeed);
       }
     }
 
@@ -452,7 +452,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
       for (PhysicalVolume physicalVolume : dom0Disk.unmodifiablePhysicalVolumes.values()) {
         // Find if allocated
         boolean allocated = false;
-   ALLOCATED: for (DomUConfiguration duc : unmodifiableDomUConfigurations) {
+        ALLOCATED: for (DomUConfiguration duc : unmodifiableDomUConfigurations) {
           if (duc.primaryDom0 == newSecondaryDom0) {
             // Primary matches
             for (DomUDiskConfiguration dudc : duc.unmodifiableDomUDiskConfigurations) {
@@ -502,8 +502,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     List<PhysicalVolumeConfiguration> secondaryPhysicalVolumeConfigurations = new ArrayList<>();
     // Work through each Dom0Disk as a starting point
     List<Dom0Disk> unallocatedDom0DisksList = new ArrayList<>(unallocatedDom0Disks.keySet());
-START_DISK:
-    for (int startDiskIndex = 0; startDiskIndex<size; startDiskIndex++) {
+    START_DISK:
+    for (int startDiskIndex = 0; startDiskIndex < size; startDiskIndex++) {
       // These are all used to iterate through the physical volumes during allocation
       int currentDiskIndex = startDiskIndex;
       Dom0Disk currentDom0Disk = unallocatedDom0DisksList.get(currentDiskIndex);
@@ -517,10 +517,10 @@ START_DISK:
       // Allocate all the extents of the free physical volumes in order on each Dom0Disk in order until VM mapped
       newDomUDiskConfigurations.clear();
       List<DomUDiskConfiguration> domUDiskConfigurations = domUConfiguration.unmodifiableDomUDiskConfigurations;
-DOMU_DISK:
+      DOMU_DISK:
       for (
-        int domUDiskConfigurationsIndex=0, domUDiskConfigurationsSize=domUDiskConfigurations.size();
-        domUDiskConfigurationsIndex<domUDiskConfigurationsSize;
+        int domUDiskConfigurationsIndex = 0, domUDiskConfigurationsSize = domUDiskConfigurations.size();
+        domUDiskConfigurationsIndex < domUDiskConfigurationsSize;
         domUDiskConfigurationsIndex++
       ) {
         DomUDiskConfiguration domUDiskConfiguration = domUDiskConfigurations.get(domUDiskConfigurationsIndex);
@@ -530,32 +530,32 @@ DOMU_DISK:
 
         while (true) {
           // Add to domUDisk
-          long allocatingExtents = currentPhysicalVolumeExtentsRemaing<domUDiskAllocationRemaining ? currentPhysicalVolumeExtentsRemaing : domUDiskAllocationRemaining;
+          long allocatingExtents = currentPhysicalVolumeExtentsRemaing < domUDiskAllocationRemaining ? currentPhysicalVolumeExtentsRemaing : domUDiskAllocationRemaining;
           secondaryPhysicalVolumeConfigurations.add(
-            PhysicalVolumeConfiguration.newInstance(
-              currentPhysicalVolume,
-              domUDisk.extents - domUDiskAllocationRemaining,
-              currentPhysicalVolume.extents - currentPhysicalVolumeExtentsRemaing,
-              allocatingExtents
-            )
+              PhysicalVolumeConfiguration.newInstance(
+                  currentPhysicalVolume,
+                  domUDisk.extents - domUDiskAllocationRemaining,
+                  currentPhysicalVolume.extents - currentPhysicalVolumeExtentsRemaing,
+                  allocatingExtents
+              )
           );
           domUDiskAllocationRemaining -= allocatingExtents;
-          assert domUDiskAllocationRemaining >= 0 : "domUDiskAllocationRemaining<0: "+domUDiskAllocationRemaining;
+          assert domUDiskAllocationRemaining >= 0 : "domUDiskAllocationRemaining<0: " + domUDiskAllocationRemaining;
 
           // Update iteration of physical volumes
           currentPhysicalVolumeExtentsRemaing -= allocatingExtents;
-          assert currentPhysicalVolumeExtentsRemaing >= 0 : "currentPhysicalVolumeExtentsRemaing<0: "+currentPhysicalVolumeExtentsRemaing;
+          assert currentPhysicalVolumeExtentsRemaing >= 0 : "currentPhysicalVolumeExtentsRemaing<0: " + currentPhysicalVolumeExtentsRemaing;
           boolean hasMorePhysicalExtents;
           if (currentPhysicalVolumeExtentsRemaing == 0) {
             // Update to point to the next physical volume
             currentPhysicalVolumeIndex++;
-            if (currentPhysicalVolumeIndex<currentPhysicalVolumes.size()) {
+            if (currentPhysicalVolumeIndex < currentPhysicalVolumes.size()) {
               currentPhysicalVolume = currentPhysicalVolumes.get(currentPhysicalVolumeIndex);
               currentPhysicalVolumeExtentsRemaing = currentPhysicalVolume.extents;
               hasMorePhysicalExtents = true;
             } else {
               currentDiskIndex++;
-              if (currentDiskIndex<unallocatedDom0DisksList.size()) {
+              if (currentDiskIndex < unallocatedDom0DisksList.size()) {
                 currentDom0Disk = unallocatedDom0DisksList.get(currentDiskIndex);
                 assert currentDom0Disk != null : "dom0Disk is null";
                 currentPhysicalVolumes = unallocatedDom0Disks.get(currentDom0Disk);
@@ -575,16 +575,16 @@ DOMU_DISK:
           // If mapping complete add to domUConfigurations
           if (domUDiskAllocationRemaining <= 0) {
             // This must be the last DomUDisk to be accepted
-            if (!hasMorePhysicalExtents && domUDiskConfigurationsIndex<(domUDiskConfigurationsSize-1)) {
+            if (!hasMorePhysicalExtents && domUDiskConfigurationsIndex < (domUDiskConfigurationsSize - 1)) {
               // More disks but no room left, can't allocate any more
               break START_DISK;
             }
             newDomUDiskConfigurations.add(
-              new DomUDiskConfiguration(
-                domUDisk,
-                domUDiskConfiguration.primaryPhysicalVolumeConfigurations,
-                getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations)
-              )
+                new DomUDiskConfiguration(
+                    domUDisk,
+                    domUDiskConfiguration.primaryPhysicalVolumeConfigurations,
+                    getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations)
+                )
             );
             continue DOMU_DISK;
           }
@@ -605,7 +605,7 @@ DOMU_DISK:
           int mappedSize = alreadyMappedDiskConfigs.size();
           if (mappedSize == newDomUDiskConfigurations.size()) {
             alreadyContains = true;
-            for (int c=0; c<mappedSize; c++) {
+            for (int c = 0; c < mappedSize; c++) {
               DomUDiskConfiguration alreadyMappedDiskConfig = alreadyMappedDiskConfigs.get(c);
               DomUDiskConfiguration newDiskConfig = newDomUDiskConfigurations.get(c);
               assert alreadyMappedDiskConfig.domUDisk == newDiskConfig.domUDisk : "alreadyMappedDiskConfig.domUDisk != newDiskConfig.domUDisk";
@@ -613,16 +613,16 @@ DOMU_DISK:
               List<PhysicalVolumeConfiguration> newPVConfigs = newDiskConfig.secondaryPhysicalVolumeConfigurations;
               int pvSize = alreadyMappedPVConfigs.size();
               if (pvSize == newPVConfigs.size()) {
-                for (int pvIndex=0; pvIndex<pvSize; pvIndex++) {
+                for (int pvIndex = 0; pvIndex < pvSize; pvIndex++) {
                   // TODO: Also consider total extents mapped (interaction with other VMs)?
                   // TODO: Consider match by total extents and those of other VMs?
                   // TODO: Or, just randomize the order???
                   PhysicalVolumeConfiguration alreadyMappedPVConfig = alreadyMappedPVConfigs.get(pvIndex);
                   PhysicalVolumeConfiguration newPVConfig = newPVConfigs.get(pvIndex);
                   if (
-                    alreadyMappedPVConfig.getFirstLogicalExtent() != newPVConfig.getFirstLogicalExtent()
-                    || alreadyMappedPVConfig.getFirstPhysicalExtent() != newPVConfig.getFirstPhysicalExtent()
-                    || alreadyMappedPVConfig.getExtents() != newPVConfig.getExtents()
+                      alreadyMappedPVConfig.getFirstLogicalExtent() != newPVConfig.getFirstLogicalExtent()
+                          || alreadyMappedPVConfig.getFirstPhysicalExtent() != newPVConfig.getFirstPhysicalExtent()
+                          || alreadyMappedPVConfig.getExtents() != newPVConfig.getExtents()
                   ) {
                     alreadyContains = false;
                     break;
@@ -644,20 +644,20 @@ DOMU_DISK:
         alreadyContainsCount++;
       } else {
         mappedConfigurations.add(
-          new ClusterConfiguration(
-            cluster,
-            replaceInUnmodifiableList(
-              DomUConfiguration.class,
-              unmodifiableDomUConfigurations,
-              unmodifiableDomUConfigurationsIndex,
-              new DomUConfiguration(
-                domU,
-                domUConfiguration.primaryDom0,
-                newSecondaryDom0,
-                getUnmodifiableCopy(DomUDiskConfiguration.class, newDomUDiskConfigurations)
-              )
+            new ClusterConfiguration(
+                cluster,
+                replaceInUnmodifiableList(
+                    DomUConfiguration.class,
+                    unmodifiableDomUConfigurations,
+                    unmodifiableDomUConfigurationsIndex,
+                    new DomUConfiguration(
+                        domU,
+                        domUConfiguration.primaryDom0,
+                        newSecondaryDom0,
+                        getUnmodifiableCopy(DomUDiskConfiguration.class, newDomUDiskConfigurations)
+                    )
+                )
             )
-          )
         );
       }
     }
@@ -669,13 +669,13 @@ DOMU_DISK:
         mappedCount++;
         long currentTime = System.currentTimeMillis();
         long timeSince = currentTime - lastDisplayTime;
-        if (timeSince<0 || timeSince >= 60000) {
+        if (timeSince < 0 || timeSince >= 60000) {
           System.out.println(
-            "        totalMapped:"+totalMapped
-            + " totalAlreadyContains:"+totalAlreadyContains
-            + " mappedCount:"+mappedCount
-            + " averageMapped:"+((float)totalMapped/(float)mappedCount)
-            + " averageAlreadyContains:"+((float)totalAlreadyContains/(float)mappedCount)
+              "        totalMapped:" + totalMapped
+                  + " totalAlreadyContains:" + totalAlreadyContains
+                  + " mappedCount:" + mappedCount
+                  + " averageMapped:" + ((float) totalMapped / (float) mappedCount)
+                  + " averageAlreadyContains:" + ((float) totalAlreadyContains / (float) mappedCount)
           );
           //mappedCount = 0;
           //totalMapped = 0;
@@ -700,7 +700,7 @@ DOMU_DISK:
    */
   @Override
   public boolean equals(Object obj) {
-    return (obj instanceof ClusterConfiguration) && equals((ClusterConfiguration)obj);
+    return (obj instanceof ClusterConfiguration) && equals((ClusterConfiguration) obj);
   }
 
   /**

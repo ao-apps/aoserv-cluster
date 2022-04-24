@@ -44,38 +44,38 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
    *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
    */
   public static PhysicalVolumeConfiguration newInstance(
-    PhysicalVolume physicalVolume,
-    long firstLogicalExtent,
-    long firstPhysicalExtent,
-    long extents
+      PhysicalVolume physicalVolume,
+      long firstLogicalExtent,
+      long firstPhysicalExtent,
+      long extents
   ) {
-    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: "+firstLogicalExtent;
-    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: "+firstPhysicalExtent;
-    assert extents>0 : "extents <= 0: "+extents;
+    assert firstLogicalExtent >= 0 : "firstLogicalExtent<0: " + firstLogicalExtent;
+    assert firstPhysicalExtent >= 0 : "firstPhysicalExtent<0: " + firstPhysicalExtent;
+    assert extents > 0 : "extents <= 0: " + extents;
     // 16-bit
     if (
-      firstLogicalExtent <= Short.MAX_VALUE
-      && firstPhysicalExtent <= Short.MAX_VALUE
-      && extents <= Short.MAX_VALUE
+        firstLogicalExtent <= Short.MAX_VALUE
+            && firstPhysicalExtent <= Short.MAX_VALUE
+            && extents <= Short.MAX_VALUE
     ) {
       return new PhysicalVolumeConfigurationShort(
           physicalVolume,
-          (short)firstLogicalExtent,
-          (short)firstPhysicalExtent,
-          (short)extents
+          (short) firstLogicalExtent,
+          (short) firstPhysicalExtent,
+          (short) extents
       );
     }
     // 32-bit
     if (
-      firstLogicalExtent <= Integer.MAX_VALUE
-      && firstPhysicalExtent <= Integer.MAX_VALUE
-      && extents <= Integer.MAX_VALUE
+        firstLogicalExtent <= Integer.MAX_VALUE
+            && firstPhysicalExtent <= Integer.MAX_VALUE
+            && extents <= Integer.MAX_VALUE
     ) {
       return new PhysicalVolumeConfigurationInt(
           physicalVolume,
-          (int)firstLogicalExtent,
-          (int)firstPhysicalExtent,
-          (int)extents
+          (int) firstLogicalExtent,
+          (int) firstPhysicalExtent,
+          (int) extents
       );
     }
     // 64-bit
@@ -90,7 +90,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
 
   @Override
   public final String toString() {
-    return physicalVolume.toString()+"("+getFirstLogicalExtent()+","+getFirstPhysicalExtent()+","+getExtents()+")";
+    return physicalVolume.toString() + "(" + getFirstLogicalExtent() + "," + getFirstPhysicalExtent() + "," + getExtents() + ")";
   }
 
   public final PhysicalVolume getPhysicalVolume() {
@@ -104,7 +104,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
    */
   @Override
   public final boolean equals(Object obj) {
-    return (obj instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration)obj);
+    return (obj instanceof PhysicalVolumeConfiguration) && equals((PhysicalVolumeConfiguration) obj);
   }
 
   /**
@@ -120,20 +120,20 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
       return false;
     }
     return
-      physicalVolume == other.physicalVolume
-      && getFirstLogicalExtent() == other.getFirstLogicalExtent()
-      && getFirstPhysicalExtent() == other.getFirstPhysicalExtent()
-      && getExtents() == other.getExtents()
+        physicalVolume == other.physicalVolume
+            && getFirstLogicalExtent() == other.getFirstLogicalExtent()
+            && getFirstPhysicalExtent() == other.getFirstPhysicalExtent()
+            && getExtents() == other.getExtents()
     ;
   }
 
   @Override
   public final int hashCode() {
     return
-      + 127*physicalVolume.hashCode()
-      + 31*(int)getFirstLogicalExtent()
-      + 7*(int)getFirstPhysicalExtent()
-      + (int)getExtents()
+        +127 * physicalVolume.hashCode()
+            + 31 * (int) getFirstLogicalExtent()
+            + 7 * (int) getFirstPhysicalExtent()
+            + (int) getExtents()
     ;
   }
 
@@ -166,28 +166,28 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
     // firstLogicalExtent
     long mine = getFirstLogicalExtent();
     long others = other.getFirstLogicalExtent();
-    if (mine<others) {
+    if (mine < others) {
       return -1;
     }
-    if (mine>others) {
+    if (mine > others) {
       return 1;
     }
     // secondLogicalExtent
     mine = getFirstPhysicalExtent();
     others = other.getFirstPhysicalExtent();
-    if (mine<others) {
+    if (mine < others) {
       return -1;
     }
-    if (mine>others) {
+    if (mine > others) {
       return 1;
     }
     // extents
     mine = getExtents();
     others = other.getExtents();
-    if (mine<others) {
+    if (mine < others) {
       return -1;
     }
-    if (mine>others) {
+    if (mine > others) {
       return 1;
     }
     // Otherwise equal
@@ -196,8 +196,8 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
 
   static boolean overlaps(long start1, long extents1, long start2, long extents2) {
     return
-      (start2+extents2)>start1
-      && (start1+extents1)>start2
+        (start2 + extents2) > start1
+            && (start1 + extents1) > start2
     ;
   }
 
@@ -208,11 +208,11 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
     long myExtents = getExtents();
     long otherExtents = other.getExtents();
     return
-      overlaps(getFirstLogicalExtent(), myExtents, other.getFirstLogicalExtent(), otherExtents)
-      || (
-        physicalVolume == other.physicalVolume
-        && overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
-      )
+        overlaps(getFirstLogicalExtent(), myExtents, other.getFirstLogicalExtent(), otherExtents)
+            || (
+            physicalVolume == other.physicalVolume
+                && overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
+        )
     ;
   }
 }

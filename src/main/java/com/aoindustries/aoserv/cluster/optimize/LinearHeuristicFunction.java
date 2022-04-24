@@ -82,7 +82,7 @@ public class LinearHeuristicFunction implements HeuristicFunction, ResultHandler
         total += 4;
         break;
       default :
-        throw new AssertionError("Unexpected value for alertLevel: "+alertLevel);
+        throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;
   }

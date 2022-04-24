@@ -45,19 +45,19 @@ public class PhysicalVolumeConfigurationTest {
   public void testOverlaps() {
     for (int c = 1; c < 100000; c++) {
       int start1 = fastRandom.nextInt(c);
-      int extents1 = fastRandom.nextInt(c)+1;
+      int extents1 = fastRandom.nextInt(c) + 1;
       int start2 = fastRandom.nextInt(c);
-      int extents2 = fastRandom.nextInt(c)+1;
+      int extents2 = fastRandom.nextInt(c) + 1;
       boolean overlaps = PhysicalVolumeConfiguration.overlaps(start1, extents1, start2, extents2);
       Rectangle r1 = new Rectangle(start1, 0, extents1, 1);
       Rectangle r2 = new Rectangle(start2, 0, extents2, 1);
       boolean overlaps2 = r1.intersects(r2);
       if (overlaps != overlaps2) {
         fail(
-          "Not equal: start1 = " + start1
-          + ", extents1 = " + extents1
-          + ", start2 = " + start2
-          + ", extents2 = " + extents2
+            "Not equal: start1 = " + start1
+                + ", extents1 = " + extents1
+                + ", start2 = " + start2
+                + ", extents2 = " + extents2
         );
       }
     }

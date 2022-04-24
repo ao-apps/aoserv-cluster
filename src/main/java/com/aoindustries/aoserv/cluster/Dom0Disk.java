@@ -48,11 +48,11 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
    * @see Cluster#addDom0Disk
    */
   Dom0Disk(
-    String clusterName,
-    String dom0Hostname,
-    String device,
-    int diskSpeed,
-    Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes
+      String clusterName,
+      String dom0Hostname,
+      String device,
+      int diskSpeed,
+      Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes
   ) {
     this.clusterName = clusterName;
     this.dom0Hostname = dom0Hostname;
@@ -101,7 +101,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
   }
 
   static String toString(String clusterName, String dom0Hostname, String device) {
-    return Dom0.toString(clusterName, dom0Hostname)+':'+device;
+    return Dom0.toString(clusterName, dom0Hostname) + ':' + device;
   }
 
   /**

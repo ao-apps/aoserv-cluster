@@ -47,21 +47,21 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
   final short weight;
 
   DomUDisk(
-    String clusterName,
-    String domUHostname,
-    String device,
-    int minimumDiskSpeed,
-    long extents,
-    short weight
+      String clusterName,
+      String domUHostname,
+      String device,
+      int minimumDiskSpeed,
+      long extents,
+      short weight
   ) {
     if (minimumDiskSpeed != -1 && minimumDiskSpeed <= 0) {
-      throw new IllegalArgumentException(this+": Invalid value for minimumDiskSpeed: "+minimumDiskSpeed);
+      throw new IllegalArgumentException(this + ": Invalid value for minimumDiskSpeed: " + minimumDiskSpeed);
     }
-    if (extents<1) {
-      throw new IllegalArgumentException(this+": extents should be >= 1: "+extents);
+    if (extents < 1) {
+      throw new IllegalArgumentException(this + ": extents should be >= 1: " + extents);
     }
-    if (weight<1 || weight>1024) {
-      throw new IllegalArgumentException(this+": Invalid value for weight, should be in range 1-1024: "+weight);
+    if (weight < 1 || weight > 1024) {
+      throw new IllegalArgumentException(this + ": Invalid value for weight, should be in range 1-1024: " + weight);
     }
 
     this.clusterName = clusterName;
@@ -114,7 +114,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
   }
 
   static String toString(String clusterName, String domUHostname, String device) {
-    return DomU.toString(clusterName, domUHostname)+':'+device;
+    return DomU.toString(clusterName, domUHostname) + ':' + device;
   }
 
   /**

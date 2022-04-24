@@ -44,7 +44,7 @@ public final class AnalyzedClusterConfigurationPrinter {
   private static void println(int indent, String label, Object value, Object maxValue, String alertLevel, PrintWriter out) {
     out.print("| ");
     int lineWidth = 2;
-    for (int c=0; c<indent; c++) {
+    for (int c = 0; c < indent; c++) {
       out.print("    ");
       lineWidth += 4;
     }
@@ -52,7 +52,7 @@ public final class AnalyzedClusterConfigurationPrinter {
       out.print(label);
       lineWidth += label.length();
     }
-    while (lineWidth<60) {
+    while (lineWidth < 60) {
       out.print(' ');
       lineWidth++;
     }
@@ -61,14 +61,14 @@ public final class AnalyzedClusterConfigurationPrinter {
     if (value != null) {
       String valueString = value.toString();
       // Right-align value
-      for (int c=7 - valueString.length(); c>0; c--) {
+      for (int c = 7 - valueString.length(); c > 0; c--) {
         out.print(' ');
         lineWidth++;
       }
       out.print(valueString);
       lineWidth += valueString.length();
     }
-    while (lineWidth<70) {
+    while (lineWidth < 70) {
       out.print(' ');
       lineWidth++;
     }
@@ -77,14 +77,14 @@ public final class AnalyzedClusterConfigurationPrinter {
     if (maxValue != null) {
       String maxValueString = maxValue.toString();
       // Right-align max value
-      for (int c=7 - maxValueString.length(); c>0; c--) {
+      for (int c = 7 - maxValueString.length(); c > 0; c--) {
         out.print(' ');
         lineWidth++;
       }
       out.print(maxValueString);
       lineWidth += maxValueString.length();
     }
-    while (lineWidth<80) {
+    while (lineWidth < 80) {
       out.print(' ');
       lineWidth++;
     }
@@ -94,7 +94,7 @@ public final class AnalyzedClusterConfigurationPrinter {
       out.print(alertLevel);
       lineWidth += alertLevel.length();
     }
-    while (lineWidth<95) {
+    while (lineWidth < 95) {
       out.print(' ');
       lineWidth++;
     }

@@ -36,7 +36,7 @@ public abstract class Result<T> implements Comparable<Result<?>> {
 
   Result(String label, double deviation, AlertLevel alertLevel) {
     assert !(alertLevel != AlertLevel.NONE && deviation <= 0) : "Any result with an alert level > NONE should have a positive, non-zero deviation";
-    assert !(alertLevel == AlertLevel.NONE && deviation>0) : "Any result with an alert level = NONE should have a negative or zero deviation";
+    assert !(alertLevel == AlertLevel.NONE && deviation > 0) : "Any result with an alert level = NONE should have a negative or zero deviation";
     this.label = label;
     this.deviation = deviation;
     this.alertLevel = alertLevel;
@@ -82,11 +82,11 @@ public abstract class Result<T> implements Comparable<Result<?>> {
     T value = getValue();
     T maxValue = getMaxValue();
     return
-      alertLevel
-      + ": " + label
-      + " "  + (value == null ? "NA" : value)
-      + "/"  + (maxValue == null ? "NA" : maxValue)
-      + " "  + deviation
+        alertLevel
+            + ": " + label
+            + " "  + (value == null ? "NA" : value)
+            + "/"  + (maxValue == null ? "NA" : maxValue)
+            + " "  + deviation
     ;
   }
 }

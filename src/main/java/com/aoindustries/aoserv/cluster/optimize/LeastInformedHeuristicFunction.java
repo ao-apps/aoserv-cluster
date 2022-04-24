@@ -37,6 +37,6 @@ public class LeastInformedHeuristicFunction implements HeuristicFunction {
   public double getHeuristic(ClusterConfiguration clusterConfiguration, int g) {
     AnalyzedClusterConfiguration analysis = new AnalyzedClusterConfiguration(clusterConfiguration);
 
-    return analysis.isOptimal() ? g : (g+1);
+    return analysis.isOptimal() ? g : (g + 1);
   }
 }

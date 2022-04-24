@@ -55,37 +55,37 @@ public class DomU implements Comparable<DomU>, Serializable {
    * @see Cluster#addDomU
    */
   DomU(
-    String clusterName,
-    String hostname,
-    int primaryRam,
-    int secondaryRam,
-    ProcessorType minimumProcessorType,
-    ProcessorArchitecture minimumProcessorArchitecture,
-    int minimumProcessorSpeed,
-    short processorCores,
-    short processorWeight,
-    boolean requiresHvm,
-    boolean primaryDom0Locked,
-    boolean secondaryDom0Locked,
-    Map<String, DomUDisk> unmodifiableDomUDisks
+      String clusterName,
+      String hostname,
+      int primaryRam,
+      int secondaryRam,
+      ProcessorType minimumProcessorType,
+      ProcessorArchitecture minimumProcessorArchitecture,
+      int minimumProcessorSpeed,
+      short processorCores,
+      short processorWeight,
+      boolean requiresHvm,
+      boolean primaryDom0Locked,
+      boolean secondaryDom0Locked,
+      Map<String, DomUDisk> unmodifiableDomUDisks
   ) {
-    if (primaryRam<1) {
-      throw new IllegalArgumentException(this+": primaryRam should be >= 1: "+primaryRam);
+    if (primaryRam < 1) {
+      throw new IllegalArgumentException(this + ": primaryRam should be >= 1: " + primaryRam);
     }
-    if (secondaryRam != -1 && secondaryRam<1) {
-      throw new IllegalArgumentException(this+": secondaryRam should be -1 or >= 1: "+secondaryRam);
+    if (secondaryRam != -1 && secondaryRam < 1) {
+      throw new IllegalArgumentException(this + ": secondaryRam should be -1 or >= 1: " + secondaryRam);
     }
     if (minimumProcessorArchitecture == null) {
-      throw new IllegalArgumentException(this+": minimumProcessorArchitecture is null");
+      throw new IllegalArgumentException(this + ": minimumProcessorArchitecture is null");
     }
     if (minimumProcessorSpeed != -1 && minimumProcessorSpeed <= 0) {
-      throw new IllegalArgumentException(this+": Invalid value for minimumProcessorSpeed: "+minimumProcessorSpeed);
+      throw new IllegalArgumentException(this + ": Invalid value for minimumProcessorSpeed: " + minimumProcessorSpeed);
     }
-    if (processorCores<1) {
-      throw new IllegalArgumentException(this+": processorCores should be >= 1: "+processorCores);
+    if (processorCores < 1) {
+      throw new IllegalArgumentException(this + ": processorCores should be >= 1: " + processorCores);
     }
-    if (processorWeight<1 || processorWeight>1024) {
-      throw new IllegalArgumentException(this+": Invalid value for processorWeight, should be in range 1-1024: "+processorWeight);
+    if (processorWeight < 1 || processorWeight > 1024) {
+      throw new IllegalArgumentException(this + ": Invalid value for processorWeight, should be in range 1-1024: " + processorWeight);
     }
 
     this.clusterName = clusterName;
@@ -208,7 +208,7 @@ public class DomU implements Comparable<DomU>, Serializable {
   }
 
   static String toString(String clusterName, String hostname) {
-    return Cluster.toString(clusterName) /*rack.toString()*/+'/'+hostname;
+    return Cluster.toString(clusterName) /*rack.toString()*/+ '/' + hostname;
   }
 
   /**
