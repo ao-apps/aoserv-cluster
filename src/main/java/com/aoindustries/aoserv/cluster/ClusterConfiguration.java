@@ -688,9 +688,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   }
 
   private static final Object mappedConfigurationsStatsLock = new Object();
-  private static long mappedCount = 0;
-  private static long totalMapped = 0;
-  private static long totalAlreadyContains = 0;
+  private static long mappedCount;
+  private static long totalMapped;
+  private static long totalAlreadyContains;
   private static long lastDisplayTime = System.currentTimeMillis();
 
   /**

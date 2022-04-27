@@ -110,7 +110,7 @@ public final class AnalyzedClusterConfigurationPrinter {
     private final int indent;
     private final PrintWriter out;
 
-    ResultPrinter(int indent, PrintWriter out) {
+    private ResultPrinter(int indent, PrintWriter out) {
       this.indent = indent;
       this.out = out;
     }
@@ -128,7 +128,7 @@ public final class AnalyzedClusterConfigurationPrinter {
     private final int indent;
     private final PrintWriter out;
 
-    SortedResultPrinter(int indent, PrintWriter out) {
+    private SortedResultPrinter(int indent, PrintWriter out) {
       this.indent = indent;
       this.out = out;
     }

@@ -323,8 +323,8 @@ public class ClusterOptimizer {
         if (
             !domU.isPrimaryDom0Locked()
                 // TODO: Don't hard-code these
-                && !secondaryDom0.getHostname().equals("gw1.fc.aoindustries.com")
-                && !secondaryDom0.getHostname().equals("gw2.fc.aoindustries.com")
+                && !"gw1.fc.aoindustries.com".equals(secondaryDom0.getHostname())
+                && !"gw2.fc.aoindustries.com".equals(secondaryDom0.getHostname())
         ) {
           // Can't swap if either primary or secondary is locked
           ClusterConfiguration swappedClusterConfiguration = clusterConfiguration.liveMigrate(domU);
@@ -351,8 +351,8 @@ public class ClusterOptimizer {
               !dom0.equals(primaryDom0)
                   && !dom0.equals(secondaryDom0)
                   // TODO: Don't hard-code these
-                  && !dom0Hostname.equals("gw1.fc.aoindustries.com")
-                  && !dom0Hostname.equals("gw2.fc.aoindustries.com")
+                  && !"gw1.fc.aoindustries.com".equals(dom0Hostname)
+                  && !"gw2.fc.aoindustries.com".equals(dom0Hostname)
           ) {
             for (ClusterConfiguration movedClusterConfiguration : clusterConfiguration.moveSecondary(domU, dom0)) {
               Transition transition = new MoveSecondaryTransition(domU, secondaryDom0, dom0);
