@@ -34,27 +34,30 @@ import java.util.RandomAccess;
  * @author  AO Industries, Inc.
  */
 public class UnmodifiableArrayList<E> extends AbstractList<E>
-    implements RandomAccess, Serializable
-{
+    implements RandomAccess, Serializable {
+
   private static final long serialVersionUID = 1L;
 
-  private final E[] a;
+  private final E[] elements;
 
+  /**
+   * Wraps the given array directly, no defensive copy.
+   */
   public UnmodifiableArrayList(E[] array) {
     if (array == null) {
       throw new NullPointerException("array is null");
     }
-    a = array;
+    elements = array;
   }
 
   @Override
   public int size() {
-    return a.length;
+    return elements.length;
   }
 
   @Override
   public Object[] toArray() {
-    return a.clone();
+    return elements.clone();
   }
 
   @Override
@@ -63,10 +66,10 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
     int size = size();
     int len = a.length;
     if (len < size) {
-      return Arrays.copyOf(this.a, size,
+      return Arrays.copyOf(this.elements, size,
           (Class<? extends T[]>) a.getClass());
     }
-    System.arraycopy(this.a, 0, a, 0, size);
+    System.arraycopy(this.elements, 0, a, 0, size);
     if (len > size) {
       a[size] = null;
     }
@@ -75,21 +78,21 @@ public class UnmodifiableArrayList<E> extends AbstractList<E>
 
   @Override
   public E get(int index) {
-    return a[index];
+    return elements[index];
   }
 
   @Override
   public int indexOf(Object o) {
-    int len = a.length;
+    int len = elements.length;
     if (o == null) {
       for (int i = 0; i < len; i++) {
-        if (a[i] == null) {
+        if (elements[i] == null) {
           return i;
         }
       }
     } else {
       for (int i = 0; i < len; i++) {
-        if (o.equals(a[i])) {
+        if (o.equals(elements[i])) {
           return i;
         }
       }

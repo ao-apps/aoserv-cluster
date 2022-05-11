@@ -35,11 +35,13 @@ import java.util.Map;
  * Analyzes the cluster to find anything that is not optimal.  This will be
  * ran periodically from our NOC software in order to identify suboptimal
  * configurations.
- *
+ * <p>
  * TODO: Analyze DomUGroups
- *
+ * </p>
+ * <p>
  * TODO: Add in the concept of node groups (no more than a certain number of Dom0 per group
  *       sharing resources).
+ * </p>
  *
  * @author  AO Industries, Inc.
  */

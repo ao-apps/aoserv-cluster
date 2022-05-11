@@ -118,7 +118,7 @@ public class DomUDisk implements Comparable<DomUDisk>, Serializable {
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>domUHostname</li>

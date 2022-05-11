@@ -24,7 +24,7 @@
 package com.aoindustries.aoserv.cluster.optimize;
 
 /**
- * Accepts results from the optimized cluster
+ * Accepts results from the optimized cluster.
  */
 public interface OptimizedClusterConfigurationHandler {
 

@@ -42,7 +42,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   final List<DomUDiskConfiguration> unmodifiableDomUDiskConfigurations;
 
   /**
-   * unmodifiableDomUDiskConfigurations MUST BE UNMODIFIABLE
+   * unmodifiableDomUDiskConfigurations MUST BE UNMODIFIABLE.
    */
   DomUConfiguration(
       DomU domU,
@@ -88,7 +88,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   }
 
   /**
-   * Gets the unmodifiable list of disk configurations currently set on this domu.
+   * Gets the unmodifiable list of disk configurations currently set on this domU.
    */
   @SuppressWarnings("ReturnOfCollectionOrArrayField") // Returning unmodifiable
   public List<DomUDiskConfiguration> getDomUDiskConfigurations() {
@@ -126,19 +126,19 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
     if (secondaryDom0 != other.secondaryDom0) {
       return false;
     }
-    {
-      int size = unmodifiableDomUDiskConfigurations.size();
-      if (size != other.unmodifiableDomUDiskConfigurations.size()) {
-        return false;
-      }
-      Iterator<DomUDiskConfiguration> myIter = unmodifiableDomUDiskConfigurations.iterator();
-      Iterator<DomUDiskConfiguration> otherIter = other.unmodifiableDomUDiskConfigurations.iterator();
-      while (myIter.hasNext()) {
-        if (!myIter.next().equals(otherIter.next())) {
+      {
+        int size = unmodifiableDomUDiskConfigurations.size();
+        if (size != other.unmodifiableDomUDiskConfigurations.size()) {
           return false;
         }
+        Iterator<DomUDiskConfiguration> myIter = unmodifiableDomUDiskConfigurations.iterator();
+        Iterator<DomUDiskConfiguration> otherIter = other.unmodifiableDomUDiskConfigurations.iterator();
+        while (myIter.hasNext()) {
+          if (!myIter.next().equals(otherIter.next())) {
+            return false;
+          }
+        }
       }
-    }
     return true;
   }
 
@@ -148,8 +148,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
         73 * domU.hashCode()
             + 37 * primaryDom0.hashCode()
             + 31 * secondaryDom0.hashCode()
-            + unmodifiableDomUDiskConfigurations.hashCode()
-    ;
+            + unmodifiableDomUDiskConfigurations.hashCode();
   }
 
   @Override

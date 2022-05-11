@@ -32,10 +32,12 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
 /**
  * Adds up all the non-optimal states of the analyzed cluster giving more weight
  * to higher level problems.  Adds in <code>g</code> to prefer shorter paths.
- * 
+ * <p>
  * This is not thread safe.
- * 
+ * </p>
+ * <p>
  * The values are:
+ * </p>
  * <pre>
  * NONE = 0
  * LOW = 4
@@ -67,21 +69,21 @@ public class ExponentialHeuristicFunction implements HeuristicFunction, ResultHa
   public boolean handleResult(Result<?> result) {
     AlertLevel alertLevel = result.getAlertLevel();
     switch (alertLevel) {
-      case NONE :
+      case NONE:
         throw new AssertionError("Should only get non-optimal results");
-      case LOW :
+      case LOW:
         total += 4;
         break;
-      case MEDIUM :
+      case MEDIUM:
         total += 8;
         break;
-      case HIGH :
+      case HIGH:
         total += 16;
         break;
-      case CRITICAL :
+      case CRITICAL:
         total += 1024; // Try to avoid this at all costs
         break;
-      default :
+      default:
         throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;

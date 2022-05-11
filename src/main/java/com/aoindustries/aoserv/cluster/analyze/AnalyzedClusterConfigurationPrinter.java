@@ -148,6 +148,9 @@ public final class AnalyzedClusterConfigurationPrinter {
     }
   }
 
+  /**
+   * Prints the given configuration.
+   */
   public static void print(Collection<AnalyzedClusterConfiguration> analyzedClusters, PrintWriter out, AlertLevel minimumAlertLevel) {
     final ResultPrinter resultPrinter2 = new ResultPrinter(2, out);
     final ResultPrinter resultPrinter4 = new ResultPrinter(4, out);

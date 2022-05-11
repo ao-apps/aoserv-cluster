@@ -81,6 +81,9 @@ public class ClusterOptimizer {
   private final boolean allowPathThroughCritical;
   private final boolean randomizeChildren;
 
+  /**
+   * Creates a new cluster optimizer for the given configuration and heuristic.
+   */
   public ClusterOptimizer(ClusterConfiguration clusterConfiguration, HeuristicFunction heuristicFunction, boolean allowPathThroughCritical, boolean randomizeChildren) {
     this.clusterConfiguration = clusterConfiguration;
     this.heuristicFunction = heuristicFunction;
@@ -99,20 +102,25 @@ public class ClusterOptimizer {
   /**
    * Optimizes the cluster and returns the best path (possibly limited by an OptimizedResultHandler)
    * or <code>null</code> if no optimal configuration was found.
-   *
+   * <p>
    * Best-first search implementation.
-   *
+   * </p>
+   * <p>
    * TODO: Since we are limited by heap space more than CPU speed, perhaps we should look for optimal
    *       solutions before adding onto the open list?  This means we could at least look one more move ahead.
-   *
+   * </p>
+   * <p>
    * Could allow heuristic to return Double.POSITIVE_INFINITY to indicate no solution from that state:
    *     (see http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
-   *
+   * </p>
+   * <p>
    * TODO: Add in transition cost because the best path depends not on the number of steps, but the total time of the steps.
    * TODO: This could be a real-world estimate on how many seconds the operation would take.
-   *
+   * </p>
+   * <p>
    * TODO: If something MUST take a path through a CRITICAL state, try to use path with shortest time in CRITICAL
    * TODO: based on time estimates above.
+   * </p>
    *
    * @param  handler  if null, returns the first path found, not necessarily the shortest
    */
@@ -129,16 +137,16 @@ public class ClusterOptimizer {
     // Initialize the open list
     PriorityQueue<ListElement> openQueue = new PriorityQueue<>();
     Map<ClusterConfiguration, ListElement> openMap = new HashMap<>();
-    {
-      ListElement openListElement = new ListElement(
-          null,
-          null,
-          clusterConfiguration,
-          heuristicFunction.getHeuristic(clusterConfiguration, 0)
-      );
-      openQueue.add(openListElement);
-      openMap.put(clusterConfiguration, openListElement);
-    }
+      {
+        ListElement openListElement = new ListElement(
+            null,
+            null,
+            clusterConfiguration,
+            heuristicFunction.getHeuristic(clusterConfiguration, 0)
+        );
+        openQueue.add(openListElement);
+        openMap.put(clusterConfiguration, openListElement);
+      }
 
     // Initialize the closed list
     Map<ClusterConfiguration, ListElement> closedMap = new HashMap<>();
@@ -153,17 +161,17 @@ public class ClusterOptimizer {
     while (!openQueue.isEmpty()) {
       loopCounter++;
       assert openQueue.size() == openMap.size() : "openQueue and openMap have different sizes";
-      ListElement x = openQueue.remove();
-      openMap.remove(x.clusterConfiguration);
-      assert shortestPath == null || x.pathLen < shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
+      ListElement current = openQueue.remove();
+      openMap.remove(current.clusterConfiguration);
+      assert shortestPath == null || current.pathLen < shortestPath.pathLen : "Should only explore paths shorter than shortestPath";
       long currentTime = System.currentTimeMillis();
       long timeSince = currentTime - lastDisplayTime;
       if (timeSince < 0 || timeSince >= 60000) {
         System.out.println(
             "        open:" + openMap.size()
                 + " closed:" + closedMap.size()
-                + " transitions:" + x.pathLen
-                + " heuristic:" + x.heuristic
+                + " transitions:" + current.pathLen
+                + " heuristic:" + current.heuristic
                 + " existingOpen:" + existingOpenCount
                 + " existingClosed:" + existingClosedCount
                 + " openQueueRemove:" + openQueueRemoveCount
@@ -172,14 +180,14 @@ public class ClusterOptimizer {
         lastDisplayTime = currentTime;
       }
       // Is this the goal?
-      AnalyzedClusterConfiguration analyzedX = new AnalyzedClusterConfiguration(x.clusterConfiguration);
-      if (analyzedX.isOptimal()) {
-        shortestPath = x;
+      AnalyzedClusterConfiguration analyzed = new AnalyzedClusterConfiguration(current.clusterConfiguration);
+      if (analyzed.isOptimal()) {
+        shortestPath = current;
 
         // Give handler a chance to cancel before trimming
         if (
             handler == null
-                || !handler.handleOptimizedClusterConfiguration(x, loopCounter)
+                || !handler.handleOptimizedClusterConfiguration(current, loopCounter)
         ) {
           break;
         }
@@ -218,32 +226,32 @@ public class ClusterOptimizer {
         //    + " closedMap:"+closedMap.size()
         //);
       } else {
-        if (!USE_SKIP_SAME_HEURISTIC_HACK || lastHeurisic != x.heuristic) {
+        if (!USE_SKIP_SAME_HEURISTIC_HACK || lastHeurisic != current.heuristic) {
           if (USE_SKIP_SAME_HEURISTIC_HACK) {
-            lastHeurisic = x.heuristic;
+            lastHeurisic = current.heuristic;
           }
           // generate children of X if depth limit not reached
           // max depth is determined by any path already found
           if (
               // + 1 to match size of newTransitions below
-              shortestPath == null || (x.pathLen + 1) < shortestPath.pathLen
+              shortestPath == null || (current.pathLen + 1) < shortestPath.pathLen
           ) {
-            generateChildren(x.clusterConfiguration, children, childTransitions, randomizeChildren);
+            generateChildren(current.clusterConfiguration, children, childTransitions, randomizeChildren);
             //System.out.println("        children: "+children.size());
-            boolean xEndsCritical = allowPathThroughCritical ? true : analyzedX.hasCritical();
+            boolean endsCritical = allowPathThroughCritical ? true : analyzed.hasCritical();
             // for each child of X do
             for (int i = 0, size = children.size(); i < size; i++) {
               ClusterConfiguration child = children.get(i);
               // Don't keep any path that has a transition from not having any critical to have at least one critical
               boolean childHasCritical = allowPathThroughCritical ? false : new AnalyzedClusterConfiguration(child).hasCritical();
-              if (xEndsCritical || !childHasCritical) {
+              if (endsCritical || !childHasCritical) {
                 ListElement existingOpen = openMap.get(child);
                 if (existingOpen != null) {
                   existingOpenCount++;
                   // if the child was reached by a shorter path
                   if (
                       // + 1 to match size of newTransitions below
-                      (x.pathLen + 1) < existingOpen.pathLen
+                      (current.pathLen + 1) < existingOpen.pathLen
                   ) {
                     // then give the state of open the shorter path
 
@@ -253,10 +261,10 @@ public class ClusterOptimizer {
                     openQueueRemoveCount++;
 
                     ListElement openListElement = new ListElement(
-                        x,
+                        current,
                         childTransitions.get(i),
                         child,
-                        heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                        heuristicFunction.getHeuristic(child, current.pathLen + 1)
                     );
                     openQueue.add(openListElement);
                     openMap.put(child, openListElement);
@@ -266,15 +274,15 @@ public class ClusterOptimizer {
                   if (existingClosed != null) {
                     existingClosedCount++;
                     // If the child was reached by a shorter path then
-                    if ((x.pathLen + 1) < existingClosed.pathLen) {
+                    if ((current.pathLen + 1) < existingClosed.pathLen) {
                       // remove the state from closed
                       closedMap.remove(child);
                       // add the child to open
                       ListElement openListElement = new ListElement(
-                          x,
+                          current,
                           childTransitions.get(i),
                           child,
-                          heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                          heuristicFunction.getHeuristic(child, current.pathLen + 1)
                       );
                       openQueue.add(openListElement);
                       openMap.put(child, openListElement);
@@ -283,10 +291,10 @@ public class ClusterOptimizer {
                     // the child is not on open or closed
                     // add the child to open
                     ListElement openListElement = new ListElement(
-                        x,
+                        current,
                         childTransitions.get(i),
                         child,
-                        heuristicFunction.getHeuristic(child, x.pathLen + 1)
+                        heuristicFunction.getHeuristic(child, current.pathLen + 1)
                     );
                     openQueue.add(openListElement);
                     openMap.put(child, openListElement);
@@ -300,7 +308,7 @@ public class ClusterOptimizer {
         }
       }
       // put X on closed
-      closedMap.put(x.clusterConfiguration, x);
+      closedMap.put(current.clusterConfiguration, current);
     }
     return shortestPath;
   }

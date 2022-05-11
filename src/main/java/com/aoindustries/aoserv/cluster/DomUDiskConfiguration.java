@@ -120,8 +120,12 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
   ) {
     assert isSorted(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
     assert isSorted(secondaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations not sorted";
-    assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk + ", domUDisk.extents=" + domUDisk.extents + ", primaryPhysicalVolumeConfigurations=" + primaryPhysicalVolumeConfigurations;
-    assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk + ", domUDisk.extents=" + domUDisk.extents + ", secondaryPhysicalVolumeConfigurations=" + secondaryPhysicalVolumeConfigurations;
+    assert totalExtentsMatch(domUDisk.extents, primaryPhysicalVolumeConfigurations)
+        : "primaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk
+        + ", domUDisk.extents=" + domUDisk.extents + ", primaryPhysicalVolumeConfigurations=" + primaryPhysicalVolumeConfigurations;
+    assert totalExtentsMatch(domUDisk.extents, secondaryPhysicalVolumeConfigurations)
+        : "secondaryPhysicalVolumeConfigurations total extents doesn't match the domUDisk extents: domUDisk=" + domUDisk
+        + ", domUDisk.extents=" + domUDisk.extents + ", secondaryPhysicalVolumeConfigurations=" + secondaryPhysicalVolumeConfigurations;
     assert !overlaps(primaryPhysicalVolumeConfigurations) : "primaryPhysicalVolumeConfigurations contains overlapping segments";
     assert !overlaps(secondaryPhysicalVolumeConfigurations) : "secondaryPhysicalVolumeConfigurations contains overlapping segments";
     assert allSameDom0(primaryPhysicalVolumeConfigurations) : "not all primaryPhysicalVolumeConfigurations are on the same Dom0";
@@ -179,21 +183,19 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
                 && domUDisk == other.domUDisk
                 && primaryPhysicalVolumeConfigurations.equals(other.primaryPhysicalVolumeConfigurations)
                 && secondaryPhysicalVolumeConfigurations.equals(other.secondaryPhysicalVolumeConfigurations)
-        )
-    ;
+        );
   }
 
   @Override
   public int hashCode() {
     return
-        +127 * domUDisk.hashCode()
+        127 * domUDisk.hashCode()
             + 31 * primaryPhysicalVolumeConfigurations.hashCode()
-            + secondaryPhysicalVolumeConfigurations.hashCode()
-    ;
+            + secondaryPhysicalVolumeConfigurations.hashCode();
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>domUDisk</li>
    * </ol>

@@ -160,11 +160,11 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
   }
 
   static String toString(String clusterName, String hostname) {
-    return Cluster.toString(clusterName) /*rack.toString()*/+ '/' + hostname;
+    return Cluster.toString(clusterName) /*rack.toString()*/ + '/' + hostname;
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>hostname</li>

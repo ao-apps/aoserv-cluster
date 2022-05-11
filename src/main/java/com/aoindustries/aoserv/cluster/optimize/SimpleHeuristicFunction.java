@@ -31,9 +31,10 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
 
 /**
  * Simply counts the non-optimal nodes, adds <code>g</code> to prefer shorter paths.
- *
+ * <p>
  * This is not thread safe.
- * 
+ * </p>
+ *
  * @author  AO Industries, Inc.
  */
 public class SimpleHeuristicFunction implements HeuristicFunction, ResultHandler<Object> {

@@ -26,6 +26,8 @@ package com.aoindustries.aoserv.cluster;
 import java.io.Serializable;
 
 /**
+ * One LVM physical volume.
+ *
  * @author  AO Industries, Inc.
  */
 public class PhysicalVolume implements Comparable<PhysicalVolume>, Serializable {
@@ -39,7 +41,7 @@ public class PhysicalVolume implements Comparable<PhysicalVolume>, Serializable 
   final long extents;
 
   /**
-   * @see Dom0Disk#addPhysicalVolume
+   * See {@link Dom0Disk#addPhysicalVolume}.
    */
   PhysicalVolume(String clusterName, String dom0Hostname, String device, short partition, long extents) {
     assert extents > 0 : "extents <= 0: " + extents;
@@ -80,7 +82,7 @@ public class PhysicalVolume implements Comparable<PhysicalVolume>, Serializable 
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>dom0Hostname</li>

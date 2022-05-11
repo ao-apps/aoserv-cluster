@@ -50,7 +50,7 @@ public class DomU implements Comparable<DomU>, Serializable {
   final boolean secondaryDom0Locked;
 
   /**
-   * unmodifiableDomUDisks MUST BE UNMODIFIABLE
+   * unmodifiableDomUDisks MUST BE UNMODIFIABLE.
    *
    * @see Cluster#addDomU
    */
@@ -115,7 +115,7 @@ public class DomU implements Comparable<DomU>, Serializable {
   }
 
   /**
-   * Gets the amount of RAM needed in primary mode (in MB)
+   * Gets the amount of RAM needed in primary mode (in MB).
    */
   public int getPrimaryRam() {
     return primaryRam;
@@ -208,11 +208,11 @@ public class DomU implements Comparable<DomU>, Serializable {
   }
 
   static String toString(String clusterName, String hostname) {
-    return Cluster.toString(clusterName) /*rack.toString()*/+ '/' + hostname;
+    return Cluster.toString(clusterName) /*rack.toString()*/ + '/' + hostname;
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>hostname</li>

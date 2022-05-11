@@ -26,7 +26,7 @@ package com.aoindustries.aoserv.cluster;
 /**
  * Higher level processes may be substituted in place of lower processors
  * without any effecting how optimal the cluster is configured.
- * 
+ *
  * @author  AO Industries, Inc.
  */
 public enum ProcessorArchitecture {

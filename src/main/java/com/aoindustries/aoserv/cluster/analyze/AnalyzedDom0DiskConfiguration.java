@@ -42,6 +42,9 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
   private final ClusterConfiguration clusterConfiguration;
   private final Dom0Disk dom0Disk;
 
+  /**
+   * Creates a new configuration.
+   */
   public AnalyzedDom0DiskConfiguration(ClusterConfiguration clusterConfiguration, Dom0Disk dom0Disk) {
     assert dom0Disk != null : "AnalyzedDom0DiskConfiguration.<init>: dom0Disk is null";
     this.clusterConfiguration = clusterConfiguration;
@@ -202,16 +205,14 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>dom0Hostname</li>
    *   <li>device</li>
    * </ol>
    */
-  /**
-   * Sorts by cluster name, dom0 hostname, device, identifyHashCode.
-   */
+  // Sorts by cluster name, dom0 hostname, device, identifyHashCode.
   @Override
   public int compareTo(AnalyzedDom0DiskConfiguration other) {
     if (this == other) {
@@ -232,7 +233,7 @@ public class AnalyzedDom0DiskConfiguration implements Comparable<AnalyzedDom0Dis
   }
 
   /**
-   * @see AnalyzedClusterConfiguration#getAllResults(com.aoindustries.aoserv.cluster.analyze.ResultHandler, com.aoindustries.aoserv.cluster.analyze.AlertLevel)
+   * See {@link AnalyzedClusterConfiguration#getAllResults(com.aoindustries.aoserv.cluster.analyze.ResultHandler, com.aoindustries.aoserv.cluster.analyze.AlertLevel)}.
    *
    * @return true if more results are wanted, or false to receive no more results.
    */

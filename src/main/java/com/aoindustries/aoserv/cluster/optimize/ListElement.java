@@ -25,6 +25,9 @@ package com.aoindustries.aoserv.cluster.optimize;
 
 import com.aoindustries.aoserv.cluster.ClusterConfiguration;
 
+/**
+ * A list element.
+ */
 public class ListElement implements Comparable<ListElement> {
 
   /**

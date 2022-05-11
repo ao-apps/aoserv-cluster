@@ -23,14 +23,17 @@
 
 package com.aoindustries.aoserv.cluster;
 
+import static org.junit.Assert.fail;
+
 import com.aoapps.lang.io.IoUtils;
 import java.awt.Rectangle;
 import java.security.SecureRandom;
 import java.util.Random;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
+ * Tests {@link PhysicalVolumeConfiguration}.
+ *
  * @author  AO Industries, Inc.
  */
 @SuppressWarnings("deprecation")

@@ -40,18 +40,23 @@ import java.util.TreeMap;
  * A ClusterConfiguration contains one possible configuration of a cluster.  The configuration
  * consists of a mapping between virtual resources and the physical layer.  This includes
  * the following:
- *     DomU onto primary Dom0
- *     DomU onto secondary Dom0
- *     DomUDisk onto a set of primary physical volumes
- *     DomUDisk onto a set of secondary physical volumes
- *
+ * <ul>
+ * <li>DomU onto primary Dom0</li>
+ * <li>DomU onto secondary Dom0</li>
+ * <li>DomUDisk onto a set of primary physical volumes</li>
+ * <li>DomUDisk onto a set of secondary physical volumes</li>
+ * </ul>
+ * <p>
  * The heap space used should be as small as possible to allow the maximum number of possible configurations
  * to be explored.
- *
+ * </p>
+ * <p>
  * Everything in ClusterConfiguration is not thread-safe, if using from multiple
  * threads, external synchronization is required.
- *
+ * </p>
+ * <p>
  * DomU VMs may only be allocated to Dom0 machines in the same cluster.
+ * </p>
  *
  * @author  AO Industries, Inc.
  */
@@ -207,6 +212,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     return false;
   }
 
+  /**
+   * Adds a domU to the configuration.
+   */
   public ClusterConfiguration addDomUConfiguration(DomU domU, Dom0 primaryDom0, Dom0 secondaryDom0) {
     // Make sure DomU not already added
     assert !contains(unmodifiableDomUConfigurations, domU) : this + ": DomU already exists in this configuration: " + domU;
@@ -250,6 +258,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     return true;
   }
 
+  /**
+   * Adds a domU disk to the configuration.
+   */
   public ClusterConfiguration addDomUDiskConfiguration(
       DomU domU,
       DomUDisk domUDisk,
@@ -262,9 +273,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
     for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
-      DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
-      if (tDomUConfiguration.domU == domU) {
-        domUConfiguration = tDomUConfiguration;
+      DomUConfiguration domUConfigurationTmp = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
+      if (domUConfigurationTmp.domU == domU) {
+        domUConfiguration = domUConfigurationTmp;
         break;
       }
     }
@@ -274,12 +285,12 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     assert !contains(domUConfiguration.unmodifiableDomUDiskConfigurations, domUDisk) : domUConfiguration + ": DomUDisk already exists in this configuration: " + domUDisk;
 
     // Make a sorted, unmodifiable, defensive copy of the inputs
-    List<PhysicalVolumeConfiguration> primaryPVCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, primaryPhysicalVolumeConfigurations);
-    List<PhysicalVolumeConfiguration> secondaryPVCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations);
+    List<PhysicalVolumeConfiguration> primaryPvCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, primaryPhysicalVolumeConfigurations);
+    List<PhysicalVolumeConfiguration> secondaryPvCopy = getSortedUnmodifiableCopy(PhysicalVolumeConfiguration.class, secondaryPhysicalVolumeConfigurations);
 
     // Make sure all physical volumes belong to the proper Dom0
-    assert allDom0Match(primaryPVCopy, domUConfiguration.primaryDom0);
-    assert allDom0Match(secondaryPVCopy, domUConfiguration.secondaryDom0);
+    assert allDom0Match(primaryPvCopy, domUConfiguration.primaryDom0);
+    assert allDom0Match(secondaryPvCopy, domUConfiguration.secondaryDom0);
 
     return new ClusterConfiguration(
         cluster,
@@ -296,8 +307,8 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
                     domUConfiguration.unmodifiableDomUDiskConfigurations,
                     new DomUDiskConfiguration(
                         domUDisk,
-                        primaryPVCopy,
-                        secondaryPVCopy
+                        primaryPvCopy,
+                        secondaryPvCopy
                     )
                 )
             )
@@ -313,9 +324,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
     for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
-      DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
-      if (tDomUConfiguration.domU == domU) {
-        domUConfiguration = tDomUConfiguration;
+      DomUConfiguration domUConfigurationTmp = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
+      if (domUConfigurationTmp.domU == domU) {
+        domUConfiguration = domUConfigurationTmp;
         break;
       }
     }
@@ -368,13 +379,15 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   /**
    * Moves the secondary to another machine if it is possible to map all of the extents for the DomUDisks onto free physical
    * volumes in Dom0.
-   *
+   * <p>
    * Because there can be many mappings between DomUDisk and PhysicalVolumes, in factorial combinations,
    * this method has a large impact on the branch factor for the cluster optimizer.  However, it also
    * affects which solutions may be found or transitioned through in the path to a solution.
-   *
+   * </p>
+   * <p>
    * This implementation is meant to be as simple as possible.  It focuses on reducing the search space
    * while possibly missing some valid configurations.  It works as follows:
+   * </p>
    * <ol>
    *   <li>Make sure all DomUDisk have the same minspeed - error otherwise.</li>
    *   <li>Find all unallocated physical volumes, sort by speed, device, partition</li>
@@ -386,8 +399,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
    *     </ol>
    *   </li>
    * </ol>
-   *
+   * <p>
    * In the future, a more advanced configuration could try to reduce the combinations while (hopefully) not losing any possible solution by:
+   * </p>
    * <ol>
    *   <li>Always allocating DomUDisks of the same min speed, extents, and weight in order by device</li>
    *   <li>Always allocating to the physical volumes in order by speed, device, partition</li>
@@ -404,9 +418,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     DomUConfiguration domUConfiguration = null;
     int unmodifiableDomUConfigurationsIndex = 0;
     for (int len = unmodifiableDomUConfigurations.size(); unmodifiableDomUConfigurationsIndex < len; unmodifiableDomUConfigurationsIndex++) {
-      DomUConfiguration tDomUConfiguration = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
-      if (tDomUConfiguration.domU == domU) {
-        domUConfiguration = tDomUConfiguration;
+      DomUConfiguration domUConfigurationTmp = unmodifiableDomUConfigurations.get(unmodifiableDomUConfigurationsIndex);
+      if (domUConfigurationTmp.domU == domU) {
+        domUConfiguration = domUConfigurationTmp;
         break;
       }
     }
@@ -518,10 +532,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
       newDomUDiskConfigurations.clear();
       List<DomUDiskConfiguration> domUDiskConfigurations = domUConfiguration.unmodifiableDomUDiskConfigurations;
       DOMU_DISK:
-      for (
-        int domUDiskConfigurationsIndex = 0, domUDiskConfigurationsSize = domUDiskConfigurations.size();
-        domUDiskConfigurationsIndex < domUDiskConfigurationsSize;
-        domUDiskConfigurationsIndex++
+      for (int domUDiskConfigurationsIndex = 0, domUDiskConfigurationsSize = domUDiskConfigurations.size();
+          domUDiskConfigurationsIndex < domUDiskConfigurationsSize;
+          domUDiskConfigurationsIndex++
       ) {
         DomUDiskConfiguration domUDiskConfiguration = domUDiskConfigurations.get(domUDiskConfigurationsIndex);
         DomUDisk domUDisk = domUDiskConfiguration.domUDisk;
@@ -609,20 +622,20 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
               DomUDiskConfiguration alreadyMappedDiskConfig = alreadyMappedDiskConfigs.get(c);
               DomUDiskConfiguration newDiskConfig = newDomUDiskConfigurations.get(c);
               assert alreadyMappedDiskConfig.domUDisk == newDiskConfig.domUDisk : "alreadyMappedDiskConfig.domUDisk != newDiskConfig.domUDisk";
-              List<PhysicalVolumeConfiguration> alreadyMappedPVConfigs = alreadyMappedDiskConfig.secondaryPhysicalVolumeConfigurations;
-              List<PhysicalVolumeConfiguration> newPVConfigs = newDiskConfig.secondaryPhysicalVolumeConfigurations;
-              int pvSize = alreadyMappedPVConfigs.size();
-              if (pvSize == newPVConfigs.size()) {
+              List<PhysicalVolumeConfiguration> alreadyMappedPvConfigs = alreadyMappedDiskConfig.secondaryPhysicalVolumeConfigurations;
+              List<PhysicalVolumeConfiguration> newPvConfigs = newDiskConfig.secondaryPhysicalVolumeConfigurations;
+              int pvSize = alreadyMappedPvConfigs.size();
+              if (pvSize == newPvConfigs.size()) {
                 for (int pvIndex = 0; pvIndex < pvSize; pvIndex++) {
                   // TODO: Also consider total extents mapped (interaction with other VMs)?
                   // TODO: Consider match by total extents and those of other VMs?
                   // TODO: Or, just randomize the order???
-                  PhysicalVolumeConfiguration alreadyMappedPVConfig = alreadyMappedPVConfigs.get(pvIndex);
-                  PhysicalVolumeConfiguration newPVConfig = newPVConfigs.get(pvIndex);
+                  PhysicalVolumeConfiguration alreadyMappedPvConfig = alreadyMappedPvConfigs.get(pvIndex);
+                  PhysicalVolumeConfiguration newPvConfig = newPvConfigs.get(pvIndex);
                   if (
-                      alreadyMappedPVConfig.getFirstLogicalExtent() != newPVConfig.getFirstLogicalExtent()
-                          || alreadyMappedPVConfig.getFirstPhysicalExtent() != newPVConfig.getFirstPhysicalExtent()
-                          || alreadyMappedPVConfig.getExtents() != newPVConfig.getExtents()
+                      alreadyMappedPvConfig.getFirstLogicalExtent() != newPvConfig.getFirstLogicalExtent()
+                          || alreadyMappedPvConfig.getFirstPhysicalExtent() != newPvConfig.getFirstPhysicalExtent()
+                          || alreadyMappedPvConfig.getExtents() != newPvConfig.getExtents()
                   ) {
                     alreadyContains = false;
                     break;
@@ -722,19 +735,19 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     if (cluster != other.cluster) {
       return false;
     }
-    {
-      int size = unmodifiableDomUConfigurations.size();
-      if (size != other.unmodifiableDomUConfigurations.size()) {
-        return false;
-      }
-      Iterator<DomUConfiguration> myIter = unmodifiableDomUConfigurations.iterator();
-      Iterator<DomUConfiguration> otherIter = other.unmodifiableDomUConfigurations.iterator();
-      while (myIter.hasNext()) {
-        if (!myIter.next().equals(otherIter.next())) {
+      {
+        int size = unmodifiableDomUConfigurations.size();
+        if (size != other.unmodifiableDomUConfigurations.size()) {
           return false;
         }
+        Iterator<DomUConfiguration> myIter = unmodifiableDomUConfigurations.iterator();
+        Iterator<DomUConfiguration> otherIter = other.unmodifiableDomUConfigurations.iterator();
+        while (myIter.hasNext()) {
+          if (!myIter.next().equals(otherIter.next())) {
+            return false;
+          }
+        }
       }
-    }
     return true;
   }
 
@@ -744,7 +757,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>cluster</li>
    * </ol>

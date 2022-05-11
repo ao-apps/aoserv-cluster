@@ -86,7 +86,6 @@ public abstract class Result<T> implements Comparable<Result<?>> {
             + ": " + label
             + " "  + (value == null ? "NA" : value)
             + "/"  + (maxValue == null ? "NA" : maxValue)
-            + " "  + deviation
-    ;
+            + " "  + deviation;
   }
 }

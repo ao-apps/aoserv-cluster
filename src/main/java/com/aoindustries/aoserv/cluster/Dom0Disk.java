@@ -43,7 +43,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
   final Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes;
 
   /**
-   * unmodifiablePhysicalVolumes MUST BE UNMODIFIABLE
+   * unmodifiablePhysicalVolumes MUST BE UNMODIFIABLE.
    *
    * @see Cluster#addDom0Disk
    */
@@ -89,7 +89,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
   }
 
   /**
-   * Gets the physical volume for the specified partition number of <code>null</code> if not found
+   * Gets the physical volume for the specified partition number of <code>null</code> if not found.
    */
   public PhysicalVolume getPhysicalVolume(short partition) {
     return unmodifiablePhysicalVolumes.get(partition);
@@ -105,7 +105,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
   }
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>clusterName</li>
    *   <li>dom0Hostname</li>

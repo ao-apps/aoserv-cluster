@@ -32,7 +32,7 @@ public interface ResultHandler<T> {
 
   /**
    * Each result is provided as it is generated instead of building into lists.
-   * 
+   *
    * @return true if more results are wanted, or false to receive no more results.
    */
   boolean handleResult(Result<? extends T> result);

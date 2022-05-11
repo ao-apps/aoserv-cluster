@@ -32,10 +32,12 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
 /**
  * Adds up all the non-optimal states of the analyzed cluster giving more weight
  * to higher level problems.  Adds in <code>g</code> to prefer shorter paths.
- * 
+ * <p>
  * This is not thread safe.
- * 
+ * </p>
+ * <p>
  * The values are:
+ * </p>
  * <pre>
  * NONE = 0
  * LOW = 1
@@ -67,21 +69,21 @@ public class LinearHeuristicFunction implements HeuristicFunction, ResultHandler
   public boolean handleResult(Result<?> result) {
     AlertLevel alertLevel = result.getAlertLevel();
     switch (alertLevel) {
-      case NONE :
+      case NONE:
         throw new AssertionError("Should only get non-optimal results");
-      case LOW :
+      case LOW:
         total++;
         break;
-      case MEDIUM :
+      case MEDIUM:
         total += 2;
         break;
-      case HIGH :
+      case HIGH:
         total += 3;
         break;
-      case CRITICAL :
+      case CRITICAL:
         total += 4;
         break;
-      default :
+      default:
         throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;

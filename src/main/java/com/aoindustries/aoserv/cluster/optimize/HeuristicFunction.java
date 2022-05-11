@@ -37,7 +37,7 @@ public interface HeuristicFunction {
    * Estimates the number of moves to an optimal state.
    * If it uses the provided <code>g</code> g(n) it will result in Algorithm A.
    * If it also always uses h(n) &lt;= h*(n) it will result in Algorithm A*.
-   * 
+   *
    * @param  clusterConfiguration   The <code>ClusterConfiguration</code> representing the current state.
    * @param  g         The number of moves already made.
    *

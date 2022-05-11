@@ -38,10 +38,11 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   /**
    * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
    * 16-bit and 32-bit representation when possible to save heap.
-   *
+   * <p>
    * If heap space is every an issue, can use even more specialized versions like:
    *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
    *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
+   * </p>
    */
   public static PhysicalVolumeConfiguration newInstance(
       PhysicalVolume physicalVolume,
@@ -123,8 +124,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
         physicalVolume == other.physicalVolume
             && getFirstLogicalExtent() == other.getFirstLogicalExtent()
             && getFirstPhysicalExtent() == other.getFirstPhysicalExtent()
-            && getExtents() == other.getExtents()
-    ;
+            && getExtents() == other.getExtents();
   }
 
   @Override
@@ -133,8 +133,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
         +127 * physicalVolume.hashCode()
             + 31 * (int) getFirstLogicalExtent()
             + 7 * (int) getFirstPhysicalExtent()
-            + (int) getExtents()
-    ;
+            + (int) getExtents();
   }
 
   public abstract long getFirstLogicalExtent();
@@ -144,7 +143,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   public abstract long getExtents();
 
   /**
-   * Sorted ascending by:
+   * Sorted ascending.  By:
    * <ol>
    *   <li>physicalVolume</li>
    *   <li>firstLogicalExtent</li>
@@ -197,8 +196,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   static boolean overlaps(long start1, long extents1, long start2, long extents2) {
     return
         (start2 + extents2) > start1
-            && (start1 + extents1) > start2
-    ;
+            && (start1 + extents1) > start2;
   }
 
   /**
@@ -212,7 +210,6 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
             || (
             physicalVolume == other.physicalVolume
                 && overlaps(getFirstPhysicalExtent(), myExtents, other.getFirstPhysicalExtent(), otherExtents)
-        )
-    ;
+        );
   }
 }

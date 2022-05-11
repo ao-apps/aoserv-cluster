@@ -33,12 +33,15 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
  * Adds up all the non-optimal states of the analyzed cluster giving more weight
  * to higher level problems.  Adds in <code>g*.00001</code> to prefer shorter paths.  Each
  * type of problem is scaled by how far off the state is when possible.
- * 
+ * <p>
  * The heuristics for "NONE" are also added (in negative form) with a coefficient of .001 (as a tie breaker with more weight than number of moves).
- * 
+ * </p>
+ * <p>
  * This is not thread safe.
- * 
+ * </p>
+ * <p>
  * The values are:
+ * </p>
  * <pre>
  * BASE = 1.5
  *
@@ -75,22 +78,22 @@ public class ExponentialDeviationWithNoneHeuristicFunction implements HeuristicF
   public boolean handleResult(Result<?> result) {
     AlertLevel alertLevel = result.getAlertLevel();
     switch (alertLevel) {
-      case NONE :
+      case NONE:
         total += 0.001 * result.getDeviation();
         break;
-      case LOW :
+      case LOW:
         total += result.getDeviation();
         break;
-      case MEDIUM :
+      case MEDIUM:
         total += BASE * result.getDeviation();
         break;
-      case HIGH :
+      case HIGH:
         total += BASE * BASE * result.getDeviation();
         break;
-      case CRITICAL :
+      case CRITICAL:
         total += 1024 + BASE * BASE * BASE * result.getDeviation(); // Try to avoid this at all costs
         break;
-      default :
+      default:
         throw new AssertionError("Unexpected value for alertLevel: " + alertLevel);
     }
     return true;
