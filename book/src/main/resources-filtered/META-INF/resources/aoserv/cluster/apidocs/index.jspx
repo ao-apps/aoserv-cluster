@@ -39,5 +39,6 @@ along with aoserv-cluster.  If not, see <https://www.gnu.org/licenses/>.
     shortTitle="API Docs"
     datePublished="2020-04-09T18:43:48-05:00"
     dateModified="${ao:getLastModified('index.html')}"
+    allowRobots="false"
   />
 </jsp:root>
