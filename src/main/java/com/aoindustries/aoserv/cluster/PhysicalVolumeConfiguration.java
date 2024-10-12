@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -136,10 +136,19 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
             + (int) getExtents();
   }
 
+  /**
+   * Gets the first logical extent.
+   */
   public abstract long getFirstLogicalExtent();
 
+  /**
+   * Gets the first physical extent.
+   */
   public abstract long getFirstPhysicalExtent();
 
+  /**
+   * Gets the number of extents.
+   */
   public abstract long getExtents();
 
   /**
