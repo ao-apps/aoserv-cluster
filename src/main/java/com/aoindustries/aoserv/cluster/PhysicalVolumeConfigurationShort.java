@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,9 +29,8 @@ import java.io.Serializable;
  * A 16-bit implementation of PhysicalVolumeConfiguration to be used
  * when all three extents fields fit into 16 bits.  This will be the case
  * until the logical or phyiscal volumes reach 1 TB.
- * <p>
- * In JDK 1.6 (i586) on Linux, this takes 24 bytes of heap per instance.
- * </p>
+ *
+ * <p>In JDK 1.6 (i586) on Linux, this takes 24 bytes of heap per instance.</p>
  *
  * @author  AO Industries, Inc.
  */

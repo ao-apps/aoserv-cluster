@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,9 +32,8 @@ import java.util.Map;
  * A cluster contains all of the definitions for virtual and physical resources
  * required and available, but nothing about the current mapping between them.
  * ClusterConfiguration keeps track of the current mappings.
- * <p>
- * A cluster is immutable.  All setters return a new instance of a cluster.
- * </p>
+ *
+ * <p>A cluster is immutable.  All setters return a new instance of a cluster.</p>
  *
  * @author  AO Industries, Inc.
  */

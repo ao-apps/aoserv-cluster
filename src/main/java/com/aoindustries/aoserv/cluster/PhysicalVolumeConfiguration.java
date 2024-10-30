@@ -38,11 +38,10 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   /**
    * Creates a new PhysicalVolume of the appropriate type for the provided extents.  Will use
    * 16-bit and 32-bit representation when possible to save heap.
-   * <p>
-   * If heap space is every an issue, can use even more specialized versions like:
+   *
+   * <p>If heap space is every an issue, can use even more specialized versions like:
    *     PhysicalVolumeConfiguration896 for multiples of 896 that can store into byte
-   *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap
-   * </p>
+   *     PhysicalVolumeConfiguration_0_0_896 for newInstance(0,0,896) - would need to measure to know which would save heap</p>
    */
   public static PhysicalVolumeConfiguration newInstance(
       PhysicalVolume physicalVolume,

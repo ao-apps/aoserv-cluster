@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -39,36 +39,33 @@ import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
- * <p>
  * Optimizes the cluster using a best-first heuristic search.
- * </p>
- * <p>
- * The current optimization only tries to eliminate all problems.  A future version
+ *
+ * <p>The current optimization only tries to eliminate all problems.  A future version
  * of this should factory in the hardware and monthly costs to maximize the amount
- * of revenue we can make per cost.
- * </p>
- * <p>
- * The search is performed by exploring two possible moves:
- * </p>
+ * of revenue we can make per cost.</p>
+ *
+ * <p>The search is performed by exploring two possible moves:</p>
+ *
  * <ol>
  *   <li>Swap DomU between primary and secondary Dom0 (live-migrate if same architecture or shutdown/create if different)</li>
  *   <li>Move the secondary storage to a different Dom0</li>
  * </ol>
- * <p>
- * The following transitions are possible, but can also occur less directly as
- * a result of the previous two transitions.  These are not yet implemented.
- * </p>
+ *
+ * <p>The following transitions are possible, but can also occur less directly as
+ * a result of the previous two transitions.  These are not yet implemented.</p>
+ *
  * <ol>
  *   <li>pvmove primary storage to different physical volumes</li>
  *   <li>pvmove secondary storage to different physical volumes</li>
  * </ol>
- * <p>
- * To reduce the number of non-live-migrate swaps, this search could try to move
- * between same architectures in preference to different architectures.
- * </p>
- * TODO: To manage heap consumption, allow two optional parameters:
+ *
+ * <p>To reduce the number of non-live-migrate swaps, this search could try to move
+ * between same architectures in preference to different architectures.</p>
+ *
+ * <p>TODO: To manage heap consumption, allow two optional parameters:
  *           maxPathLen
- *           something to make it a "Beam Search" (http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
+ *           something to make it a "Beam Search" (http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -102,25 +99,20 @@ public class ClusterOptimizer {
   /**
    * Optimizes the cluster and returns the best path (possibly limited by an OptimizedResultHandler)
    * or <code>null</code> if no optimal configuration was found.
-   * <p>
-   * Best-first search implementation.
-   * </p>
-   * <p>
-   * TODO: Since we are limited by heap space more than CPU speed, perhaps we should look for optimal
-   *       solutions before adding onto the open list?  This means we could at least look one more move ahead.
-   * </p>
-   * <p>
-   * Could allow heuristic to return Double.POSITIVE_INFINITY to indicate no solution from that state:
-   *     (see http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)
-   * </p>
-   * <p>
-   * TODO: Add in transition cost because the best path depends not on the number of steps, but the total time of the steps.
-   * TODO: This could be a real-world estimate on how many seconds the operation would take.
-   * </p>
-   * <p>
-   * TODO: If something MUST take a path through a CRITICAL state, try to use path with shortest time in CRITICAL
-   * TODO: based on time estimates above.
-   * </p>
+   *
+   * <p>Best-first search implementation.</p>
+   *
+   * <p>TODO: Since we are limited by heap space more than CPU speed, perhaps we should look for optimal
+   *       solutions before adding onto the open list?  This means we could at least look one more move ahead.</p>
+   *
+   * <p>Could allow heuristic to return Double.POSITIVE_INFINITY to indicate no solution from that state:
+   *     (see http://pages.cs.wisc.edu/~dyer/cs540/notes/search2.html)</p>
+   *
+   * <p>TODO: Add in transition cost because the best path depends not on the number of steps, but the total time of the steps.
+   * TODO: This could be a real-world estimate on how many seconds the operation would take.</p>
+   *
+   * <p>TODO: If something MUST take a path through a CRITICAL state, try to use path with shortest time in CRITICAL
+   * TODO: based on time estimates above.</p>
    *
    * @param  handler  if null, returns the first path found, not necessarily the shortest
    */

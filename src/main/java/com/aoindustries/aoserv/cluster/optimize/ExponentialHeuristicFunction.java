@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2020, 2022  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2020, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -32,19 +32,16 @@ import com.aoindustries.aoserv.cluster.analyze.ResultHandler;
 /**
  * Adds up all the non-optimal states of the analyzed cluster giving more weight
  * to higher level problems.  Adds in <code>g</code> to prefer shorter paths.
- * <p>
- * This is not thread safe.
- * </p>
- * <p>
- * The values are:
- * </p>
- * <pre>
- * NONE = 0
+ *
+ * <p>This is not thread safe.</p>
+ *
+ * <p>The values are:</p>
+ *
+ * <pre>NONE = 0
  * LOW = 4
  * MEDIUM = 8
  * HIGH = 16
- * CRITICAL = 1024
- * </pre>
+ * CRITICAL = 1024</pre>
  *
  * @author  AO Industries, Inc.
  */

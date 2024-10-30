@@ -46,17 +46,14 @@ import java.util.TreeMap;
  * <li>DomUDisk onto a set of primary physical volumes</li>
  * <li>DomUDisk onto a set of secondary physical volumes</li>
  * </ul>
- * <p>
- * The heap space used should be as small as possible to allow the maximum number of possible configurations
- * to be explored.
- * </p>
- * <p>
- * Everything in ClusterConfiguration is not thread-safe, if using from multiple
- * threads, external synchronization is required.
- * </p>
- * <p>
- * DomU VMs may only be allocated to Dom0 machines in the same cluster.
- * </p>
+ *
+ * <p>The heap space used should be as small as possible to allow the maximum number of possible configurations
+ * to be explored.</p>
+ *
+ * <p>Everything in ClusterConfiguration is not thread-safe, if using from multiple
+ * threads, external synchronization is required.</p>
+ *
+ * <p>DomU VMs may only be allocated to Dom0 machines in the same cluster.</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -382,15 +379,14 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   /**
    * Moves the secondary to another machine if it is possible to map all of the extents for the DomUDisks onto free physical
    * volumes in Dom0.
-   * <p>
-   * Because there can be many mappings between DomUDisk and PhysicalVolumes, in factorial combinations,
+   *
+   * <p>Because there can be many mappings between DomUDisk and PhysicalVolumes, in factorial combinations,
    * this method has a large impact on the branch factor for the cluster optimizer.  However, it also
-   * affects which solutions may be found or transitioned through in the path to a solution.
-   * </p>
-   * <p>
-   * This implementation is meant to be as simple as possible.  It focuses on reducing the search space
-   * while possibly missing some valid configurations.  It works as follows:
-   * </p>
+   * affects which solutions may be found or transitioned through in the path to a solution.</p>
+   *
+   * <p>This implementation is meant to be as simple as possible.  It focuses on reducing the search space
+   * while possibly missing some valid configurations.  It works as follows:</p>
+   *
    * <ol>
    *   <li>Make sure all DomUDisk have the same minspeed - error otherwise.</li>
    *   <li>Find all unallocated physical volumes, sort by speed, device, partition</li>
@@ -402,9 +398,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
    *     </ol>
    *   </li>
    * </ol>
-   * <p>
-   * In the future, a more advanced configuration could try to reduce the combinations while (hopefully) not losing any possible solution by:
-   * </p>
+   *
+   * <p>In the future, a more advanced configuration could try to reduce the combinations while (hopefully) not losing any possible solution by:</p>
+   *
    * <ol>
    *   <li>Always allocating DomUDisks of the same min speed, extents, and weight in order by device</li>
    *   <li>Always allocating to the physical volumes in order by speed, device, partition</li>
