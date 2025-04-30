@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2008-2011, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2008-2011, 2019, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -129,16 +129,16 @@ public class ClusterOptimizer {
     // Initialize the open list
     PriorityQueue<ListElement> openQueue = new PriorityQueue<>();
     Map<ClusterConfiguration, ListElement> openMap = new HashMap<>();
-      {
-        ListElement openListElement = new ListElement(
-            null,
-            null,
-            clusterConfiguration,
-            heuristicFunction.getHeuristic(clusterConfiguration, 0)
-        );
-        openQueue.add(openListElement);
-        openMap.put(clusterConfiguration, openListElement);
-      }
+    {
+      ListElement openListElement = new ListElement(
+          null,
+          null,
+          clusterConfiguration,
+          heuristicFunction.getHeuristic(clusterConfiguration, 0)
+      );
+      openQueue.add(openListElement);
+      openMap.put(clusterConfiguration, openListElement);
+    }
 
     // Initialize the closed list
     Map<ClusterConfiguration, ListElement> closedMap = new HashMap<>();

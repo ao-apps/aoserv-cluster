@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022, 2024  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2024, 2025  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -734,19 +734,19 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     if (cluster != other.cluster) {
       return false;
     }
-      {
-        int size = unmodifiableDomUConfigurations.size();
-        if (size != other.unmodifiableDomUConfigurations.size()) {
+    {
+      int size = unmodifiableDomUConfigurations.size();
+      if (size != other.unmodifiableDomUConfigurations.size()) {
+        return false;
+      }
+      Iterator<DomUConfiguration> myIter = unmodifiableDomUConfigurations.iterator();
+      Iterator<DomUConfiguration> otherIter = other.unmodifiableDomUConfigurations.iterator();
+      while (myIter.hasNext()) {
+        if (!myIter.next().equals(otherIter.next())) {
           return false;
         }
-        Iterator<DomUConfiguration> myIter = unmodifiableDomUConfigurations.iterator();
-        Iterator<DomUConfiguration> otherIter = other.unmodifiableDomUConfigurations.iterator();
-        while (myIter.hasNext()) {
-          if (!myIter.next().equals(otherIter.next())) {
-            return false;
-          }
-        }
       }
+    }
     return true;
   }
 
