@@ -185,11 +185,11 @@ public class ClusterOptimizer {
         }
 
         // Trim anything out of open/closed that has transitions.length >= this path
-        //System.out.println(
-        //    "        Before trim: openQueue: "+openQueue.size()
-        //    + " openMap: "+openMap.size()
-        //    + " closedMap:"+closedMap.size()
-        //);
+        // System.out.println(
+        //     "        Before trim: openQueue: "+openQueue.size()
+        //     + " openMap: "+openMap.size()
+        //     + " closedMap:"+closedMap.size()
+        // );
         // openQueue and openMap
         int shortestPathLen = shortestPath.pathLen;
         Iterator<Map.Entry<ClusterConfiguration, ListElement>> openIter = openMap.entrySet().iterator();
@@ -212,11 +212,11 @@ public class ClusterOptimizer {
             closedIter.remove();
           }
         }
-        //System.out.println(
-        //    "        After trim: openQueue: "+openQueue.size()
-        //    + " openMap: "+openMap.size()
-        //    + " closedMap:"+closedMap.size()
-        //);
+        // System.out.println(
+        //     "        After trim: openQueue: "+openQueue.size()
+        //     + " openMap: "+openMap.size()
+        //     + " closedMap:"+closedMap.size()
+        // );
       } else {
         if (!USE_SKIP_SAME_HEURISTIC_HACK || lastHeurisic != current.heuristic) {
           if (USE_SKIP_SAME_HEURISTIC_HACK) {
@@ -229,7 +229,7 @@ public class ClusterOptimizer {
               shortestPath == null || (current.pathLen + 1) < shortestPath.pathLen
           ) {
             generateChildren(current.clusterConfiguration, children, childTransitions, randomizeChildren);
-            //System.out.println("        children: "+children.size());
+            // System.out.println("        children: "+children.size());
             boolean endsCritical = allowPathThroughCritical ? true : analyzed.hasCritical();
             // for each child of X do
             for (int i = 0, size = children.size(); i < size; i++) {

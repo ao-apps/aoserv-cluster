@@ -77,7 +77,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     V[] newArray = (V[]) Array.newInstance(clazz, size + 1);
     newArray = existingList.toArray(newArray);
     newArray[size] = newValue;
-    //Arrays.sort(newArray);
+    // Arrays.sort(newArray);
     return new UnmodifiableArrayList<>(newArray);
   }
 
@@ -97,7 +97,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
     V[] newArray = (V[]) Array.newInstance(clazz, size);
     newArray = existingList.toArray(newArray);
     newArray[index] = newValue;
-    //Arrays.sort(newArray);
+    // Arrays.sort(newArray);
     return new UnmodifiableArrayList<>(newArray);
   }
 
@@ -489,7 +489,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
           }
         }
         if (!allocated) {
-          //SortedMap<Dom0Disk, SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
+          // SortedMap<Dom0Disk, SortedSet<PhysicalVolume>> unallocatedPhysicalVolumes = new TreeMap<>(); // Natural sort of Dom0Disk is by speed then device
           List<PhysicalVolume> unallocatedPhysicalVolumes = unallocatedDom0Disks.get(dom0Disk);
           if (unallocatedPhysicalVolumes == null) {
             unallocatedDom0Disks.put(dom0Disk, unallocatedPhysicalVolumes = new ArrayList<>());
@@ -689,9 +689,9 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
                   + " averageMapped:" + ((float) totalMapped / (float) mappedCount)
                   + " averageAlreadyContains:" + ((float) totalAlreadyContains / (float) mappedCount)
           );
-          //mappedCount = 0;
-          //totalMapped = 0;
-          //totalAlreadyContains = 0;
+          // mappedCount = 0;
+          // totalMapped = 0;
+          // totalAlreadyContains = 0;
           lastDisplayTime = currentTime;
         }
       }

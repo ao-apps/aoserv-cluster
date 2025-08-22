@@ -83,11 +83,11 @@ public class Cluster implements Comparable<Cluster>, Serializable {
   }
 
   final String name;
-  //final SortedSet<Rack> unmodifiableRacks = Collections.unmodifiableSortedSet(racks);
+  // final SortedSet<Rack> unmodifiableRacks = Collections.unmodifiableSortedSet(racks);
   final Map<String, Dom0> unmodifiableDom0s;
   final Map<String, DomU> unmodifiableDomUs;
 
-  //final Map<String, SortedSet<DomU>> unmodifiableDomUGroups = Collections.unmodifiableMap(domUGroups);
+  // final Map<String, SortedSet<DomU>> unmodifiableDomUGroups = Collections.unmodifiableMap(domUGroups);
 
   /**
    * Creates a new, empty cluster.
@@ -137,24 +137,24 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     return name;
   }
 
-  ///**
-  // * Gets an unmodifiable set of racks.
-  // */
-  //public SortedSet<Rack> getRacks() {
-  //  return unmodifiableRacks;
-  //}
+  // /**
+  //  * Gets an unmodifiable set of racks.
+  //  */
+  // public SortedSet<Rack> getRacks() {
+  //   return unmodifiableRacks;
+  // }
 
-  ///**
-  // * Adds a rack to the cluster returning the reference to Rack.
-  // */
-  //public Rack addRack(String id) {
-  //  Rack newRack = new Rack(this, id);
-  //  if (racks.contains(newRack)) {
-  //    throw new IllegalArgumentException(this+": Cluster already contains rack with id="+id);
-  //  }
-  //  racks.add(newRack);
-  //  return newRack;
-  //}
+  // /**
+  //  * Adds a rack to the cluster returning the reference to Rack.
+  //  */
+  // public Rack addRack(String id) {
+  //   Rack newRack = new Rack(this, id);
+  //   if (racks.contains(newRack)) {
+  //     throw new IllegalArgumentException(this+": Cluster already contains rack with id="+id);
+  //   }
+  //   racks.add(newRack);
+  //   return newRack;
+  // }
 
   /**
    * Gets an unmodifiable set of Dom0s.
@@ -408,26 +408,26 @@ public class Cluster implements Comparable<Cluster>, Serializable {
     );
   }
 
-  ///**
-  // * Adds a group of DomU that should all be on different Dom0 machines.
-  // */
-  //public void addDomUGroup(String name, SortedSet<DomU> domUGroup) {
-  //  if (domUGroups.containsKey(name)) {
-  //    throw new IllegalArgumentException(this+": DomU group already exists in this cluster: "+name);
-  //  }
-  //  // Each of the DomU must be in this cluster
-  //  for (DomU domU : domUGroup) {
-  //    if (domU.getCluster() != this) {
-  //      throw new IllegalArgumentException(this+": DomU is not in this cluster: "+domU);
-  //    }
-  //  }
-  //  domUGroups.put(name, Collections.unmodifiableSortedSet(new TreeSet<>(domUGroup)));
-  //}
+  // /**
+  //  * Adds a group of DomU that should all be on different Dom0 machines.
+  //  */
+  // public void addDomUGroup(String name, SortedSet<DomU> domUGroup) {
+  //   if (domUGroups.containsKey(name)) {
+  //     throw new IllegalArgumentException(this+": DomU group already exists in this cluster: "+name);
+  //   }
+  //   // Each of the DomU must be in this cluster
+  //   for (DomU domU : domUGroup) {
+  //     if (domU.getCluster() != this) {
+  //       throw new IllegalArgumentException(this+": DomU is not in this cluster: "+domU);
+  //     }
+  //   }
+  //   domUGroups.put(name, Collections.unmodifiableSortedSet(new TreeSet<>(domUGroup)));
+  // }
 
-  ///**
-  // * Gets an unmodifiable view of the DomU groups.
-  // */
-  //public Map<String, SortedSet<DomU>> unmodifiableDomUGroups() {
-  //  return unmodifiableDomUGroups;
-  //}
+  // /**
+  //  * Gets an unmodifiable view of the DomU groups.
+  //  */
+  // public Map<String, SortedSet<DomU>> unmodifiableDomUGroups() {
+  //   return unmodifiableDomUGroups;
+  // }
 }

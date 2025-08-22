@@ -38,7 +38,7 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
 
   final String clusterName;
   final String hostname;
-  //final Rack rack;
+  // final Rack rack;
   final int ram;
   final ProcessorType processorType;
   final ProcessorArchitecture processorArchitecture;
@@ -78,10 +78,10 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
     assert !hasNull(unmodifiableDom0Disks.values()) : "null value in unmodifiableDom0Disks";
     this.clusterName = clusterName;
     this.hostname = hostname;
-    //if (rack.getCluster() != cluster) {
-    //  throw new IllegalArgumentException(this+": cluster != rack.cluster");
+    // if (rack.getCluster() != cluster) {
+    //   throw new IllegalArgumentException(this+": cluster != rack.cluster");
     //
-    //this.rack = rack;
+    // this.rack = rack;
     this.ram = ram;
     this.processorType = processorType;
     this.processorArchitecture = processorArchitecture;
