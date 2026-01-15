@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -50,7 +50,7 @@ public class DomU implements Comparable<DomU>, Serializable {
   final boolean secondaryDom0Locked;
 
   /**
-   * unmodifiableDomUDisks MUST BE UNMODIFIABLE.
+   * {@code unmodifiableDomUDisks} MUST BE UNMODIFIABLE.
    *
    * @see Cluster#addDomU
    */

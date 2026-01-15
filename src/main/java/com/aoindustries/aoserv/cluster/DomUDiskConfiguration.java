@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -110,7 +110,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
   }
 
   /**
-   * unmodifiablePrimaryPhysicalVolumes and unmodifiableSecondaryPhysicalVolumes MUST BE UNMODIFIABLE.
+   * {@code unmodifiablePrimaryPhysicalVolumes} and {@code unmodifiableSecondaryPhysicalVolumes} MUST BE UNMODIFIABLE.
    * They must also both be sorted to ensure proper results from hashCode and equals.
    */
   DomUDiskConfiguration(

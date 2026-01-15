@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022, 2025  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2025, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -42,7 +42,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   final List<DomUDiskConfiguration> unmodifiableDomUDiskConfigurations;
 
   /**
-   * unmodifiableDomUDiskConfigurations MUST BE UNMODIFIABLE.
+   * {@code unmodifiableDomUDiskConfigurations} MUST BE UNMODIFIABLE.
    */
   DomUConfiguration(
       DomU domU,

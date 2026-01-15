@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -43,7 +43,7 @@ public class Dom0Disk implements Comparable<Dom0Disk>, Serializable {
   final Map<Short, PhysicalVolume> unmodifiablePhysicalVolumes;
 
   /**
-   * unmodifiablePhysicalVolumes MUST BE UNMODIFIABLE.
+   * {@code unmodifiablePhysicalVolumes} MUST BE UNMODIFIABLE.
    *
    * @see Cluster#addDom0Disk
    */
