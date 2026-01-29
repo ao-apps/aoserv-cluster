@@ -98,7 +98,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(DomUConfiguration)
+   * @see  DomUConfiguration#equals(DomUConfiguration)
    */
   @Override
   public boolean equals(Object obj) {
@@ -108,7 +108,7 @@ public class DomUConfiguration implements Comparable<DomUConfiguration>, Seriali
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(Object)
+   * @see  DomUConfiguration#equals(Object)
    */
   public boolean equals(DomUConfiguration other) {
     if (this == other) {

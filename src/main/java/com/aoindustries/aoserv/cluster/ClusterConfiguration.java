@@ -708,7 +708,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(ClusterConfiguration)
+   * @see  ClusterConfiguration#equals(ClusterConfiguration)
    */
   @Override
   public boolean equals(Object obj) {
@@ -718,7 +718,7 @@ public class ClusterConfiguration implements Comparable<ClusterConfiguration>, S
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(Object)
+   * @see  ClusterConfiguration#equals(Object)
    */
   public boolean equals(ClusterConfiguration other) {
     if (this == other) {

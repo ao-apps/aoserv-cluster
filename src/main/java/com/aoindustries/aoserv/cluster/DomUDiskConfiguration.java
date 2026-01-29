@@ -163,7 +163,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(DomUDiskConfiguration)
+   * @see  DomUDiskConfiguration#equals(DomUDiskConfiguration)
    */
   @Override
   public boolean equals(Object obj) {
@@ -173,7 +173,7 @@ public class DomUDiskConfiguration implements Comparable<DomUDiskConfiguration>,
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(Object)
+   * @see  DomUDiskConfiguration#equals(Object)
    */
   public boolean equals(DomUDiskConfiguration other) {
     return

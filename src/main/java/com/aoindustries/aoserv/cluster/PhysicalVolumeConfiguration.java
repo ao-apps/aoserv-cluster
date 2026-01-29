@@ -100,7 +100,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
+   * @see  PhysicalVolumeConfiguration#equals(com.aoindustries.aoserv.cluster.PhysicalVolumeConfiguration)
    */
   @Override
   public final boolean equals(Object obj) {
@@ -110,7 +110,7 @@ public abstract class PhysicalVolumeConfiguration implements Comparable<Physical
   /**
    * Performs a deep field-by-field comparison to see if two configurations are identical in every way.
    *
-   * @see  #equals(Object)
+   * @see  PhysicalVolumeConfiguration#equals(Object)
    */
   public final boolean equals(PhysicalVolumeConfiguration other) {
     if (this == other) {
