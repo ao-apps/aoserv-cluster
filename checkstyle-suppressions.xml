@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 aoserv-cluster - Cluster optimizer for the AOServ Platform.
-Copyright (C) 2022  AO Industries, Inc.
+Copyright (C) 2022, 2026  AO Industries, Inc.
     support@aoindustries.com
     7262 Bull Pen Cir
     Mobile, AL 36695
@@ -29,32 +29,32 @@ along with aoserv-cluster.  If not, see <https://www.gnu.org/licenses/>.
 
   <!-- Will keep "domU" and "DomU" for consistency with Xen's "DomU" -->
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]Cluster\.java$"
     message="'addDomUDisk'"
   />
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]ClusterConfiguration\.java$"
     message="'(.*DomU.*|domU.*)'"
   />
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]DomU\.java$"
     message="'(getDomUDisk|getDomUDisks|unmodifiableDomUDisks)'"
   />
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]DomUConfiguration\.java$"
     message="'(DomUConfiguration|getDomUDiskConfigurations|unmodifiableDomUDiskConfigurations)'"
   />
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]DomUDisk\.java$"
     message="'(DomUDisk|domUHostname|getDomUHostname)'"
   />
   <suppress
-    checks="AbbreviationAsWordInName"
+    checks="(AbbreviationAsWordInName|GoogleMethodName)"
     files="[/\\]com[/\\]aoindustries[/\\]aoserv[/\\]cluster[/\\]DomUDiskConfiguration\.java$"
     message="'(DomUDiskConfiguration|domUDisk|getDomUDisk)'"
   />

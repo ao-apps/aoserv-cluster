@@ -1,6 +1,6 @@
 /*
  * aoserv-cluster - Cluster optimizer for the AOServ Platform.
- * Copyright (C) 2007-2011, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2007-2011, 2020, 2021, 2022, 2026  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -99,9 +99,9 @@ public class Dom0 implements Comparable<Dom0>, Serializable {
     return hostname;
   }
 
-  /*public Rack getRack() {
-    return rack;
-  }*/
+  // public Rack getRack() {
+  //   return rack;
+  // }
 
   /**
    * Gets the physical amount of RAM in megabytes.
